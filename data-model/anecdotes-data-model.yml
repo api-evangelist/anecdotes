@@ -1,0 +1,485 @@
+generated: '2026-07-31'
+method: derived
+source: openapi/anecdotes-grc-openapi.yml
+docs: https://help.anecdotes.ai/product-tour/frameworks/anecdotes-terminology-and-framework-hierarchy
+summary: Entity-relationship graph derived from the components.schemas of the Anecdotes GRC OpenAPI. Relationships
+  are inferred from id-reference fields (*_id / *_ids) between domain entities; enum schemas are listed separately
+  rather than modelled as entities.
+domain_hierarchy:
+  note: Anecdotes models compliance as Framework -> Control -> Requirement, with Evidence collected by plugins and
+    evaluated by Analysis Rules, and Risks, Policies and Findings hanging off the same core.
+  root: Framework
+  chain:
+  - Framework
+  - Control
+  - Requirement
+  - Evidence
+  - AnalysisRule
+  - AnalysisRuleResult
+entity_count: 40
+enum_count: 14
+entities:
+- entity: AnalysisRuleModel
+  fields: 17
+  operations:
+  - createAnalysisRule
+  - getAnalysisRules
+  relationships:
+  - target: rule
+    type: belongs_to
+    via: rule_id
+    field_type: string
+  - target: evidence
+    type: belongs_to
+    via: evidence_id
+    field_type: string
+  - target: library_rule
+    type: belongs_to
+    via: library_rule_id
+    field_type: string
+- entity: AnalysisRuleResultModel
+  fields: 13
+  description: Analysis rule execution result for a specific evidence instance.
+  operations:
+  - getAnalysisRulesResults
+  relationships:
+  - target: rule
+    type: belongs_to
+    via: rule_id
+    field_type: string
+  - target: evidence
+    type: belongs_to
+    via: evidence_id
+    field_type: string
+  - target: parent_evidence
+    type: belongs_to
+    via: parent_evidence_id
+    field_type: string
+  - target: evidence_instance
+    type: belongs_to
+    via: evidence_instance_id
+    field_type: string
+  - target: service_instance
+    type: belongs_to
+    via: service_instance_id
+    field_type: string
+- entity: Control
+  fields: 16
+  description: Control facade returned by list/read endpoints. Additional tenant-specific fields may appear.
+  operations:
+  - createCustomControl
+  - getControlById
+  - getControlsByFramework
+  - getControlsByIds
+  - listControls
+  - updateCustomControl
+  relationships:
+  - target: control
+    type: belongs_to
+    via: control_id
+    field_type: string
+  - target: control_framework
+    type: belongs_to
+    via: control_framework_id
+    field_type: string
+  - target: control_framework_category
+    type: belongs_to
+    via: control_framework_category_id
+    field_type: string
+  - target: control_requirement
+    type: has_many
+    via: control_requirement_ids
+    field_type: array
+- entity: CreateCustomAnalysisRuleModel
+  fields: 11
+  description: Request body for creating a new custom analysis rule.
+  operations:
+  - createAnalysisRule
+  relationships:
+  - target: evidence
+    type: belongs_to
+    via: evidence_id
+    field_type: string
+  - target: library_rule
+    type: belongs_to
+    via: library_rule_id
+    field_type: string
+- entity: CreateCustomFieldRequest
+  fields: 6
+  description: Body for creating a custom field definition.
+  operations:
+  - createCustomField
+- entity: CustomField
+  fields: 8
+  description: A custom field definition.
+  operations:
+  - getCustomField
+  - listCustomFields
+- entity: Evidence_AttachIpeResponse
+  fields: 2
+  description: Response returned after attaching or replacing IPE on an evidence collection.
+  operations:
+  - attachEvidenceIpe
+  relationships:
+  - target: evidence_instance
+    type: belongs_to
+    via: evidence_instance_id
+    field_type: string
+- entity: Evidence_CreateEvidenceResponse
+  fields: 1
+  operations:
+  - createEvidenceCollection
+  relationships:
+  - target: evidence
+    type: belongs_to
+    via: evidence_id
+    field_type: string
+- entity: Evidence_DetailMessage
+  fields: 1
+  description: Error body for input-combination errors raised directly by the endpoint (FastAPI `HTTPException`
+    with a string detail).
+  operations:
+  - attachEvidenceIpe
+  - createEvidenceCollection
+- entity: Evidence_ErrorResponse
+  fields: 2
+  description: Error body returned for Anecdotes business-logic errors (e.g. IPE validation failures and the API-evidence-only
+    guard). `error_detail` repeats the HTTP status code.
+  operations:
+  - attachEvidenceIpe
+  - attachEvidenceToCollection
+  - createEvidenceCollection
+- entity: Evidence_EvidenceDefinition
+  fields: 40
+  description: Full evidence definition with metadata and latest collection data.
+  operations:
+  - getAnEvidence
+  - getEvidence
+  relationships:
+  - target: evidence_instance
+    type: belongs_to
+    via: evidence_instance_id
+    field_type: string
+  - target: evidence
+    type: belongs_to
+    via: evidence_id
+    field_type: string
+  - target: evidence_service
+    type: belongs_to
+    via: evidence_service_id
+    field_type: string
+  - target: evidence_collection_run
+    type: belongs_to
+    via: evidence_collection_run_id
+    field_type: string
+  - target: evidence_originated_by_instance
+    type: belongs_to
+    via: evidence_originated_by_instance_id
+    field_type: string
+- entity: Evidence_EvidenceInstance
+  fields: 24
+  relationships:
+  - target: evidence_instance
+    type: belongs_to
+    via: evidence_instance_id
+    field_type: string
+  - target: evidence
+    type: belongs_to
+    via: evidence_id
+    field_type: string
+  - target: evidence_service
+    type: belongs_to
+    via: evidence_service_id
+    field_type: string
+  - target: evidence_service_instance
+    type: belongs_to
+    via: evidence_service_instance_id
+    field_type: string
+  - target: evidence_collection_run
+    type: belongs_to
+    via: evidence_collection_run_id
+    field_type: string
+  - target: evidence_originated_by_instance
+    type: belongs_to
+    via: evidence_originated_by_instance_id
+    field_type: string
+- entity: Evidence_EvidenceRunHistory
+  fields: 2
+  description: Evidence collection run history with details per instance and history per run.
+  operations:
+  - getCollectionMultiHistory
+- entity: Finding
+  fields: 17
+  description: A compliance finding.
+  operations:
+  - createFinding
+  - getFindingById
+  - patchFinding
+  relationships:
+  - target: customer_finding
+    type: belongs_to
+    via: customer_finding_id
+    field_type: string
+- entity: FindingsDeleteResponse
+  fields: 1
+  description: Bulk delete result.
+  operations:
+  - deleteFindings
+- entity: FindingsListResponse
+  fields: 2
+  operations:
+  - listFindings
+- entity: GetControlsBody
+  fields: 1
+  operations:
+  - getControlsByIds
+  relationships:
+  - target: controls
+    type: has_many
+    via: controls_ids
+    field_type: array
+- entity: LinkedRequirement
+  fields: 2
+  relationships:
+  - target: requirement
+    type: belongs_to
+    via: requirement_id
+    field_type: string
+- entity: PatchControlCustomFieldValuePayload
+  fields: 1
+  operations:
+  - patchControlCustomField
+- entity: Policy_CreatePoliciesRequest
+  fields: 0
+  description: 'Request body for `POST /policy/v2/policies`: one or more create instructions.'
+  operations:
+  - createPolicies
+- entity: Policy_CreatePolicyItem
+  fields: 3
+  description: One policy to create in `POST /policy/v2/policies` (body is an array of these objects).
+  relationships:
+  - target: evidence
+    type: belongs_to
+    via: evidence_id
+    field_type: string
+  - target: requirements
+    type: has_many
+    via: requirements_ids
+    field_type: array
+- entity: Policy_CustomerPolicy
+  fields: 23
+  description: A customer policy record from `GET /policy/v1/customer-policies`, `POST /policy/v2/policies` (create),
+    `PATCH /policy/v1/policies/{policy_id}` (replace evidence link), or `PUT /pol
+  operations:
+  - createPolicies
+  - listPolicyCustomerPolicies
+  - patchPolicyRelatedEvidence
+  - updatePolicySettings
+  relationships:
+  - target: policy
+    type: belongs_to
+    via: policy_id
+    field_type: string
+  - target: global_policy
+    type: belongs_to
+    via: global_policy_id
+    field_type: string
+- entity: Policy_DeletePoliciesRequest
+  fields: 0
+  description: 'Request body for `PUT /policy/v1/policies/delete-policies`: policy ids to remove.'
+  operations:
+  - deletePolicies
+- entity: Policy_LibraryPolicy
+  fields: 10
+  description: A template policy from the library from `GET /policy/v1/library-policies`.
+  operations:
+  - listPolicyLibraryPolicies
+  relationships:
+  - target: policy
+    type: belongs_to
+    via: policy_id
+    field_type: string
+- entity: Policy_PatchPolicyRequest
+  fields: 1
+  description: 'Request body for `PATCH /policy/v1/policies/{policy_id}`: set the evidence definition that backs
+    the policy file.'
+  operations:
+  - patchPolicyRelatedEvidence
+- entity: Policy_PolicySettingsStakeholder
+  fields: 26
+  description: Stakeholder entry under `policy_settings.stakeholders` on a customer policy (approval workflow).
+  relationships:
+  - target: slack_service_instance
+    type: belongs_to
+    via: slack_service_instance_id
+    field_type: string
+- entity: Policy_PolicyVersion
+  fields: 10
+  description: A single version of a policy from `GET /policy/v2/policies/{policy_id}/versions`.
+  operations:
+  - listPolicyVersions
+  relationships:
+  - target: policy
+    type: belongs_to
+    via: policy_id
+    field_type: string
+  - target: evidence_instance
+    type: belongs_to
+    via: evidence_instance_id
+    field_type: string
+- entity: Policy_UpdatePolicySettingsRequest
+  fields: 3
+  description: 'Request body for `PUT /policy/v1/policies/update-settings`: apply approval settings to the given
+    `resource_ids`.'
+  operations:
+  - updatePolicySettings
+- entity: PostCustomControl
+  fields: 9
+  operations:
+  - createCustomControl
+  relationships:
+  - target: control_framework_category
+    type: belongs_to
+    via: control_framework_category_id
+    field_type: string
+- entity: PutCustomControl
+  fields: 6
+  operations:
+  - updateCustomControl
+  relationships:
+  - target: control_framework_category
+    type: belongs_to
+    via: control_framework_category_id
+    field_type: string
+- entity: Requirement
+  fields: 18
+  description: A customer requirement instance. Field names mirror the live API; additional fields may appear (`additionalProperties`).
+  operations:
+  - createRequirement
+  - getRequirementById
+  - listRequirements
+  relationships:
+  - target: requirement
+    type: belongs_to
+    via: requirement_id
+    field_type: string
+- entity: RequirementCreateRequest
+  fields: 5
+  operations:
+  - createRequirement
+- entity: RequirementCustomFieldValueUpdate
+  fields: 1
+  description: Body for setting a custom field value on a requirement. The **`value`** shape depends on the field
+    type.
+  operations:
+  - setRequirementCustomFieldValue
+- entity: RequirementCustomFieldValues
+  fields: 0
+  description: 'Custom field values across requirements: a map of **requirement id → field id → `{ "value": … }`**.
+    Empty object when nothing is set.'
+  operations:
+  - listRequirementCustomFieldValues
+- entity: RequirementUpdateRequestEnvelope
+  fields: 2
+  operations:
+  - updateRequirement
+- entity: Risk_CustomerFullRiskModel
+  fields: 0
+  description: Risk with last treatment plan data
+  operations:
+  - getRisks
+- entity: Risk_CustomerRiskModel
+  fields: 37
+  description: Customer risk base model
+  operations:
+  - createRisk
+  - getRisk
+  - updateRisk
+  relationships:
+  - target: mitigation_control
+    type: has_many
+    via: mitigation_control_ids
+    field_type: array
+  - target: evidence
+    type: has_many
+    via: evidence_ids
+    field_type: array
+  - target: customer_risk
+    type: belongs_to
+    via: customer_risk_id
+    field_type: string
+  - target: register
+    type: belongs_to
+    via: register_id
+    field_type: string
+- entity: Risk_CustomerUpdatedRiskModel
+  fields: 29
+  description: All updatable fields for a risk. All fields are optional in a PATCH request.
+  operations:
+  - updateRisk
+  relationships:
+  - target: mitigation_control
+    type: has_many
+    via: mitigation_control_ids
+    field_type: array
+  - target: evidence
+    type: has_many
+    via: evidence_ids
+    field_type: array
+  - target: customer_risk
+    type: belongs_to
+    via: customer_risk_id
+    field_type: string
+  - target: register
+    type: belongs_to
+    via: register_id
+    field_type: string
+- entity: Risk_NewRisk
+  fields: 5
+  description: Request body for creating a new risk via **POST /risk/v1/risk**. Only `name` is required; all other
+    fields are optional.
+  operations:
+  - createRisk
+  relationships:
+  - target: evidence
+    type: has_many
+    via: evidence_ids
+    field_type: array
+  - target: customer_risk
+    type: belongs_to
+    via: customer_risk_id
+    field_type: string
+  - target: register
+    type: belongs_to
+    via: register_id
+    field_type: string
+- entity: ValidationError
+  fields: 1
+  description: 'Validation error response. Each item in `detail` describes one validation failure. The `loc` array
+    identifies the field path — each segment may be a string (field name) or integer '
+  operations:
+  - attachEvidenceToCollection
+  - createAnalysisRule
+  - createCustomControl
+  - createCustomField
+  - createEvidenceCollection
+  - createFinding
+  - createPolicies
+  - createRequirement
+  - createRisk
+  - deleteFindings
+enums:
+- AccountScopingType
+- AnalysisRuleActiveState
+- AnalysisRuleAlertLevel
+- AnalysisRuleOrigin
+- AnalysisRuleQueryType
+- AnalysisRuleType
+- ControlStatusEnum
+- Evidence_EvidenceType
+- FieldType
+- MaturityLevel
+- ResourceType
+- Risk_ActionStatus
+- Risk_CycleStatus
+- Risk_RiskAppetiteStatus

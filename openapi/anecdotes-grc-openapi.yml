@@ -1,0 +1,4084 @@
+openapi: 3.0.3
+info:
+  title: Anecdotes API
+  version: 1.0.0
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks,
+    requirements, risks, controls, policies, evidence, findings, and more.
+
+
+    Authentication is two-step: create an API key in the Anecdotes platform, exchange it at GET /identity/v1/apikey/exchange
+    for a short-lived JWT (1 hour), then send that JWT as `Authorization: Bearer <token>` on all other calls. A descriptive
+    User-Agent header is required.'
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+security:
+- Bearer: []
+tags:
+- name: Analysis Rules
+  description: '**Analysis rules** evaluate evidence table rows for **gaps or warnings**; configure query, scoping, and alert
+    levels, and read **execution results** per instance. [Analysis rules (product)](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-monitoring/analysis-rules)'
+- name: Create Controls
+  description: Create one or more **custom controls** in a framework.
+- name: Create Evidence
+  description: Create custom **Evidence Collections**, **attach** JSON/CSV files to a collection, and upload **manual** evidence
+    of any type. Customer-pushed evidence can also carry **IPE** (Information Produced by Entity) — the structured queries
+    that produced the data — supplied inline (`evidence_api_query`) or as a JSON file (`ipe_file`) on create/attach, or added
+    later to an existing collection via the `/ipe` endpoint. IPE can only be written to API (customer-pushed) evidence.
+- name: Custom Fields
+  description: '**Custom fields** extend platform resources (including **requirements**) with your own **dropdown**, **multi-select**,
+    or **free-text** values. These endpoints manage the field **definitions** — create one, list them, and read a single definition
+    to discover its **`field_metadata.values`** (the `{option_id: label}` map used when setting dropdown / multi-select values).
+    Field definitions are shared across resource types; scope a field to requirements with **`resource_types: ["REQUIREMENT"]`**.'
+- name: Download Evidence
+  description: Download **raw** evidence payloads, processed **evidence tables**, combined full-or-raw streams, and latest
+    binary payloads.
+- name: Findings
+  description: '**Findings** record compliance gaps and issues, including links to controls, evidence, and policies.'
+- name: Framework
+  description: A **framework** in anecdotes is a compliance program built from a formally written standard or regulation (e.g.
+    ISO/IEC 27001, SOC 2, HIPAA, CSA STAR). It is organized into **control categories** and **control titles** with control
+    statements. **API:** list frameworks and export framework data. [Terminology](https://help.anecdotes.ai/product-tour/frameworks/anecdotes-terminology-and-framework-hierarchy)
+- name: Policy Manager
+  description: '**Policy Manager** allows you to create, edit, and manage policies for your organization. List customer-owned
+    policies, library templates, policy versions, and configure approval cycles.'
+- name: Read Controls
+  description: List all controls or fetch by framework or id.
+- name: Read Evidence Metadata
+  description: List and retrieve **evidence definitions**, **instance metadata**, and multi-instance **run history**.
+- name: Requirements
+  description: '**Requirements** tie **controls** to expected **evidence** and framework scoping. These endpoints cover listing
+    customer requirements, simple **create / read / update / delete** for a single requirement id (`requirement_…`), and reading
+    / updating **custom field** values on requirements.'
+- name: Risk
+  description: '**Risks** live in **risk registers** in Risk Manager: inherent/residual dimensions, treatment, custom fields,
+    and links to evidence. **API:** create, list (full), get, update. [Risk Manager](https://help.anecdotes.ai/product-tour/risk-manager)
+    · [Getting started](https://help.anecdotes.ai/product-tour/risk-manager/getting-started-risk-management)'
+- name: Token
+  description: 'Exchange your **API key** for a **short-lived JWT** (1 hour). Send the JWT as `Authorization: Bearer <token>`
+    on all subsequent requests.'
+- name: Update Control Metadata
+  description: Update or delete a **custom control**'s name, description, category, and implementation.
+paths:
+  /analysis-rules/v1/analysis-rules:
+    get:
+      tags:
+      - Analysis Rules
+      summary: Get Analysis Rules
+      description: 'Gets analysis rules of the specified analysis rules ids if provided, otherwise get all analysis rules
+        instances.
+
+
+        Each rule includes its query definition, alert level, origin, active state, and account scoping configuration. The
+        list is a merge of global (library) rules and customer-specific rules, with customer overrides taking precedence.'
+      operationId: getAnalysisRules
+      responses:
+        '200':
+          description: List of analysis rule objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnalysisRuleModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    post:
+      tags:
+      - Analysis Rules
+      summary: Create Analysis Rule
+      description: 'Creates a new custom analysis rule.
+
+
+        Define the rule query, alert level, and scoping to control how evidence data is analyzed. The rule will be applied
+        during subsequent evidence collection runs.'
+      operationId: createAnalysisRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomAnalysisRuleModel'
+      responses:
+        '201':
+          description: Analysis rule created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisRuleModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /analysis-rules/v1/analysis-rules/rule_results_by_filter:
+    get:
+      tags:
+      - Analysis Rules
+      summary: Get rules and their results
+      description: This endpoint returns a list of tuples of rules and evidence instances, including the results of the analysis.
+      operationId: getAnalysisRulesResults
+      parameters:
+      - name: rule_type
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/AnalysisRuleType'
+        description: Filter by analysis rule type.
+      - name: rule_state
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/AnalysisRuleActiveState'
+        description: Filter by whether the rule is active or not.
+      responses:
+        '200':
+          description: List of analysis rule result objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnalysisRuleResultModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /api/v1/framework:
+    get:
+      tags:
+      - Framework
+      summary: Get frameworks
+      description: 'Returns a JSON **array** of frameworks in the customer environment. Optional query parameters `limit`
+        and `offset` slice the result; the response body does **not** include a separate total-count or pagination envelope—only
+        the array of framework objects.
+
+
+        Each item includes its ID, name, folder, and metadata. See [Anecdotes terminology and framework hierarchy](https://help.anecdotes.ai/product-tour/frameworks/anecdotes-terminology-and-framework-hierarchy).'
+      operationId: getFrameworks
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          description: Maximum number of frameworks to return per page.
+        description: Maximum number of frameworks to return per page.
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          description: Number of frameworks to skip (for pagination).
+        description: Number of frameworks to skip (for pagination).
+      responses:
+        '200':
+          description: Paginated list of framework objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Framework unique identifier
+                    name:
+                      type: string
+                      description: Framework name
+                    folder_id:
+                      type: string
+                      description: Parent folder ID
+                    description:
+                      type: string
+                      description: Framework description
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /api/v1/framework/{framework_id}/download:
+    get:
+      tags:
+      - Framework
+      summary: Export a framework
+      description: Exports a framework and its controls. Actual **Content-Type** depends on tenant/export configuration—typically
+        structured **JSON** or **CSV** text, or a downloadable file stream.
+      operationId: exportFramework
+      parameters:
+      - name: framework_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: The unique identifier of the framework to export.
+        description: The unique identifier of the framework to export.
+      responses:
+        '200':
+          description: Export payload. Set the `Accept` header according to your integration. The response may be JSON, CSV,
+            or a binary export.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Framework export when returned as JSON.
+            text/csv:
+              schema:
+                type: string
+                description: CSV export when returned as comma-separated text.
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                description: Binary file export when the platform returns a non-text artifact.
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /api/v1/requirement:
+    get:
+      tags:
+      - Requirements
+      summary: Get all requirements
+      description: 'Returns requirement objects for the authenticated tenant. Use optional **`limit`** and **`offset`** to
+        page through the catalog (typical page sizes are in the hundreds).
+
+
+        The response is a **JSON array** of requirement objects, or in some gateways a wrapper object; clients should accept
+        either an **array** or an object containing a **`requirements`** array.
+
+
+        For one id and the fullest payload (for example **`requirement_scoping_overrides`**), use **`GET /api/v1/requirement/{requirement_id}`**.'
+      operationId: listRequirements
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          description: Maximum number of requirements to return in this response.
+        description: Maximum number of requirements to return in this response.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          description: Number of requirements to skip before returning results (pagination).
+        description: Number of requirements to skip before returning results (pagination).
+      responses:
+        '200':
+          description: Array of **`Requirement`** objects, or a wrapper with a **`requirements`** array.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/Requirement'
+                - type: object
+                  properties:
+                    requirements:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Requirement'
+                  additionalProperties: true
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '422':
+          description: Validation error — the request failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /api/v1/requirement/:
+    post:
+      tags:
+      - Requirements
+      summary: Create a custom requirement
+      description: 'Creates a new **custom** requirement. Link it to **controls** and **frameworks** with optional arrays
+        of prefixed ids (`control_…`, `framework_…`).
+
+
+        **201** response body is often the new **`requirement_id`** string; some responses return a full **`Requirement`**
+        object instead — clients should accept either.'
+      operationId: createRequirement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequirementCreateRequest'
+      responses:
+        '201':
+          description: Created — body may be the new **`requirement_*`** id string or a **`Requirement`** object.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: string
+                  description: New requirement id
+                - $ref: '#/components/schemas/Requirement'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /api/v1/requirement/{requirement_id}:
+    get:
+      tags:
+      - Requirements
+      summary: Get requirement by id
+      description: Returns one requirement. The body may be a single **`Requirement`** object or a **one-element array** —
+        clients should accept both shapes.
+      operationId: getRequirementById
+      responses:
+        '200':
+          description: Requirement record.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Requirement'
+                - type: array
+                  minItems: 1
+                  maxItems: 1
+                  items:
+                    $ref: '#/components/schemas/Requirement'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '404':
+          description: Requirement not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /api/v1/requirement/{requirement_id}/:
+    delete:
+      tags:
+      - Requirements
+      summary: Delete a requirement
+      description: Deletes the requirement identified by **`requirement_id`**.
+      operationId: deleteRequirement
+      responses:
+        '200':
+          description: Requirement deleted.
+        '204':
+          description: Requirement deleted (no body).
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '404':
+          description: Requirement not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    patch:
+      tags:
+      - Requirements
+      summary: Update a requirement
+      description: 'Partial update for a single requirement. Wrap mutable fields under **`requirement`**. Optional **`context`**
+        (e.g. **`control_id`**) may be required for certain scoping updates.
+
+
+        Successful responses typically return **200** with the updated resource or an empty body depending on gateway version
+        — re-**GET** the requirement if you need a guaranteed full payload.'
+      operationId: updateRequirement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequirementUpdateRequestEnvelope'
+      responses:
+        '200':
+          description: Requirement updated.
+        '201':
+          description: Requirement updated (some gateways return **201**).
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '404':
+          description: Requirement not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /api/v1/requirement/{requirement_id}/fields/{field_id}:
+    patch:
+      tags:
+      - Requirements
+      summary: Set a custom field value on a requirement
+      description: 'Sets (or clears) the value of one **custom field** on one requirement.
+
+
+        The **`value`** shape depends on the field type:
+
+        - **Free text** — a plain string, e.g. **`"True"`**.
+
+        - **Dropdown** — a single **option id** (a key of the field''s **`field_metadata.values`** map), e.g. **`"option_…"`**
+        — not the label.
+
+        - **Multi-select** — an **array** of option ids.
+
+        - Send **`null`** to clear the value.
+
+
+        To turn a desired label (e.g. `Sync-To-Archer` = `True`) into the option id to send, read the field definition via
+        **`GET /custom-fields/v1/fields/{field_id}`** and look up the matching entry in **`field_metadata.values`**.
+
+
+        Returns **204 No Content** on success.'
+      operationId: setRequirementCustomFieldValue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequirementCustomFieldValueUpdate'
+      responses:
+        '204':
+          description: Value set (no body).
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '500':
+          description: Internal server error, including when the **`field_id`** does not exist or **`value`** does not match
+            the field type (for example a list sent to a **dropdown** or **free-text** field). Verify the field id via **`GET
+            /custom-fields/v1/fields/{field_id}`** and send a value matching the field type.
+  /api/v1/requirements/fields:
+    get:
+      tags:
+      - Requirements
+      summary: Get all requirement custom field values
+      description: 'Returns every **custom field value** set on requirements for the authenticated tenant, as a nested map:
+        **`{ requirement_id: { field_id: { "value": … } } }`**.
+
+
+        Values are stored as raw **option ids** for **dropdown** / **multi-select** fields — resolve the human-readable label
+        with **`GET /custom-fields/v1/fields/{field_id}`** (see **`field_metadata.values`**) — and as plain strings for **free-text**
+        fields. Requirements with no value set are omitted; when nothing is set at all the body is an empty object **`{}`**.
+
+
+        There is **no server-side filter by value**. To find requirements where a field equals a specific value, read this
+        map and filter client-side. Note the path is **plural** (`requirements`), unlike the single-requirement endpoints
+        above.'
+      operationId: listRequirementCustomFieldValues
+      responses:
+        '200':
+          description: 'Nested map of requirement id → field id → **`{ "value": … }`**. Empty object when no values are set.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequirementCustomFieldValues'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /compliance/v1/findings:
+    get:
+      tags:
+      - Findings
+      summary: Get all findings
+      description: Returns **`findings`** and **`pagination`**. Use **`limit`** and **`offset`** to page results.
+      operationId: listFindings
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          description: Maximum number of findings to return in this response.
+        description: Maximum number of findings to return in this response.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          description: Number of findings to skip before returning results (pagination).
+        description: Number of findings to skip before returning results (pagination).
+      responses:
+        '200':
+          description: Findings and pagination.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindingsListResponse'
+        '401':
+          description: Unauthorized.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    post:
+      tags:
+      - Findings
+      summary: Create finding
+      description: Creates a finding. Send **`multipart/form-data`** with **`finding_data`** as a JSON string of finding fields.
+      operationId: createFinding
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - finding_data
+              properties:
+                finding_data:
+                  type: string
+                  description: JSON string of finding fields (e.g. `title`, `description`, `severity`, `status`, `linked_entities`).
+      responses:
+        '201':
+          description: Created finding.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Finding'
+        '401':
+          description: Unauthorized.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    delete:
+      tags:
+      - Findings
+      summary: Delete findings
+      description: 'Deletes findings by internal **`id`**. Request body: **`ids`** array. Response: **`deleted_count`**.'
+      operationId: deleteFindings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                  description: Internal finding ids to delete.
+      responses:
+        '200':
+          description: Delete result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindingsDeleteResponse'
+        '401':
+          description: Unauthorized.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /compliance/v1/findings/{finding_id}:
+    get:
+      tags:
+      - Findings
+      summary: Get finding by id
+      description: Returns one finding by **`finding_id`**.
+      operationId: getFindingById
+      responses:
+        '200':
+          description: Finding record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Finding'
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Finding not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    patch:
+      tags:
+      - Findings
+      summary: Update finding status
+      description: 'Updates a finding. Send fields to change (e.g. **`status`**: `Open`, `In progress`, `Resolved`).'
+      operationId: patchFinding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: Workflow status.
+                  enum:
+                  - Open
+                  - In progress
+                  - Resolved
+              additionalProperties: true
+      responses:
+        '200':
+          description: Updated finding.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Finding'
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Finding not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /controls/control:
+    post:
+      tags:
+      - Create Controls
+      summary: Create custom control
+      description: Creates a **custom control** in the framework from query parameter **`control_framework`**. Send one object
+        or an array for bulk create; **201** returns the created record(s).
+      operationId: createCustomControl
+      parameters:
+      - name: control_framework
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Framework id (`framework_…`) the new control belongs to.
+        description: Framework id (`framework_…`) the new control belongs to.
+      - name: notify
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          description: Whether to notify the platform UI of the change.
+        description: Whether to notify the platform UI of the change.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/PostCustomControl'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/PostCustomControl'
+      responses:
+        '201':
+          description: Created control object, or array of created controls for bulk requests.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Control'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/Control'
+        '400':
+          description: Invalid control payload.
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    get:
+      tags:
+      - Read Controls
+      summary: Get all controls
+      description: Returns every applicable control in the tenant as a JSON **array**. Auditor tokens are scoped to the active
+        audit's frameworks.
+      operationId: listControls
+      responses:
+        '200':
+          description: Array of control objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Control'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /controls/control/framework/{framework_id}:
+    get:
+      tags:
+      - Read Controls
+      summary: Get controls by framework
+      description: Returns all controls in **`framework_id`** as a JSON array.
+      operationId: getControlsByFramework
+      responses:
+        '200':
+          description: Array of control objects for the framework.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Control'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden — caller cannot access this framework.
+  /controls/control/read:
+    post:
+      tags:
+      - Read Controls
+      summary: Get controls by ids
+      description: Returns full control objects for **`controls_ids`** without listing the entire catalog.
+      operationId: getControlsByIds
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetControlsBody'
+      responses:
+        '200':
+          description: Array of matching control objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Control'
+        '401':
+          description: Unauthorized.
+        '404':
+          description: One or more controls not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /controls/control/{control_id}:
+    get:
+      tags:
+      - Read Controls
+      summary: Get control by id
+      description: Returns one control by **`control_id`**. Returns **403** when the caller lacks framework access.
+      operationId: getControlById
+      responses:
+        '200':
+          description: Control object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Control'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '403':
+          description: Forbidden — caller cannot access this control.
+        '404':
+          description: Control not found.
+    put:
+      tags:
+      - Update Control Metadata
+      summary: Update custom control
+      description: Updates name, description, category, implementation, and related-control links on a **custom control**.
+      operationId: updateCustomControl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutCustomControl'
+      responses:
+        '200':
+          description: Updated control object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Control'
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Control not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    delete:
+      tags:
+      - Update Control Metadata
+      summary: Delete custom control
+      description: Permanently deletes a **custom control**.
+      operationId: deleteCustomControl
+      responses:
+        '200':
+          description: Control deleted.
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Control not found.
+  /controls/controls/fields:
+    get:
+      tags:
+      - Custom Fields
+      summary: Get all control custom field values
+      description: Returns all control custom-field values for the tenant as a JSON object.
+      operationId: getControlCustomFieldValues
+      responses:
+        '200':
+          description: Custom field values map.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          description: Unauthorized.
+  /controls/controls/{control_id}/fields/{field_id}:
+    patch:
+      tags:
+      - Custom Fields
+      summary: Update control custom field
+      description: Sets **`value`** on the given **`field_id`** for **`control_id`**.
+      operationId: patchControlCustomField
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchControlCustomFieldValuePayload'
+      responses:
+        '204':
+          description: Field updated.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden — auditors cannot edit custom fields.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /custom-fields/v1/fields:
+    get:
+      tags:
+      - Custom Fields
+      summary: List custom field definitions
+      description: 'Returns all **custom field definitions** for the authenticated tenant. Use this (or **`GET /custom-fields/v1/fields/{field_id}`**)
+        to discover a field''s **`id`** and its **`field_metadata.values`** (the `{option_id: label}` map) before setting
+        a value on a requirement.'
+      operationId: listCustomFields
+      responses:
+        '200':
+          description: Array of **`CustomField`** definitions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomField'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+    post:
+      tags:
+      - Custom Fields
+      summary: Create a custom field definition
+      description: 'Creates a new **custom field definition**. Scope it to requirements with **`resource_types: ["REQUIREMENT"]`**.
+        For **dropdown** / **multi-select** fields, define the selectable options under **`field_metadata.values`** as a `{option_id:
+        label}` map.
+
+
+        Requires an **admin** or **manager** role. The **201** response body is the new **`field_…`** id string.'
+      operationId: createCustomField
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomFieldRequest'
+      responses:
+        '201':
+          description: Created — the new custom field id.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: New custom field id (`field_…`).
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '403':
+          description: Forbidden — only an admin or manager can create a custom field.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /custom-fields/v1/fields/{field_id}:
+    get:
+      tags:
+      - Custom Fields
+      summary: Get a custom field definition
+      description: 'Returns a single **custom field definition**, including **`field_metadata.values`** — the `{option_id:
+        label}` map you use to translate a desired label into the **option id** to send when setting a **dropdown** / **multi-select**
+        value on a requirement.'
+      operationId: getCustomField
+      responses:
+        '200':
+          description: The **`CustomField`** definition.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomField'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '500':
+          description: Internal server error, including when the custom field does not exist.
+  /evidence/v1/evidence:
+    post:
+      tags:
+      - Create Evidence
+      summary: Create Manual Evidence
+      description: Upload any filetype as evidence without the use of an Evidence Collection. This evidence will display as
+        Manual Evidence from within the Evidence Pool.
+      operationId: uploadManualEvidence
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                evidence_file:
+                  type: string
+                  format: binary
+                  description: The file to upload as manual evidence.
+                evidence_id:
+                  type: string
+                  description: The evidence_id to attach the file to. Used when creating a new version of existing manual
+                    evidence.
+      responses:
+        '200':
+          description: File uploaded successfully.
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '422':
+          description: Invalid arguments.
+    get:
+      tags:
+      - Read Evidence Metadata
+      summary: Get All Evidence Metadata
+      description: Returns all evidence metadata from within the Anecdotes account.
+      operationId: getEvidence
+      responses:
+        '200':
+          description: Array of evidence definition objects with metadata.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Evidence_EvidenceDefinition'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /evidence/v1/evidence/create:
+    post:
+      tags:
+      - Create Evidence
+      summary: Create an Evidence Collection
+      description: "Create a new API Evidence Collection, used to attach evidence data into using the **Attach Evidence**\
+        \ endpoint. Successful response provides the resulting 'evidence_id'. \n\n**IPE (optional):** you may attach **IPE**\
+        \ (Information Produced by Entity) — the structured queries that produced the data — via `evidence_api_query` (inline\
+        \ JSON-stringified array of query strings) **or** `ipe_file` (a JSON file), but **not both**. IPE is tied to a data\
+        \ collection, so it is stored **only when `evidence_file` is also included** in this request; sending IPE with no\
+        \ `evidence_file` returns `422` (add the data here, or push it later via **Attach Evidence** / **Attach IPE**). IPE\
+        \ is capped at **5000 entries** and **15 MB** — oversized payloads are rejected, never truncated.\n\nFor a step-by-step\
+        \ guide see [How to create & collect API evidence](https://help.anecdotes.ai/integrations-and-data/api-evidence)."
+      operationId: createEvidenceCollection
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - service_id
+              - evidence_name
+              properties:
+                service_id:
+                  type: string
+                  description: Name the service or plugin for this evidence. Naming different evidences with the same service_id
+                    will group them within Anecdotes.
+                evidence_name:
+                  type: string
+                  description: The name of this evidence.
+                evidence_help:
+                  type: string
+                  description: The description of the evidence.
+                  default: ''
+                empty_state:
+                  type: string
+                  description: Text to display when the evidence has no data.
+                  default: ''
+                is_uar:
+                  type: boolean
+                  description: Whether this evidence is used for User Access Reviews.
+                  default: false
+                is_sot:
+                  type: boolean
+                  description: Whether this evidence is a Source of Truth.
+                  default: false
+                evidence_file:
+                  type: string
+                  format: binary
+                  description: Optional evidence file to upload on creation.
+                evidence_preview_rules:
+                  type: string
+                  description: Preview rules for the evidence as a JSON-stringified object.
+                evidence_api_query:
+                  type: string
+                  description: 'IPE, inline: a JSON-stringified array of structured query strings (HTTP calls, SQL, etc.)
+                    that produced this evidence. Provide either this or `ipe_file`, not both. Only stored when `evidence_file`
+                    is also uploaded.'
+                ipe_file:
+                  type: string
+                  format: binary
+                  description: 'IPE, as a file: a JSON file holding an array of query strings, for very large lists. Provide
+                    either this or `evidence_api_query`, not both. Only stored when `evidence_file` is also uploaded.'
+      responses:
+        '201':
+          description: Evidence Collection created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_CreateEvidenceResponse'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '422':
+          description: 'Validation Error. Possible causes and body shapes:
+
+            - **Request validation** (e.g. missing `service_id`/`evidence_name`): `ValidationError` (`detail` array).
+
+            - **IPE without data** (IPE supplied but no `evidence_file`): `DetailMessage` (`detail` string).
+
+            - **IPE validation** (both `evidence_api_query` and `ipe_file` supplied; malformed JSON; not an array of strings;
+            more than 5000 entries; payload over 15 MB; non-UTF-8 file): `ErrorResponse` (`error_title`/`error_detail`).'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ValidationError'
+                - $ref: '#/components/schemas/Evidence_DetailMessage'
+                - $ref: '#/components/schemas/Evidence_ErrorResponse'
+  /evidence/v1/evidence/{evidence_id}:
+    get:
+      tags:
+      - Read Evidence Metadata
+      summary: Get Evidence Metadata
+      description: Returns evidence metadata of the specified evidence_id.
+      operationId: getAnEvidence
+      parameters:
+      - name: evidence_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique identifier of the evidence item.
+      responses:
+        '200':
+          description: Evidence definition object with metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_EvidenceDefinition'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '404':
+          description: Evidence item not found.
+  /evidence/v1/evidence/{evidence_id}/attach:
+    post:
+      tags:
+      - Create Evidence
+      summary: Create Evidence within a Collection
+      description: 'Create JSON or CSV formatted evidence for an existing Evidence Collection. The collection is specified
+        with the `evidence_id` path parameter. Send the file as **multipart/form-data** using the `evidence_file` field.
+
+
+        **IPE (optional):** attach **IPE** (Information Produced by Entity) for this collection via `evidence_api_query` (inline
+        JSON-stringified array of query strings) **or** `ipe_file` (a JSON file), but **not both**. Attaching IPE here **replaces**
+        any IPE previously set on this collection. IPE is capped at **5000 entries** and **15 MB** — oversized payloads are
+        rejected, never truncated.
+
+
+        Only API (customer-pushed) evidence can be written to; attaching to Anecdotes/connector-collected evidence returns
+        `400`.'
+      operationId: attachEvidenceToCollection
+      parameters:
+      - name: evidence_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence_id to attach this collection to.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - evidence_file
+              properties:
+                evidence_file:
+                  type: string
+                  format: binary
+                  description: The evidence file content for this collection. Must be JSON or CSV.
+                evidence_api_query:
+                  type: string
+                  description: 'IPE, inline: a JSON-stringified array of structured query strings (HTTP calls, SQL, etc.)
+                    that produced this evidence. Provide either this or `ipe_file`, not both. Replaces any IPE previously
+                    set on this collection.'
+                ipe_file:
+                  type: string
+                  format: binary
+                  description: 'IPE, as a file: a JSON file holding an array of query strings, for very large lists. Provide
+                    either this or `evidence_api_query`, not both. Replaces any IPE previously set on this collection.'
+      responses:
+        '201':
+          description: Evidence uploaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  evidence_id:
+                    type: array
+                    items:
+                      type: string
+                    description: Evidence definition id(s) the data was attached to.
+        '400':
+          description: The target evidence is not API (customer-pushed) evidence and cannot be written to.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_ErrorResponse'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '422':
+          description: 'Validation Error. Possible causes and body shapes:
+
+            - **Request validation** (e.g. missing `evidence_file`): `ValidationError` (`detail` array).
+
+            - **IPE validation** (both `evidence_api_query` and `ipe_file` supplied; malformed JSON; not an array of strings;
+            more than 5000 entries; payload over 15 MB; non-UTF-8 file): `ErrorResponse` (`error_title`/`error_detail`).'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ValidationError'
+                - $ref: '#/components/schemas/Evidence_ErrorResponse'
+  /evidence/v1/evidence/{evidence_id}/latest_raw:
+    get:
+      tags:
+      - Download Evidence
+      summary: Get Latest Raw Data
+      description: Returns the raw data of the latest evidence instance.
+      operationId: getLatestRawData
+      parameters:
+      - name: evidence_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence ID.
+      responses:
+        '200':
+          description: Raw data of the latest evidence instance (binary stream).
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '404':
+          description: Evidence instance not found.
+  /evidence/v1/evidence/{evidence_id}/run_history:
+    get:
+      tags:
+      - Read Evidence Metadata
+      summary: Get Evidence Run History
+      description: Returns a list of evidence instances for the specified evidence id.
+      operationId: getCollectionMultiHistory
+      parameters:
+      - name: evidence_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence ID to retrieve history for.
+      responses:
+        '200':
+          description: Evidence history with details per instance and history per run.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_EvidenceRunHistory'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+  /evidence/v1/evidence/{evidence_instance_id}/download_raw:
+    get:
+      tags:
+      - Download Evidence
+      summary: Download Raw Data
+      description: Download the **raw** evidence payload for an instance. The response is a **binary stream** (`application/octet-stream`).
+      operationId: downloadRawData
+      parameters:
+      - name: evidence_instance_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence instance identifier.
+      responses:
+        '200':
+          description: Raw data file download.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '404':
+          description: Evidence instance not found.
+  /evidence/v1/evidence/{evidence_instance_id}/full_data:
+    get:
+      tags:
+      - Download Evidence
+      summary: Get Evidence Full Data (preview table)
+      description: 'Path segment `full_data` returns the **processed evidence table** (the same logical preview grid as in
+        the platform UI), streamed with `Content-Type: application/octet-stream` (often JSON bytes for the table).'
+      operationId: getEvidenceFullData
+      parameters:
+      - name: evidence_instance_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence instance identifier.
+      responses:
+        '200':
+          description: Processed evidence preview table as a streamed binary payload. This is the JSON representation of the
+            table seen in the Anecdotes platform.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '404':
+          description: Evidence instance not found.
+  /evidence/v1/evidence/{evidence_instance_id}/fulldata_or_raw:
+    get:
+      tags:
+      - Download Evidence
+      summary: Get Full Data Or Raw
+      description: Returns the full data for evidence if exists, else the raw file data.
+      operationId: getEvidenceFullDataOrRaw
+      parameters:
+      - name: evidence_instance_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: The evidence instance identifier (from GET /evidence/v1/evidence).
+        description: The evidence instance identifier (from GET /evidence/v1/evidence).
+      responses:
+        '200':
+          description: Full processed evidence data if available, otherwise the raw file data. The response is a streamed
+            binary payload.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /evidence/v1/evidence/{evidence_instance_id}/ipe:
+    post:
+      tags:
+      - Create Evidence
+      summary: Add IPE to a Collection
+      description: 'Add or **replace** IPE (Information Produced by Entity — the structured queries that produced the data)
+        on an evidence collection that was **already pushed**, identified by its `evidence_instance_id`. Use this to add IPE
+        to data sent before IPE was supported, or to update it later.
+
+
+        Get the `evidence_instance_id` from `GET /evidence/v1/evidence/{evidence_id}/run_history`.
+
+
+        Supply IPE via `evidence_api_query` (inline JSON-stringified array of query strings) **or** `ipe_file` (a JSON file),
+        but **not both**, capped at **5000 entries** and **15 MB** (oversized is rejected, never truncated). Only API (customer-pushed)
+        evidence can be written to — setting IPE on Anecdotes/connector-collected evidence is rejected.'
+      operationId: attachEvidenceIpe
+      parameters:
+      - name: evidence_instance_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence_instance_id of the collection to attach IPE to (from GET /evidence/v1/evidence/{evidence_id}/run_history).
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                evidence_api_query:
+                  type: string
+                  description: 'IPE, inline: a JSON-stringified array of structured query strings (HTTP calls, SQL, etc.)
+                    that produced this evidence. Provide either this or `ipe_file`, not both.'
+                ipe_file:
+                  type: string
+                  format: binary
+                  description: 'IPE, as a file: a JSON file holding an array of query strings, for very large lists. Provide
+                    either this or `evidence_api_query`, not both.'
+      responses:
+        '200':
+          description: IPE was attached successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_AttachIpeResponse'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '404':
+          description: No evidence instance found for the given evidence_instance_id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_ErrorResponse'
+        '422':
+          description: 'Validation Error. Possible causes and body shapes:
+
+            - **No IPE supplied** (neither `evidence_api_query` nor `ipe_file`): `DetailMessage` (`detail` string).
+
+            - **IPE validation** (both sources supplied; malformed JSON; not an array of strings; more than 5000 entries;
+            payload over 15 MB; non-UTF-8 file) **or the API-evidence-only guard** (target is not customer-pushed evidence):
+            `ErrorResponse` (`error_title`/`error_detail`).'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Evidence_DetailMessage'
+                - $ref: '#/components/schemas/Evidence_ErrorResponse'
+  /evidence/v1/evidence/{evidence_instance_id}/raw:
+    get:
+      tags:
+      - Download Evidence
+      summary: Get Raw Data
+      description: Returns the raw data file of the requested evidence_instance_id.
+      operationId: getEvidenceRaw
+      parameters:
+      - name: evidence_instance_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: The evidence instance identifier (from GET /evidence/v1/evidence).
+        description: The evidence instance identifier (from GET /evidence/v1/evidence).
+      responses:
+        '200':
+          description: Raw evidence file data (binary stream).
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /identity/v1/apikey/exchange:
+    get:
+      tags:
+      - Token
+      summary: Exchange API key
+      description: 'Exchange an API key created in the Anecdotes platform for a short-lived JWT (valid for 1 hour).
+
+
+        1. Create an API key in the Anecdotes platform under your project settings.
+
+        2. Use the exchange endpoint with the key as `x-anecdotes-api-key` header.
+
+        3. Use the result JWT token as `Authorization: Bearer <token>` header.'
+      operationId: exchangeApiKey
+      parameters:
+      - name: x-anecdotes-api-key
+        in: header
+        required: true
+        schema:
+          type: string
+          description: Your Anecdotes API key (created in the platform under project settings).
+        description: Your Anecdotes API key (created in the platform under project settings).
+      responses:
+        '200':
+          description: 'JWT token string (plain text). Valid for 1 hour. Use as `Authorization: Bearer <JWT>` on all other
+            API calls.'
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - API key is missing or invalid.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /policy/v1/customer-policies:
+    get:
+      tags:
+      - Policy Manager
+      summary: List customer policies
+      description: Returns policies created for your organization (custom policies), including status, approval workflow settings,
+        stakeholders, and scheduling metadata.
+      operationId: listPolicyCustomerPolicies
+      responses:
+        '200':
+          description: Array of customer policy records.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Policy_CustomerPolicy'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+  /policy/v1/library-policies:
+    get:
+      tags:
+      - Policy Manager
+      summary: List library policies
+      description: Returns out-of-the-box policy templates from the policy library that customers can adopt.
+      operationId: listPolicyLibraryPolicies
+      responses:
+        '200':
+          description: Array of library policy template records.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Policy_LibraryPolicy'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+  /policy/v1/policies/delete-policies:
+    put:
+      tags:
+      - Policy Manager
+      summary: Delete policies
+      description: Deletes one or more customer policies by id. Send a JSON array of `policy_id` strings (e.g. `policy_<numeric>`).
+      operationId: deletePolicies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Policy_DeletePoliciesRequest'
+      responses:
+        '200':
+          description: Deletion request processed successfully.
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '422':
+          description: Validation error — invalid request body or parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /policy/v1/policies/update-settings:
+    put:
+      tags:
+      - Policy Manager
+      summary: Update policy settings (approval cycle)
+      description: 'Creates or updates an **approval cycle** for one or more policies: stakeholders (reviewers, approvers),
+        notification `share_method`, and scheduling (`approval_frequency`, `start_from`, `approval_time`). Target policies
+        are listed in `resource_ids`. Use `is_new_cycle` per product workflow when starting a new cycle versus updating the
+        current one.'
+      operationId: updatePolicySettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Policy_UpdatePolicySettingsRequest'
+      responses:
+        '200':
+          description: Updated policy records, including expanded stakeholder rows and server-assigned scheduling task ids
+            when applicable.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Policy_CustomerPolicy'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '422':
+          description: Validation error — invalid request body or parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /policy/v1/policies/{policy_id}:
+    patch:
+      tags:
+      - Policy Manager
+      summary: Replace policy file (evidence link)
+      description: Points the policy at a different **evidence** definition—typically after uploading a replacement document
+        to manual (or other) evidence. Send `policy_related_evidence` with the target evidence id (e.g. `manual_<id>`).
+      operationId: patchPolicyRelatedEvidence
+      parameters:
+      - name: policy_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Customer policy id (`policy_<numeric>`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Policy_PatchPolicyRequest'
+      responses:
+        '200':
+          description: Updated policy record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy_CustomerPolicy'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '404':
+          description: Policy not found.
+        '422':
+          description: Validation error — invalid request body or parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /policy/v2/policies:
+    post:
+      tags:
+      - Policy Manager
+      summary: Create policies
+      description: Creates one or more policies from manual (or other) evidence definitions. The body is a **JSON array**;
+        each element links an `evidence_id`, sets `policy_name`, and optionally maps `requirements_ids` (framework requirement
+        ids as strings). Omit `requirements_ids` or send an empty array when no requirement mapping is needed.
+      operationId: createPolicies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Policy_CreatePoliciesRequest'
+      responses:
+        '200':
+          description: Policies created successfully. Returns an array of policy records in the same general shape as **List
+            customer policies**; many fields are `null` or empty until setup is completed (e.g. `policy_status` may be `Setup
+            Incomplete`).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Policy_CustomerPolicy'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '422':
+          description: Validation error — invalid request body or parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /policy/v2/policies/{policy_id}/versions:
+    get:
+      tags:
+      - Policy Manager
+      summary: List policy versions
+      description: Returns version history for a policy when versions exist. Policies without versions may return an empty
+        array.
+      operationId: listPolicyVersions
+      parameters:
+      - name: policy_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Policy identifier (e.g. `policy_<id>` for customer policies).
+      responses:
+        '200':
+          description: Array of policy version records.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Policy_PolicyVersion'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+  /risk/v1/risk:
+    post:
+      tags:
+      - Risk
+      summary: Create Risk
+      description: Create a new risk.
+      operationId: createRisk
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Risk_NewRisk'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Risk_CustomerRiskModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /risk/v1/risk/full:
+    get:
+      tags:
+      - Risk
+      summary: Get Risks
+      description: List of risks and its associated data.
+      operationId: getRisks
+      parameters:
+      - name: risk_ids
+        in: query
+        required: false
+        schema:
+          type: string
+          title: Risk Ids
+          description: Optional comma-separated list of risk IDs to filter by.
+        description: Optional comma-separated list of risk IDs to filter by.
+      - name: exclude_review
+        in: query
+        required: false
+        schema:
+          type: boolean
+          title: Exclude Review
+          description: When false, includes risks that have reviewer access from users with specific roles. Defaults to false.
+          default: false
+        description: When false, includes risks that have reviewer access from users with specific roles. Defaults to false.
+      - name: limit
+        in: query
+        schema:
+          type: integer
+        description: Maximum number of risks to return.
+      - name: offset
+        in: query
+        schema:
+          type: integer
+        description: Number of risks to skip (for pagination).
+      responses:
+        '200':
+          description: Array of risk objects with treatment plan data.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Risk_CustomerFullRiskModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /risk/v1/risk/{risk_id}:
+    get:
+      tags:
+      - Risk
+      summary: Get Risk
+      description: Get a Risk by its ID.
+      operationId: getRisk
+      parameters:
+      - name: risk_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: The unique identifier of the risk.
+        description: The unique identifier of the risk.
+      responses:
+        '200':
+          description: Risk object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Risk_CustomerRiskModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    patch:
+      tags:
+      - Risk
+      summary: Update Risk
+      description: Update a specific risk.
+      operationId: updateRisk
+      parameters:
+      - name: risk_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: The unique identifier of the risk to update.
+        description: The unique identifier of the risk to update.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Risk_CustomerUpdatedRiskModel'
+      responses:
+        '200':
+          description: Updated risk object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Risk_CustomerRiskModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+components:
+  schemas:
+    AccountScopingType:
+      type: string
+      enum:
+      - all_accounts
+      - included_accounts
+      - excluded_accounts
+      title: AccountScopingType
+      description: Determines which accounts the rule applies to.
+    AnalysisRuleActiveState:
+      type: string
+      enum:
+      - active
+      - inactive
+      title: AnalysisRuleActiveState
+      description: Whether the analysis rule is active or inactive.
+    AnalysisRuleAlertLevel:
+      type: integer
+      enum:
+      - 3
+      - 5
+      - 10
+      - 30
+      - 50
+      title: AnalysisRuleAlertLevel
+      description: 'The alert level of the analysis rule. Values: 3 (Not Processed), 5 (No Active Rules), 10 (OK), 30 (Warning),
+        50 (Gap).'
+    AnalysisRuleModel:
+      type: object
+      properties:
+        rule_id:
+          type: string
+          title: Rule Id
+          description: Unique identifier for the analysis rule.
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The evidence ID this rule is tied to.
+        library_rule_id:
+          type: string
+          title: Library Rule Id
+          description: Library rule ID if cloned from a library rule.
+        rule_query_type:
+          $ref: '#/components/schemas/AnalysisRuleQueryType'
+        rule_query_str:
+          type: string
+          title: Rule Query Str
+          description: The rule query string.
+        rule_query_message:
+          type: string
+          title: Rule Query Message
+          description: Optional message associated with the rule query.
+        rule_name:
+          type: string
+          title: Rule Name
+          description: Human-readable name of the rule.
+        rule_message:
+          type: string
+          title: Rule Message
+          description: Message displayed when the rule triggers.
+        alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+        rule_origin:
+          $ref: '#/components/schemas/AnalysisRuleOrigin'
+        rule_state:
+          $ref: '#/components/schemas/AnalysisRuleActiveState'
+        last_updated:
+          type: string
+          format: date-time
+          title: Last Updated
+          description: Timestamp of the last update.
+        last_updated_by:
+          type: string
+          title: Last Updated By
+          description: User who last updated the rule.
+        rule_is_archived:
+          type: boolean
+          title: Rule Is Archived
+          description: Whether the rule is archived.
+        rule_type:
+          $ref: '#/components/schemas/AnalysisRuleType'
+        account_scoping_type:
+          $ref: '#/components/schemas/AccountScopingType'
+        account_scoping_list:
+          type: array
+          items:
+            type: string
+          title: Account Scoping List
+          description: Service instance IDs the rule applies to (when scoping type is INCLUDED or EXCLUDED).
+      required:
+      - rule_id
+      - evidence_id
+      - rule_query_type
+      - rule_query_str
+      - rule_name
+      - rule_message
+      - alert_level
+      - rule_origin
+      - rule_state
+      - last_updated
+      - last_updated_by
+      - rule_is_archived
+      - account_scoping_type
+      title: AnalysisRuleModel
+    AnalysisRuleOrigin:
+      type: string
+      enum:
+      - library
+      - custom
+      title: AnalysisRuleOrigin
+      description: Whether the rule originates from the library or is custom.
+    AnalysisRuleQueryType:
+      type: string
+      enum:
+      - aql
+      - aqlext
+      - pandas
+      title: AnalysisRuleQueryType
+      description: The type of query engine used by the analysis rule.
+    AnalysisRuleResultModel:
+      type: object
+      properties:
+        rule_id:
+          type: string
+          title: Rule Id
+          description: The analysis rule id.
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The evidence id.
+        parent_evidence_id:
+          type: string
+          title: Parent Evidence Id
+          description: The parent evidence id (useful for mapping views to parent evidence).
+        evidence_instance_id:
+          type: string
+          title: Evidence Instance Id
+          description: Evidence instance id.
+        service_instance_id:
+          type: string
+          title: Service Instance Id
+          description: Service instance id.
+        service_name:
+          type: string
+          title: Service Name
+          description: Service name.
+        alert_level:
+          type: string
+          title: Alert Level
+          description: Human-readable or symbolic **outcome** severity for this run (string). May differ from `rule_alert_level`
+            when violations change the effective severity label.
+        date_processed:
+          type: string
+          format: date-time
+          title: Date Processed
+          description: The analysis date processed.
+        violations_count:
+          type: integer
+          title: Violations Count
+          description: Amount of violated rows.
+        violated_rows:
+          type: array
+          items:
+            type: integer
+            description: 0-based row index in the evidence table that violated the rule.
+          title: Violated Rows
+          description: Row indexes that violated the rule.
+        rule_state:
+          type: string
+          title: Rule State
+          description: The analysis rule state.
+        rule_alert_level:
+          allOf:
+          - $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+          title: Rule Alert Level
+          description: 'Configured alert level on the rule (integer enum: 3, 5, 10, 30, 50).'
+        evidence_entity_type:
+          type: string
+          title: Evidence Entity Type
+          description: The evidence entity type (evidence or view).
+      required:
+      - rule_id
+      - evidence_id
+      - evidence_instance_id
+      - service_instance_id
+      - service_name
+      - alert_level
+      - date_processed
+      - violations_count
+      - violated_rows
+      - rule_state
+      - rule_alert_level
+      - evidence_entity_type
+      title: AnalysisRuleResultModel
+      description: Analysis rule execution result for a specific evidence instance.
+    AnalysisRuleType:
+      type: string
+      enum:
+      - uam
+      - eid
+      title: AnalysisRuleType
+      description: The type of the analysis rule.
+    Control:
+      type: object
+      description: Control facade returned by list/read endpoints. Additional tenant-specific fields may appear.
+      properties:
+        control_id:
+          type: string
+        control_name:
+          type: string
+        control_description:
+          type: string
+        control_framework_id:
+          type: string
+        control_category:
+          type: string
+        control_framework_category:
+          type: string
+        control_framework_category_id:
+          type: string
+        control_status:
+          $ref: '#/components/schemas/ControlStatus'
+        control_owners:
+          type: array
+          items:
+            type: string
+        control_tags:
+          type: array
+          items:
+            type: string
+        control_requirement_ids:
+          type: array
+          items:
+            type: string
+        linked_requirements:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedRequirement'
+        control_original_related_controls:
+          type: array
+          items:
+            type: string
+        maturity_level:
+          $ref: '#/components/schemas/MaturityLevel'
+        control_last_edit_time:
+          type: string
+          format: date-time
+        custom_fields:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      required:
+      - control_id
+      - control_name
+      additionalProperties: true
+    ControlStatus:
+      type: object
+      description: Current control status and audit metadata.
+      properties:
+        status:
+          $ref: '#/components/schemas/ControlStatusEnum'
+        updated_by:
+          type: string
+        last_edit_time:
+          type: string
+          format: date-time
+        note:
+          type: string
+        manually_set:
+          type: boolean
+        gap_detected:
+          type: boolean
+      required:
+      - status
+    ControlStatusEnum:
+      type: string
+      enum:
+      - NOT_STARTED
+      - IN_PROGRESS
+      - READY_FOR_AUDIT
+      - GAP
+      - ISSUE
+      - APPROVED_BY_AUDITOR
+      - MONITORING
+      - NOT_APPLICABLE
+      - NOT_READY_FOR_AUDIT
+      - INSUFFICIENT_DATA
+      - UNDER_REVIEW
+      description: Machine status code. Product UI may display human-readable labels (for example `Gap`, `Ready for audit`).
+    CreateCustomAnalysisRuleModel:
+      type: object
+      properties:
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The evidence ID that the rule is related to.
+        rule_name:
+          type: string
+          title: Rule Name
+          description: The name of the rule.
+        alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+        rule_message:
+          type: string
+          title: Rule Message
+          description: The message displayed when the rule triggers.
+        rule_query_type:
+          allOf:
+          - $ref: '#/components/schemas/AnalysisRuleQueryType'
+          default: aql
+          description: The query type. Defaults to aql.
+        rule_query:
+          type: object
+          title: Rule Query
+          description: The rule query object. Structure depends on the rule_query_type (AQL, AQLExt, or Pandas).
+        rule_origin:
+          $ref: '#/components/schemas/AnalysisRuleOrigin'
+        library_rule_id:
+          type: string
+          title: Library Rule Id
+          description: The library rule ID that the rule was cloned from (if applicable).
+        rule_type:
+          $ref: '#/components/schemas/AnalysisRuleType'
+        account_scoping_type:
+          allOf:
+          - $ref: '#/components/schemas/AccountScopingType'
+          default: all_accounts
+          description: The account scoping type. Defaults to all_accounts.
+        account_scoping_list:
+          type: array
+          items:
+            type: string
+          title: Account Scoping List
+          description: List of service instance IDs the rule relates to (used with included_accounts or excluded_accounts
+            scoping).
+      title: CreateCustomAnalysisRuleModel
+      description: Request body for creating a new custom analysis rule.
+    CreateCustomFieldRequest:
+      type: object
+      description: Body for creating a custom field definition.
+      required:
+      - name
+      - type
+      - resource_types
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        type:
+          $ref: '#/components/schemas/FieldType'
+        resource_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceType'
+          description: Resource types the field applies to, e.g. **`["REQUIREMENT"]`**.
+        field_metadata:
+          type: object
+          description: 'Type-specific configuration. For **dropdown** / **multi-select**, provide **`values`** as a **`{ option_id:
+            label }`** map.'
+          additionalProperties: true
+        metadata:
+          type: object
+          description: 'Per-resource-type metadata, e.g. **`{ "REQUIREMENT": { "framework_ids": null } }`**.'
+          additionalProperties: true
+    CustomField:
+      type: object
+      description: A custom field definition.
+      properties:
+        id:
+          type: string
+          description: Field id (`field_…`).
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/FieldType'
+        description:
+          type: string
+          nullable: true
+        field_metadata:
+          type: object
+          description: Type-specific configuration.
+          properties:
+            values:
+              type: object
+              description: 'Selectable options as a **`{ option_id: label }`** map (dropdown / multi-select only). The **option
+                id** is what you send as **`value`** when setting the field on a requirement.'
+              additionalProperties:
+                type: string
+            who_can_edit:
+              type: string
+              description: Who may edit the value, e.g. **`all`**.
+            allow_auditors_to_view:
+              type: boolean
+          additionalProperties: true
+        resource_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceType'
+          description: Resource types this field applies to.
+        metadata:
+          type: object
+          description: Per-resource-type metadata (e.g. **`order`**, **`mandatory`**, **`framework_ids`**).
+          additionalProperties: true
+        registers_metadata:
+          type: object
+          nullable: true
+          description: Per-register metadata, keyed by register id (the empty-string key **`""`** is the default register).
+            Present for all field types; may be **`null`**.
+          additionalProperties: true
+      additionalProperties: true
+    Evidence_AttachIpeResponse:
+      type: object
+      description: Response returned after attaching or replacing IPE on an evidence collection.
+      properties:
+        evidence_instance_id:
+          type: string
+          title: Evidence Instance Id
+          description: The collection (evidence instance) the IPE was attached to.
+        ipe_count:
+          type: integer
+          title: Ipe Count
+          description: Number of IPE entries stored.
+      required:
+      - evidence_instance_id
+      - ipe_count
+      title: AttachIpeResponse
+    Evidence_ColumnHelp:
+      type: object
+      properties:
+        column_name:
+          type: string
+          title: Column Name
+          description: The display name of the column.
+        help_note:
+          type: string
+          title: Help Note
+          description: The help note for the column.
+      required:
+      - column_name
+      - help_note
+      title: ColumnHelp
+    Evidence_CreateEvidenceResponse:
+      type: object
+      properties:
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The id of the newly created evidence.
+      required:
+      - evidence_id
+      title: CreateEvidenceResponse
+    Evidence_DetailMessage:
+      type: object
+      description: Error body for input-combination errors raised directly by the endpoint (FastAPI `HTTPException` with a
+        string detail).
+      properties:
+        detail:
+          type: string
+          title: Detail
+          description: Human-readable error message.
+      required:
+      - detail
+      title: DetailMessage
+    Evidence_DetailsPerRun:
+      type: object
+      properties:
+        service_display_name:
+          type: string
+          title: Service Display Name
+          description: The display name of the instance.
+        instance_runs:
+          type: array
+          items:
+            type: string
+            format: date-time
+          title: Instance Runs
+          description: List of instance collection timestamps.
+      required:
+      - service_display_name
+      - instance_runs
+      title: DetailsPerRun
+    Evidence_ErrorResponse:
+      type: object
+      description: Error body returned for Anecdotes business-logic errors (e.g. IPE validation failures and the API-evidence-only
+        guard). `error_detail` repeats the HTTP status code.
+      properties:
+        error_title:
+          type: string
+          title: Error Title
+          description: Human-readable error message.
+        error_detail:
+          type: integer
+          title: Error Detail
+          description: The HTTP status code, repeated in the body.
+      required:
+      - error_title
+      - error_detail
+      title: ErrorResponse
+    Evidence_EvidenceDefinition:
+      type: object
+      properties:
+        evidence_instance_id:
+          type: string
+          format: uuid
+          title: Evidence Instance Id
+          description: The unique identifier of this evidence instance.
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The id of this evidence.
+        evidence_type:
+          $ref: '#/components/schemas/Evidence_EvidenceType'
+        evidence_name:
+          type: string
+          title: Evidence Name
+          description: The name of this evidence.
+        evidence_service_id:
+          type: string
+          title: Evidence Service Id
+          description: The id related with the service that collected this evidence.
+        evidence_service_display_name:
+          type: string
+          title: Evidence Service Display Name
+          description: The display name related to the service that collected this evidence.
+        evidence_collection_timestamp:
+          type: string
+          format: date-time
+          title: Evidence Collection Timestamp
+          description: The time this specific evidence instance was collected.
+        evidence_is_applicable:
+          type: boolean
+          title: Evidence Is Applicable
+          description: Whether this evidence is applicable for the customer.
+        evidence_url:
+          type: string
+          title: Evidence Url
+          description: The URL of this specific evidence.
+        evidence_empty_state:
+          type: string
+          title: Evidence Empty State
+          description: The empty state of this evidence.
+        evidence_items_count:
+          type: integer
+          title: Evidence Items Count
+          description: Items count in evidence full data.
+        evidence_api_query:
+          type: array
+          items:
+            type: string
+          title: Evidence Api Query
+          description: The structured queries (IPE) that produced this evidence. For API (customer-pushed) evidence this is
+            the customer-supplied IPE; in the exported PDF it renders in the standard IPE location with a "Generated on an
+            external system" label to distinguish it from Anecdotes-collected IPE.
+        evidence_time_frame:
+          type: string
+          title: Evidence Time Frame
+          description: Evidence time frame, in case of a log type.
+        evidence_help:
+          type: string
+          title: Evidence Help
+          description: A help phrase describing the purpose of this evidence.
+        evidence_best_practice:
+          type: string
+          title: Evidence Best Practice
+          description: A best practice usage of the evidence.
+        evidence_gap:
+          type: object
+          nullable: true
+          title: Evidence Gap
+          description: Structured gap information for preview/full evidence data; shape is evidence-type-specific.
+        evidence_gap_message:
+          type: string
+          title: Evidence Gap Message
+          description: Help on the evidence instance gap, if exists.
+        evidence_status:
+          type: object
+          title: Evidence Status
+          description: The status of this evidence per framework. Keys are framework IDs, values are EvidenceStatusDetails
+            objects.
+          additionalProperties:
+            $ref: '#/components/schemas/Evidence_EvidenceStatusDetails'
+        evidence_is_custom:
+          type: boolean
+          title: Evidence Is Custom
+          description: Whether this evidence was created by the customer.
+        evidence_is_beta:
+          type: boolean
+          title: Evidence Is Beta
+          description: Whether this evidence is in beta mode or not.
+        evidence_tip:
+          type: string
+          title: Evidence Tip
+          description: The tip recommended for this evidence.
+        evidence_collection_run_id:
+          type: string
+          title: Evidence Collection Run Id
+          description: The unique identifier of the collection run.
+        evidence_originated_by_instance_id:
+          type: string
+          title: Evidence Originated By Instance Id
+          description: The service instance id this evidence was collected by.
+        evidence_also_collected_by_instances:
+          type: array
+          items:
+            type: string
+          title: Evidence Also Collected By Instances
+          description: List of service instance IDs for all evidence instances collected during the last runs.
+        evidence_last_modified_time:
+          type: string
+          format: date-time
+          title: Evidence Last Modified Time
+          description: The last modification time of this document.
+        evidence_creation_time:
+          type: string
+          format: date-time
+          title: Evidence Creation Time
+          description: The creation time of this document.
+        evidence_last_modified_by:
+          type: string
+          title: Evidence Last Modified By
+          description: Who last modified the evidence.
+        evidence_uploaded_by:
+          type: string
+          title: Evidence Uploaded By
+          description: This manual evidence was uploaded by this user.
+        evidence_column_help:
+          type: array
+          items:
+            $ref: '#/components/schemas/Evidence_ColumnHelp'
+          title: Evidence Column Help
+          description: List of column name/help note pairs for preview columns.
+        evidence_views:
+          type: object
+          title: Evidence Views
+          description: Evidence views keyed by view identifier.
+          additionalProperties:
+            $ref: '#/components/schemas/Evidence_EvidenceView'
+        evidence_views_map:
+          type: object
+          title: Evidence Views Map
+          description: Mapping of resource to the associated view_id.
+          additionalProperties:
+            type: object
+        evidence_source_screenshots_data:
+          type: array
+          items:
+            type: string
+          title: Evidence Source Screenshots Data
+          description: List of screenshot names in the bucket.
+        evidence_is_uar:
+          type: boolean
+          title: Evidence Is UAR
+          description: Whether the evidence can be used for user access review.
+        evidence_is_sot:
+          type: boolean
+          title: Evidence Is SOT
+          description: Whether the evidence can be used for SOT.
+        evidence_is_seen:
+          type: boolean
+          title: Evidence Is Seen
+          description: Whether evidence has been seen or not.
+        evidence_column_metadata:
+          type: object
+          title: Evidence Column Metadata
+          description: Per-column data type metadata; values are arrays of type descriptors.
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              description: Column type metadata entry (structure varies by evidence).
+        last_instances_per_service_instance:
+          type: array
+          items:
+            $ref: '#/components/schemas/Evidence_EvidenceInstance'
+          title: Last Instances Per Service Instance
+          description: List of related evidence instances.
+        evidence_alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+        freshness_timestamp:
+          type: string
+          format: date-time
+          title: Freshness Timestamp
+          description: The last timestamp evidence is validated.
+        evidence_alert_level_gap_rules_only:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+      required:
+      - evidence_instance_id
+      - evidence_id
+      - evidence_name
+      - evidence_service_id
+      - evidence_service_display_name
+      - evidence_collection_timestamp
+      - evidence_status
+      - evidence_is_custom
+      - evidence_is_beta
+      - evidence_collection_run_id
+      - evidence_originated_by_instance_id
+      - evidence_also_collected_by_instances
+      title: EvidenceDefinition
+      description: Full evidence definition with metadata and latest collection data.
+    Evidence_EvidenceInstance:
+      type: object
+      properties:
+        evidence_instance_id:
+          type: string
+          format: uuid
+          title: Evidence Instance Id
+          description: The unique identifier of this evidence instance.
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The id of this evidence.
+        evidence_name:
+          type: string
+          title: Evidence Name
+          description: The name of this evidence.
+        evidence_collection_timestamp:
+          type: string
+          format: date-time
+          title: Evidence Collection Timestamp
+          description: The time this specific evidence instance was collected.
+        evidence_service_id:
+          type: string
+          title: Evidence Service Id
+          description: The id related with the service that collected this evidence.
+        evidence_service_instance_id:
+          type: string
+          title: Evidence Service Instance Id
+          description: The service instance id this evidence was collected by.
+        evidence_url:
+          type: string
+          title: Evidence Url
+          description: The URL of this specific evidence.
+        evidence_items_count:
+          type: integer
+          title: Evidence Items Count
+          description: Items count in evidence full data.
+        evidence_alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+        evidence_alert_level_gap_rules_only:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+        evidence_time_frame:
+          type: string
+          title: Evidence Time Frame
+          description: Evidence time frame, in case of a log type.
+        evidence_analysis_results:
+          type: array
+          items:
+            type: object
+          title: Evidence Analysis Results
+          description: Object describing the gaps in the preview/full evidence data.
+        evidence_gap:
+          type: object
+          nullable: true
+          title: Evidence Gap
+          description: Structured gap information for preview/full evidence data; shape is evidence-type-specific.
+        evidence_collection_run_id:
+          type: string
+          title: Evidence Collection Run Id
+          description: The unique identifier of the collection run.
+        evidence_last_modified_time:
+          type: string
+          format: date-time
+          title: Evidence Last Modified Time
+          description: The last modification time of this document.
+        evidence_creation_time:
+          type: string
+          format: date-time
+          title: Evidence Creation Time
+          description: The creation time of this document.
+        evidence_last_modified_by:
+          type: string
+          title: Evidence Last Modified By
+          description: Who last modified the evidence.
+        evidence_originated_by_instance_id:
+          type: string
+          title: Evidence Originated By Instance Id
+          description: The service instance id this evidence was collected by.
+        evidence_iceberg_exists:
+          type: boolean
+          title: Evidence Iceberg Exists
+          description: Whether the evidence has iceberg view.
+        evidence_processing_state:
+          type: string
+          title: Evidence Processing State
+          description: The evidence processing status.
+        evidence_blob_path:
+          type: string
+          title: Evidence Blob Path
+          description: The path to the evidence blob in the bucket.
+        merged_items_count_by_source:
+          type: object
+          title: Merged Items Count By Source
+          description: Merged evidence items count by source.
+        evidence_left_instance_collection_time:
+          type: string
+          format: date-time
+          title: Evidence Left Instance Collection Time
+          description: The collection time of the left evidence instance (for merged evidence).
+        evidence_right_instance_collection_time:
+          type: string
+          format: date-time
+          title: Evidence Right Instance Collection Time
+          description: The collection time of the right evidence instance (for merged evidence).
+      required:
+      - evidence_instance_id
+      - evidence_id
+      - evidence_collection_timestamp
+      - evidence_service_id
+      - evidence_service_instance_id
+      - evidence_collection_run_id
+      title: EvidenceInstance
+    Evidence_EvidenceRunHistory:
+      type: object
+      properties:
+        details_per_instance:
+          type: object
+          title: Details Per Instance
+          description: Dictionary where the key is the instance ID and the value contains the instance display name and collection
+            times.
+          additionalProperties:
+            $ref: '#/components/schemas/Evidence_DetailsPerRun'
+        history_per_run:
+          type: object
+          title: History Per Run
+          description: Dictionary where the key is the max collection time of a run and the value is an array of all instances
+            collected during that run.
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/Evidence_EvidenceInstance'
+      required:
+      - details_per_instance
+      - history_per_run
+      title: EvidenceRunHistory
+      description: Evidence collection run history with details per instance and history per run.
+    Evidence_EvidenceStatusDetails:
+      type: object
+      properties:
+        status:
+          type: string
+          title: Status
+          description: The evidence status value.
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+          description: When this status was set.
+        updated_by:
+          type: string
+          title: Updated By
+          description: Who set this status.
+        update_mode:
+          type: string
+          title: Update Mode
+          description: The way the status was set (manual or auto).
+          enum:
+          - manual
+          - auto
+        evidence_alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+      required:
+      - status
+      - timestamp
+      title: EvidenceStatusDetails
+    Evidence_EvidenceType:
+      type: string
+      enum:
+      - URL
+      - DOCUMENT
+      - LOG
+      - LIST
+      - CONFIGURATION
+      - APP
+      - UNKNOWN
+      - LINK
+      - MANUAL
+      - TICKET
+      - API
+      title: EvidenceType
+      description: The type of evidence.
+    Evidence_EvidenceView:
+      type: object
+      properties:
+        name:
+          type: string
+          title: Name
+        upload_time:
+          type: string
+          format: date-time
+          title: Upload Time
+        created_by:
+          type: string
+          title: Created By
+        aql:
+          type: object
+          title: AQL
+          description: AQL filter definition.
+        aql_ext:
+          type: object
+          title: AQL Ext
+          description: Extended AQL filter definition.
+        updated_by:
+          type: string
+          title: Updated By
+        updated_time:
+          type: string
+          format: date-time
+          title: Updated Time
+        id:
+          type: string
+          title: Id
+      required:
+      - name
+      - created_by
+      title: EvidenceView
+    FieldType:
+      type: string
+      enum:
+      - FreeText
+      - DropDown
+      - MultiSelect
+      description: Custom field type. **`FreeText`** stores a string; **`DropDown`** stores a single option id; **`MultiSelect`**
+        stores an array of option ids.
+    Finding:
+      type: object
+      description: A compliance finding.
+      properties:
+        id:
+          type: string
+          description: Internal finding id (UUID).
+        customer_finding_id:
+          type: string
+          description: Human-facing id (e.g. `F-0001`), assigned by the service.
+        title:
+          type: string
+        description:
+          type: string
+          description: Plain text or HTML.
+        severity:
+          type: string
+          description: Severity label as returned by the API (e.g. `Low`, `Medium`, `High`).
+        status:
+          type: string
+          description: Workflow status (e.g. `Open`, `In progress`, `Resolved`).
+          enum:
+          - Open
+          - In progress
+          - Resolved
+        owners:
+          type: array
+          description: Assignee identifiers.
+          items:
+            type: string
+        due_date:
+          type: string
+          format: date-time
+          nullable: true
+        reported_by:
+          type: string
+          description: Reporter user id (often email).
+        created_by:
+          type: string
+          description: Creator.
+        updated_by:
+          type: string
+          nullable: true
+          description: Last editor.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        source_finding_type:
+          type: string
+          nullable: true
+        resolution_plan_id:
+          type: string
+          nullable: true
+          description: Linked resolution plan id, if any.
+        linked_entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindingLinkedEntity'
+        supporting_documents:
+          type: array
+          description: Supporting documents metadata.
+          items:
+            type: object
+            additionalProperties: true
+      additionalProperties: true
+    FindingLinkedEntity:
+      type: object
+      description: Link from a finding to another object.
+      properties:
+        entity_type:
+          type: string
+          description: Linked resource type, e.g. `Control`, `Evidence`, `Policy`.
+        entity_id:
+          type: string
+          description: Target object id.
+        linked_type:
+          type: string
+          description: e.g. `Origin`
+        linked_at:
+          type: string
+          format: date-time
+          description: When the link was created.
+        linked_by:
+          type: string
+          description: User who created the link.
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+          nullable: true
+          description: User who last updated the link, if any.
+      additionalProperties: true
+    FindingsDeleteResponse:
+      type: object
+      required:
+      - deleted_count
+      description: Bulk delete result.
+      properties:
+        deleted_count:
+          type: integer
+          minimum: 0
+          description: Number of findings deleted for this request.
+      additionalProperties: true
+    FindingsListResponse:
+      type: object
+      required:
+      - findings
+      properties:
+        findings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Finding'
+        pagination:
+          $ref: '#/components/schemas/FindingsPagination'
+    FindingsPagination:
+      type: object
+      description: Pagination metadata for get-all responses.
+      properties:
+        limit:
+          type: integer
+          description: Page size used for this response.
+        offset:
+          type: integer
+          description: Starting index of this slice.
+        total_count:
+          type: integer
+        has_next:
+          type: boolean
+        has_previous:
+          type: boolean
+      additionalProperties: true
+    GetControlsBody:
+      type: object
+      required:
+      - controls_ids
+      properties:
+        controls_ids:
+          type: array
+          minItems: 1
+          items:
+            type: string
+    LinkedRequirement:
+      type: object
+      properties:
+        requirement_id:
+          type: string
+        requirement_name:
+          type: string
+      required:
+      - requirement_id
+    MaturityLevel:
+      type: string
+      enum:
+      - INITIAL
+      - REPEATABLE
+      - DEFINED
+      - MANAGED
+      - OPTIMIZING
+    PatchControlCustomFieldValuePayload:
+      type: object
+      properties:
+        value: {}
+    Policy_ApprovalSchedulingInput:
+      type: object
+      title: ApprovalSchedulingInput
+      description: Scheduling block for `settings.scheduling` on update-settings.
+      additionalProperties: true
+      properties:
+        approval_frequency:
+          type: string
+          description: Cadence label (e.g. `yearly`, `half_yearly`).
+        approval_time:
+          type: string
+          format: date-time
+          description: Next or recurring approval instant (ISO 8601).
+        start_from:
+          type: string
+          format: date-time
+          description: When the current cycle window starts (ISO 8601).
+    Policy_ApprovalSettingsInput:
+      type: object
+      title: ApprovalSettingsInput
+      description: Nested `settings` object for `PUT /policy/v1/policies/update-settings`.
+      additionalProperties: true
+      required:
+      - stakeholders
+      - scheduling
+      properties:
+        stakeholders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy_ApprovalStakeholderInput'
+          description: Ordered reviewers and approvers for the policy approval cycle.
+        scheduling:
+          $ref: '#/components/schemas/Policy_ApprovalSchedulingInput'
+    Policy_ApprovalStakeholderInput:
+      type: object
+      title: ApprovalStakeholderInput
+      description: Stakeholder row for `PUT /policy/v1/policies/update-settings` (`settings.stakeholders`).
+      additionalProperties: true
+      properties:
+        approve_type:
+          type: string
+          description: Role in the workflow (e.g. `reviewer`, `approver`).
+        comments:
+          type: string
+          description: Instruction or note shown to this stakeholder.
+        role:
+          type: string
+          description: Display role label.
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        share_method:
+          type: array
+          items:
+            type: string
+          description: Channels used to notify this stakeholder (e.g. `email`).
+    Policy_CreatePoliciesRequest:
+      type: array
+      title: CreatePoliciesRequest
+      description: 'Request body for `POST /policy/v2/policies`: one or more create instructions.'
+      minItems: 1
+      items:
+        $ref: '#/components/schemas/Policy_CreatePolicyItem'
+    Policy_CreatePolicyItem:
+      type: object
+      title: CreatePolicyItem
+      description: One policy to create in `POST /policy/v2/policies` (body is an array of these objects).
+      additionalProperties: true
+      required:
+      - evidence_id
+      - policy_name
+      properties:
+        evidence_id:
+          type: string
+          description: Evidence definition id to attach (e.g. a manual evidence id `manual_<id>`).
+        policy_name:
+          type: string
+          description: Display name for the new policy.
+        requirements_ids:
+          type: array
+          items:
+            type: string
+            description: Framework requirement identifier as string.
+          description: Optional. Requirement ids to associate with the policy; omit or use `[]` when none.
+    Policy_CustomerPolicy:
+      type: object
+      title: CustomerPolicy
+      description: A customer policy record from `GET /policy/v1/customer-policies`, `POST /policy/v2/policies` (create),
+        `PATCH /policy/v1/policies/{policy_id}` (replace evidence link), or `PUT /policy/v1/policies/update-settings`. Newly
+        created policies often have `null` or placeholder values until configuration is finished.
+      additionalProperties: true
+      properties:
+        policy_id:
+          type: string
+          description: Unique policy id (e.g. `policy_<numeric>`).
+        policy_type:
+          type: string
+          nullable: true
+        policy_name:
+          type: string
+        policy_status:
+          type: string
+          nullable: true
+          description: Lifecycle status (e.g. Approved, Setup Incomplete).
+        policy_is_custom:
+          type: boolean
+        policy_group:
+          type: string
+          nullable: true
+        global_policy_id:
+          type: string
+          nullable: true
+        policy_edited_by:
+          type: string
+          nullable: true
+        policy_description:
+          type: string
+          nullable: true
+        policy_has_template:
+          type: boolean
+          nullable: true
+          description: Whether a document template exists; may be unset right after create.
+        policy_related_evidence:
+          type: string
+          nullable: true
+          description: Related evidence definition or instance id (e.g. `manual_<id>`).
+        policy_related_frameworks_names:
+          type: object
+          additionalProperties: true
+          description: Map or object of related framework display names (shape may vary).
+        policy_settings:
+          $ref: '#/components/schemas/Policy_PolicySettings'
+        policy_upcoming_cycle:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description: Next approval cycle metadata when scheduled (may be null).
+        policy_last_edit_time:
+          type: string
+          nullable: true
+          description: Last modification time (microsecond precision timestamp string from API).
+        policy_recommended_frameworks:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: Suggested frameworks; may be `null` before recommendations are populated.
+        evidence:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description: Linked evidence payload when present (may be null).
+        policy_owner:
+          nullable: true
+          description: Primary owner—often an email string; may also be a structured object in some responses.
+          oneOf:
+          - type: string
+            format: email
+          - type: object
+            additionalProperties: true
+        owners:
+          type: array
+          nullable: true
+          description: Policy owners—list of emails and/or objects depending on API version.
+          items:
+            oneOf:
+            - type: string
+              format: email
+            - type: object
+              additionalProperties: true
+        policy_approved_instance:
+          type: string
+          format: uuid
+          nullable: true
+        is_just_approved:
+          type: boolean
+        approval_status:
+          type: string
+          description: Approval workflow aggregate status.
+        policy_ai:
+          nullable: true
+          description: AI-assisted policy analysis metadata when enabled (may be `null`).
+          allOf:
+          - $ref: '#/components/schemas/Policy_PolicyAi'
+    Policy_DeletePoliciesRequest:
+      type: array
+      title: DeletePoliciesRequest
+      description: 'Request body for `PUT /policy/v1/policies/delete-policies`: policy ids to remove.'
+      minItems: 1
+      items:
+        type: string
+        description: Customer policy id (e.g. `policy_<numeric>`).
+    Policy_LibraryPolicy:
+      type: object
+      title: LibraryPolicy
+      description: A template policy from the library from `GET /policy/v1/library-policies`.
+      additionalProperties: true
+      properties:
+        policy_id:
+          type: string
+          description: Library template policy id (may be numeric string).
+        policy_type:
+          type: string
+        policy_name:
+          type: string
+        policy_group:
+          type: string
+        policy_edited_by:
+          type: string
+          nullable: true
+        policy_description:
+          type: string
+          nullable: true
+        policy_has_template:
+          type: boolean
+        policy_related_evidence:
+          type: string
+          nullable: true
+        policy_related_frameworks_names:
+          type: object
+          additionalProperties: true
+        policy_recommended_frameworks:
+          type: array
+          items:
+            type: string
+    Policy_PatchPolicyRequest:
+      type: object
+      title: PatchPolicyRequest
+      description: 'Request body for `PATCH /policy/v1/policies/{policy_id}`: set the evidence definition that backs the policy
+        file.'
+      additionalProperties: true
+      required:
+      - policy_related_evidence
+      properties:
+        policy_related_evidence:
+          type: string
+          description: Evidence definition id to attach (e.g. `manual_<id>` after uploading a replacement document).
+    Policy_PolicyAi:
+      type: object
+      title: PolicyAi
+      description: AI feature flags and metrics for a policy document.
+      additionalProperties: true
+      properties:
+        enabled:
+          type: boolean
+        evidence_count:
+          type: integer
+        control_count:
+          type: integer
+        rule_count:
+          type: integer
+        statement_count:
+          type: integer
+        flow_id:
+          type: string
+          format: uuid
+        flow_name:
+          type: string
+          nullable: true
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    Policy_PolicyScheduling:
+      type: object
+      title: PolicyScheduling
+      description: Approval cycle scheduling under `policy_settings.scheduling`. Fields are often `null` on newly created
+        policies until scheduling is configured.
+      additionalProperties: true
+      properties:
+        approval_frequency:
+          type: string
+          nullable: true
+        start_from:
+          type: string
+          nullable: true
+          description: Scheduled start (ISO 8601 with offset when set).
+        approval_time:
+          type: string
+          nullable: true
+          description: Next or recurring approval time (ISO 8601 with offset when set).
+        notify_approvers_scheduledtask_id:
+          type: string
+          nullable: true
+        end_cycle_scheduledtask_id:
+          type: string
+          nullable: true
+        overdue_reminder_task_id:
+          type: string
+          nullable: true
+    Policy_PolicySettings:
+      type: object
+      title: PolicySettings
+      description: Workflow and scheduling configuration for a customer policy.
+      additionalProperties: true
+      properties:
+        stakeholders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy_PolicySettingsStakeholder'
+        scheduling:
+          $ref: '#/components/schemas/Policy_PolicyScheduling'
+    Policy_PolicySettingsStakeholder:
+      type: object
+      title: PolicySettingsStakeholder
+      description: Stakeholder entry under `policy_settings.stakeholders` on a customer policy (approval workflow).
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        approve_type:
+          type: string
+          nullable: true
+        rows_submitted:
+          type: integer
+          nullable: true
+          description: Row submission count or similar when present (may be null).
+        approved:
+          type: boolean
+          nullable: true
+        ignore:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description: Ignore flag payload when present (may be null).
+        comments:
+          type: string
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        ignored_time:
+          type: string
+          nullable: true
+        approved_time:
+          type: string
+          nullable: true
+        last_notified:
+          type: string
+          nullable: true
+        changes_requested_count:
+          type: integer
+          nullable: true
+        approved_count:
+          type: integer
+          nullable: true
+        delete_count:
+          type: integer
+          nullable: true
+        missing_count:
+          type: integer
+          nullable: true
+        duplicated_approved_count:
+          type: integer
+          nullable: true
+        duplicated_delete_count:
+          type: integer
+          nullable: true
+        duplicated_changes_requested_count:
+          type: integer
+          nullable: true
+        duplicated_missing_count:
+          type: integer
+          nullable: true
+        view_name:
+          type: string
+          nullable: true
+        filter:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description: Filter payload when present (may be null).
+        approval_status:
+          type: string
+          nullable: true
+        last_approval_status_changed:
+          type: string
+          nullable: true
+          description: Timestamp or structured value when approval status last changed.
+        share_method:
+          description: How stakeholders are notified (e.g. `email`). May be a single value or a list.
+          nullable: true
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        slack_service_instance_id:
+          type: string
+          nullable: true
+    Policy_PolicyVersion:
+      type: object
+      title: PolicyVersion
+      description: A single version of a policy from `GET /policy/v2/policies/{policy_id}/versions`.
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        policy_id:
+          type: string
+        version_name:
+          type: string
+        version_changes:
+          type: string
+          nullable: true
+        submitted_on:
+          type: string
+          format: date-time
+          nullable: true
+        approved_on:
+          type: string
+          format: date-time
+          nullable: true
+        evidence_instance_id:
+          type: string
+        status:
+          type: string
+        version_number:
+          type: integer
+        stakeholders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy_VersionStakeholder'
+    Policy_UpdatePolicySettingsRequest:
+      type: object
+      title: UpdatePolicySettingsRequest
+      description: 'Request body for `PUT /policy/v1/policies/update-settings`: apply approval settings to the given `resource_ids`.'
+      additionalProperties: true
+      required:
+      - settings
+      - resource_ids
+      - is_new_cycle
+      properties:
+        settings:
+          $ref: '#/components/schemas/Policy_ApprovalSettingsInput'
+        resource_ids:
+          type: array
+          items:
+            type: string
+            description: Policy id to update (e.g. `policy_<numeric>`).
+          description: One or more policies that receive these settings.
+          minItems: 1
+        is_new_cycle:
+          type: boolean
+          description: Whether this operation starts a new approval cycle vs updating the existing configuration (semantics
+            depend on product workflow).
+    Policy_VersionStakeholder:
+      type: object
+      title: PolicyVersionStakeholder
+      description: Stakeholder on a specific policy version.
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        approve_type:
+          type: string
+        approved:
+          type: boolean
+        comments:
+          type: string
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        approved_time:
+          type: string
+          nullable: true
+        last_notified:
+          type: string
+          nullable: true
+        approval_status:
+          type: string
+        last_approval_status_changed:
+          type: string
+          nullable: true
+    PostCustomControl:
+      type: object
+      required:
+      - control_name
+      - control_framework_category
+      - control_framework_category_id
+      properties:
+        control_name:
+          type: string
+          minLength: 1
+        control_description:
+          type: string
+        control_framework_category:
+          type: string
+          minLength: 1
+        control_framework_category_id:
+          type: string
+          minLength: 1
+        control_original_related_controls:
+          type: array
+          items:
+            type: string
+          default: []
+        control_requirements:
+          type: array
+          items:
+            type: string
+        control_owner:
+          type: array
+          items:
+            type: string
+            format: email
+        control_implementation:
+          type: string
+        maturity_level:
+          $ref: '#/components/schemas/MaturityLevel'
+    PutCustomControl:
+      type: object
+      required:
+      - control_name
+      - control_framework_category
+      - control_framework_category_id
+      properties:
+        control_name:
+          type: string
+          minLength: 1
+        control_description:
+          type: string
+        control_framework_category:
+          type: string
+        control_framework_category_id:
+          type: string
+        control_original_related_controls:
+          type: array
+          items:
+            type: string
+        control_implementation:
+          type: string
+    Requirement:
+      type: object
+      description: A customer requirement instance. Field names mirror the live API; additional fields may appear (`additionalProperties`).
+      properties:
+        requirement_id:
+          type: string
+          description: Stable requirement instance id (`requirement_…`).
+        requirement_name:
+          type: string
+          description: Display name / title.
+        requirement_description:
+          type: string
+          description: Full text or title text depending on context.
+        requirement_help:
+          type: string
+          description: Guidance text; may contain HTML.
+        requirement_category:
+          type: string
+        requirement_status:
+          type: string
+          description: Internal status id (`requirement_status_…`).
+        requirement_status_name:
+          type: string
+          description: Human-readable status label.
+        requirement_edited_by:
+          type: string
+        requirement_last_edit_time:
+          type: string
+          description: Last edit timestamp (ISO-8601 string as returned by the API).
+        requirement_is_custom:
+          type: boolean
+        requirement_applicability:
+          type: boolean
+        requirement_note_exists:
+          type: boolean
+        requirement_related_controls:
+          type: array
+          items:
+            type: string
+          description: Linked control ids (`control_…`).
+        requirement_related_frameworks:
+          type: array
+          items:
+            type: string
+          description: Linked framework ids (`framework_…`).
+        requirement_related_evidences:
+          type: array
+          items:
+            type: string
+        requirement_related_policies:
+          type: array
+          items:
+            type: string
+        requirement_scoping_overrides:
+          type: object
+          description: Per-framework scoping overrides (shape is product-defined). Often maps **`framework_*`** keys to objects
+            with **`evidences`** maps and optional **`resource_type`**.
+          additionalProperties: true
+        services_that_automates:
+          type: array
+          items:
+            type: string
+          description: Integrations or services that collect evidence for this requirement.
+      additionalProperties: true
+    RequirementCreateRequest:
+      type: object
+      required:
+      - requirement_description
+      - requirement_category
+      - requirement_related_frameworks
+      properties:
+        requirement_description:
+          type: string
+          description: Title / name of the new custom requirement.
+        requirement_help:
+          type: string
+          description: HTML or plain text describing the requirement.
+        requirement_category:
+          type: string
+        requirement_related_controls:
+          type: array
+          items:
+            type: string
+        requirement_related_frameworks:
+          type: array
+          items:
+            type: string
+          description: Framework ids to link; send **`[]`** when none.
+    RequirementCustomFieldValueUpdate:
+      type: object
+      description: Body for setting a custom field value on a requirement. The **`value`** shape depends on the field type.
+      required:
+      - value
+      properties:
+        value:
+          description: String for **free-text**, a single **option id** for **dropdown**, an array of option ids for **multi-select**,
+            or **`null`** to clear.
+          oneOf:
+          - type: string
+            nullable: true
+          - type: array
+            items:
+              type: string
+    RequirementCustomFieldValues:
+      type: object
+      description: 'Custom field values across requirements: a map of **requirement id → field id → `{ "value": … }`**. Empty
+        object when nothing is set.'
+      additionalProperties:
+        type: object
+        description: 'For one requirement: a map of **field id → `{ "value": … }`**.'
+        additionalProperties:
+          type: object
+          properties:
+            value:
+              description: 'Stored value: an **option id** (dropdown) or array of option ids (multi-select), or a plain string
+                (free-text).'
+              oneOf:
+              - type: string
+                nullable: true
+              - type: array
+                items:
+                  type: string
+          additionalProperties: true
+    RequirementUpdateBody:
+      type: object
+      properties:
+        requirement_description:
+          type: string
+        requirement_help:
+          type: string
+          description: HTML or plain text.
+        requirement_category:
+          type: string
+        requirement_related_evidences:
+          type: array
+          items:
+            type: string
+        requirement_related_policies:
+          type: array
+          items:
+            type: string
+        requirement_scoping_overrides:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              evidences:
+                type: object
+                additionalProperties:
+                  type: boolean
+              resource_type:
+                type: string
+            additionalProperties: true
+      additionalProperties: true
+    RequirementUpdateRequestEnvelope:
+      type: object
+      properties:
+        requirement:
+          $ref: '#/components/schemas/RequirementUpdateBody'
+        context:
+          type: object
+          properties:
+            control_id:
+              type: string
+              description: Control context for scoped updates.
+          additionalProperties: true
+      additionalProperties: true
+    ResourceType:
+      type: string
+      enum:
+      - CONTROL
+      - POLICY
+      - FRAMEWORK
+      - EVIDENCE
+      - REQUIREMENT
+      - RISK
+      - UAR
+      - FINDING
+      - TREATMENT_PLAN
+      description: Platform resource type a custom field can apply to.
+    Risk_ActionStatus:
+      type: string
+      enum:
+      - PENDING
+      - WAITING_FOR_REVIEW
+      - APPLIED
+      title: ActionStatus
+      description: An enumeration.
+    Risk_CustomerFullRiskModel:
+      allOf:
+      - $ref: '#/components/schemas/Risk_CustomerRiskModel'
+      - type: object
+        properties:
+          treatment_method:
+            type: string
+            title: Treatment Method
+            description: The treatment method applied to this risk.
+          treatment_expiration_time:
+            type: string
+            format: date-time
+            title: Treatment Expiration Time
+            description: When the current treatment plan expires.
+          treatment_creation_time:
+            type: string
+            format: date-time
+            title: Treatment Creation Time
+            description: When the treatment plan was created.
+          treatment_created_by:
+            type: string
+            title: Treatment Created By
+            description: User who created the treatment plan.
+          treatment_last_updated_time:
+            type: string
+            format: date-time
+            title: Treatment Last Updated Time
+            description: When the treatment plan was last updated.
+          treatment_last_updated_by:
+            type: string
+            title: Treatment Last Updated By
+            description: User who last updated the treatment plan.
+      title: CustomerFullRiskModel
+      description: Risk with last treatment plan data
+    Risk_CustomerRiskModel:
+      properties:
+        name:
+          type: string
+          title: Name
+        inherent_risk_level:
+          type: integer
+          title: Inherent Risk Level
+        inherent_risk_level_impact:
+          type: integer
+          title: Inherent Risk Level Impact
+        inherent_risk_level_like_hood:
+          type: integer
+          title: Inherent Risk Level Like Hood
+          description: Inherent **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
+        inherent_risk_level_financial_impact:
+          type: string
+          title: Inherent Risk Level Financial Impact
+        residual_risk_level:
+          type: number
+          title: Residual Risk Level
+        residual_risk_level_impact:
+          type: integer
+          title: Residual Risk Level Impact
+        residual_risk_level_like_hood:
+          type: integer
+          title: Residual Risk Level Like Hood
+          description: Residual **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
+        residual_risk_level_financial_impact:
+          type: string
+          title: Residual Risk Level Financial Impact
+        strategy_status:
+          $ref: '#/components/schemas/Risk_CycleStatus'
+        calculated_risk_level:
+          type: integer
+          title: Calculated Risk Level
+        level_target:
+          type: string
+          title: Level Target
+        mitigation_control_ids:
+          items:
+            type: string
+          type: array
+          title: Mitigation Control Ids
+          default: []
+        evidence_ids:
+          items:
+            type: string
+          type: array
+          title: Evidence Ids
+          default: []
+        creation_time:
+          type: string
+          format: date-time
+          title: Creation Time
+        customer_risk_id:
+          type: string
+          title: Customer Risk Id
+        managers:
+          items:
+            type: string
+          type: array
+          title: Managers
+          default: []
+        owners:
+          items:
+            type: string
+          type: array
+          title: Owners
+          default: []
+        auto_calc:
+          $ref: '#/components/schemas/Risk_RiskAutoCalc'
+        id:
+          type: string
+          title: Id
+        last_updated:
+          type: string
+          format: date-time
+          title: Last Updated
+        register_id:
+          type: string
+          title: Register Id
+          description: The risk register this risk belongs to.
+        fields:
+          type: object
+          title: Fields
+          description: Custom field values as a mapping of field ID to value (string or array of strings).
+          additionalProperties:
+            oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        source_id:
+          type: string
+          title: Source Id
+        creator_name:
+          type: string
+          title: Creator Name
+        original_creation_time:
+          type: string
+          format: date-time
+          title: Original Creation Time
+        last_updated_by:
+          type: string
+          title: Last Updated By
+        sequence_index:
+          type: integer
+          title: Sequence Index
+        global_id:
+          type: string
+          title: Global Id
+        calculated_risk_level_score:
+          type: number
+          title: Calculated Risk Level Score
+        inherent_risk_level_name:
+          type: string
+          title: Inherent Risk Level Name
+        inherent_risk_level_impact_name:
+          type: string
+          title: Inherent Risk Level Impact Name
+        inherent_risk_level_likelihood_name:
+          type: string
+          title: Inherent Risk Level Likelihood Name
+        residual_risk_level_name:
+          type: string
+          title: Residual Risk Level Name
+        residual_risk_level_impact_name:
+          type: string
+          title: Residual Risk Level Impact Name
+        residual_risk_level_likelihood_name:
+          type: string
+          title: Residual Risk Level Likelihood Name
+        appetite_status:
+          $ref: '#/components/schemas/Risk_RiskAppetiteStatus'
+      type: object
+      required:
+      - name
+      title: CustomerRiskModel
+      description: Customer risk base model
+    Risk_CustomerUpdatedRiskModel:
+      type: object
+      properties:
+        name:
+          type: string
+          title: Name
+        inherent_risk_level:
+          type: integer
+          title: Inherent Risk Level
+        inherent_risk_level_impact:
+          type: integer
+          title: Inherent Risk Level Impact
+        inherent_risk_level_like_hood:
+          type: integer
+          title: Inherent Risk Level Like Hood
+          description: Inherent **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
+        inherent_risk_level_financial_impact:
+          type: string
+          title: Inherent Risk Level Financial Impact
+        residual_risk_level:
+          type: number
+          title: Residual Risk Level
+        residual_risk_level_impact:
+          type: integer
+          title: Residual Risk Level Impact
+        residual_risk_level_like_hood:
+          type: integer
+          title: Residual Risk Level Like Hood
+          description: Residual **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
+        residual_risk_level_financial_impact:
+          type: string
+          title: Residual Risk Level Financial Impact
+        strategy_status:
+          $ref: '#/components/schemas/Risk_CycleStatus'
+        calculated_risk_level:
+          type: integer
+          title: Calculated Risk Level
+        calculated_risk_level_score:
+          type: number
+          title: Calculated Risk Level Score
+        level_target:
+          type: string
+          title: Level Target
+        mitigation_control_ids:
+          items:
+            type: string
+          type: array
+          title: Mitigation Control Ids
+          default: []
+        evidence_ids:
+          items:
+            type: string
+          type: array
+          title: Evidence Ids
+          default: []
+        customer_risk_id:
+          type: string
+          title: Customer Risk Id
+        managers:
+          items:
+            type: string
+          type: array
+          title: Managers
+          default: []
+        owners:
+          items:
+            type: string
+          type: array
+          title: Owners
+          default: []
+        auto_calc:
+          $ref: '#/components/schemas/Risk_RiskAutoCalc'
+        global_id:
+          type: string
+          title: Global Id
+        inherent_risk_level_name:
+          type: string
+          title: Inherent Risk Level Name
+        inherent_risk_level_impact_name:
+          type: string
+          title: Inherent Risk Level Impact Name
+        inherent_risk_level_likelihood_name:
+          type: string
+          title: Inherent Risk Level Likelihood Name
+        residual_risk_level_name:
+          type: string
+          title: Residual Risk Level Name
+        residual_risk_level_impact_name:
+          type: string
+          title: Residual Risk Level Impact Name
+        residual_risk_level_likelihood_name:
+          type: string
+          title: Residual Risk Level Likelihood Name
+        register_id:
+          type: string
+          title: Register Id
+        appetite_status:
+          $ref: '#/components/schemas/Risk_RiskAppetiteStatus'
+        fields:
+          type: object
+          title: Fields
+          description: Custom field values as a mapping of field ID to value (string or array of strings).
+          additionalProperties:
+            oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+      title: CustomerUpdatedRiskModel
+      description: All updatable fields for a risk. All fields are optional in a PATCH request.
+    Risk_CycleStatus:
+      enum:
+      - Setup Incomplete
+      - Not Started
+      - Missing File
+      - On Hold
+      - In Progress
+      - Changes Required
+      - Approved
+      - Scheduled
+      - Sent For Approval
+      - Approval Required
+      - Implemented
+      - Action Required
+      title: CycleStatus
+      description: An enumeration.
+    Risk_NewRisk:
+      properties:
+        name:
+          type: string
+          title: Name
+        evidence_ids:
+          items:
+            type: string
+          type: array
+          title: Evidence Ids
+        customer_risk_id:
+          type: string
+          title: Customer Risk Id
+        register_id:
+          type: string
+          title: Register Id
+          description: The risk register to create the risk in.
+        fields:
+          type: object
+          title: Fields
+          description: Custom field values as a mapping of field ID to value (string or array of strings).
+          additionalProperties:
+            oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+      type: object
+      required:
+      - name
+      title: NewRisk
+      description: Request body for creating a new risk via **POST /risk/v1/risk**. Only `name` is required; all other fields
+        are optional.
+    Risk_RiskAppetiteStatus:
+      type: string
+      enum:
+      - above
+      - within
+      title: RiskAppetiteStatus
+      description: Whether the risk level is above or within appetite.
+    Risk_RiskAutoCalc:
+      properties:
+        enabled:
+          type: boolean
+          title: Enabled
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Risk_ActionStatus'
+          default: PENDING
+        residual_risk_level:
+          type: number
+          title: Residual Risk Level
+        residual_impact:
+          type: number
+          title: Residual Impact
+        residual_likelihood:
+          type: number
+          title: Residual Likelihood
+      type: object
+      required:
+      - enabled
+      title: RiskAutoCalc
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies
+        the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.

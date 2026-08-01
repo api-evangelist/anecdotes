@@ -1,0 +1,328 @@
+{
+  "info": {
+    "name": "FedRAMP 20x API",
+    "description": "FedRAMP 20x Gateway API – Public, Authorization, and Gated endpoints.\n\n**Variables:** Set `api_key` and `jwt` at the collection level (click the collection → Variables). Use Exchange API Key first to get a JWT from your API key.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.anecdotes.ai",
+      "type": "string"
+    },
+    {
+      "key": "gateway_url",
+      "value": "https://gateway.anecdotes.ai",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "jwt",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ksi_code",
+      "value": "FRR-IAM-01",
+      "type": "string"
+    },
+    {
+      "key": "evidence_id",
+      "value": "659414963",
+      "type": "string"
+    },
+    {
+      "key": "trust_center_url",
+      "value": "trust.anecdotes.ai",
+      "type": "string"
+    },
+    {
+      "key": "public_info_evidence_id",
+      "value": "url_2037408219127",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Request Access",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "trustcenterurl",
+                "value": "{{trust_center_url}}",
+                "type": "text",
+                "description": "Target Trust Center URL (e.g. trust.anecdotes.ai)"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Smith\",\n  \"email\": \"john.smith@example.gov\",\n  \"company\": \"FedRAMP\",\n  \"job_title\": \"Security Analyst\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/fedramp20x/v1/access",
+              "host": ["{{base_url}}"],
+              "path": ["fedramp20x", "v1", "access"]
+            },
+            "description": "Request access to gated FedRAMP Trust Center APIs. An email will be sent containing access information upon approval. Response includes previous_status; allowed values: null, approved, pending_nda, denied, requested, revoked."
+          }
+        },
+        {
+          "name": "Public Information",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text",
+                "description": "application/json or text/csv — returns evidence metadata and a message instructing to send another request with Accept: application/octet-stream to retrieve the raw data."
+              },
+              {
+                "key": "trustcenterurl",
+                "value": "{{trust_center_url}}",
+                "type": "text",
+                "description": "Target Trust Center URL (e.g. trust.anecdotes.ai)"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fedramp20x/v1/public/info?evidence_id={{public_info_evidence_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["fedramp20x", "v1", "public", "info"],
+              "query": [
+                {
+                  "key": "evidence_id",
+                  "value": "{{public_info_evidence_id}}",
+                  "description": "Identifier for the document/section. Allowed: url_2037408219127 (Anecdotes Trust Center), FRR-ADS-01, builder_2666397450893, builder_2795822335733, builder_2110205339759, manual_2454242086620, manual_2578511430147, builder_2639056738947"
+                }
+              ]
+            },
+            "description": "Returns public Trust Center info for the given evidence_id. Accept: application/json or text/csv returns metadata and a message to re-request with Accept: application/octet-stream for raw data. Set public_info_evidence_id to one of: url_2037408219127, FRR-ADS-01, builder_2666397450893, builder_2795822335733, builder_2110205339759, manual_2454242086620, manual_2578511430147, builder_2639056738947."
+          }
+        }
+      ],
+      "description": "Endpoints that do not require authentication."
+    },
+    {
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "Exchange API Key",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-anecdotes-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text",
+                "description": "application/json or text/csv"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/identity/v1/apikey/exchange",
+              "host": ["{{base_url}}"],
+              "path": ["identity", "v1", "apikey", "exchange"]
+            },
+            "description": "Exchange a static API key for a short-lived (1 hour) JWT. Set the returned JWT in the collection variable `jwt` to call gated endpoints."
+          }
+        },
+        {
+          "name": "List Tokens",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fedramp20x/v1/access/token",
+              "host": ["{{base_url}}"],
+              "path": ["fedramp20x", "v1", "access", "token"]
+            },
+            "description": "Retrieve metadata for all active tokens (JSON or CSV). Response includes id, nickname, key, created_at, expiration_date, is_revoked, last_used_date. Requires Bearer JWT."
+          }
+        }
+      ],
+      "description": "After approval, Trust Center authorized FedRAMP users can access gated content in the FedRAMP tab and manage programmatic access via the API Token tab. Use Exchange API Key to get a JWT; use that JWT for List Tokens and all Gated endpoints."
+    },
+    {
+      "name": "Gated",
+      "item": [
+        {
+          "name": "Get Authorization Package",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fedramp20x/v1/authorization-package?include_evidence_ids=true",
+              "host": ["{{base_url}}"],
+              "path": ["fedramp20x", "v1", "authorization-package"],
+              "query": [
+                {
+                  "key": "include_evidence_ids",
+                  "value": "true",
+                  "description": "Include evidence IDs for each KSI (default: true)"
+                }
+              ]
+            },
+            "description": "Returns the comprehensive compliance posture including KSIs and evidence mappings. Optional query: include_evidence_ids (boolean). Accept: application/json or application/pdf."
+          }
+        },
+        {
+          "name": "Get KSI Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fedramp20x/v1/ksi/{{ksi_code}}",
+              "host": ["{{base_url}}"],
+              "path": ["fedramp20x", "v1", "ksi", "{{ksi_code}}"]
+            },
+            "description": "Retrieve a specific KSI by ID. Change collection variable ksi_code (e.g. FRR-IAM-01). Accept: application/json or application/pdf. Response includes metrics.analysis_rules_coverage."
+          }
+        },
+        {
+          "name": "Get Evidence",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text",
+                "description": "application/json, text/csv, or application/octet-stream (for file download)"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fedramp20x/v1/evidence/{{evidence_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["fedramp20x", "v1", "evidence", "{{evidence_id}}"],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "",
+                  "description": "Optional. Full ISO 8601 datetime. Omit for latest.",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number, 1-indexed (JSON only)",
+                  "disabled": true
+                },
+                {
+                  "key": "page_size",
+                  "value": "100",
+                  "description": "Items per page, max 1000 (JSON only)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve a specific evidence artifact. version: full ISO 8601; page/page_size for JSON. For file evidence, use Accept: application/octet-stream to download."
+          }
+        },
+        {
+          "name": "Get Evidence History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fedramp20x/v1/evidence/{{evidence_id}}/history?limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["fedramp20x", "v1", "evidence", "{{evidence_id}}", "history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Max history entries. Default 100, min 1, max 10000"
+                },
+                {
+                  "key": "from_date",
+                  "value": "",
+                  "description": "Only versions on or after this date (ISO 8601)",
+                  "disabled": true
+                },
+                {
+                  "key": "to_date",
+                  "value": "",
+                  "description": "Only versions on or before this date (ISO 8601)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "List collection history for an evidence artifact. Response: metadata, data (evidence_instance_id, collection_date, is_latest), pagination."
+          }
+        }
+      ],
+      "description": "Gated endpoints require a valid JWT. Obtain the JWT via Exchange API Key (Authorization folder), then set the collection variable jwt."
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+generated: '2026-07-31'
+method: searched
+source: https://help.anecdotes.ai/product-tour/playbooks/how-to-define-a-playbooks-trigger
+spec_type: Webhooks
+asyncapi_published: false
+summary: >-
+  Anecdotes publishes no AsyncAPI document, but it does ship a real outbound event surface: Playbooks.
+  A Playbook binds a platform event (its trigger) to an action, and one of the available actions is
+  "Create a webhook", which POSTs to a customer-supplied URL. The event catalog below is transcribed
+  from the provider's published trigger list. Events are configured and filtered in the platform UI -
+  there is no public subscription API, and the provider does not publish payload schemas, delivery
+  guarantees, retry behaviour or signature verification for the outbound POST.
+docs:
+- https://help.anecdotes.ai/product-tour/playbooks
+- https://help.anecdotes.ai/product-tour/playbooks/how-to-define-a-playbooks-trigger
+- https://help.anecdotes.ai/product-tour/playbooks/how-to-define-the-action-that-will-be-performed-from-the-trigger
+- https://help.anecdotes.ai/product-tour/playbooks/how-to-create-a-webhook-from-anecdotes-to-slack
+- https://help.anecdotes.ai/product-tour/playbooks/create-a-webhook-from-anecdotes-to-microsoft-teams
+delivery:
+  direction: outbound
+  transport: https
+  method: POST
+  target: customer-supplied webhook URL (for example a Slack or Microsoft Teams incoming webhook)
+  configuration: per-Playbook, in the platform UI
+  subscription_api: none published
+  payload_schema: not published
+  signature_verification: not published
+  retries: not published
+events:
+- event: plugin.connectivity_failed
+  label: Plugin connectivity failed
+  domain: Plugins
+  description: A configured data-collection plugin failed to connect to the source system.
+  filters: [specific plugins]
+- event: control.status_changed
+  label: Control status change
+  domain: Controls
+  description: The status of a control changed.
+  filters: [target status or statuses, framework, control owner]
+- event: control.owner_changed
+  label: Control owner change
+  domain: Controls
+  description: Ownership of a control was reassigned.
+- event: requirement.owner_changed
+  label: Requirement owner change
+  domain: Requirement
+  description: Ownership of a requirement was reassigned.
+- event: evidence.compliance_gap_detected
+  label: Compliance gap detected in evidence
+  domain: Evidence
+  description: An analysis rule detected a compliance gap in collected evidence.
+- event: risk.added
+  label: Risk added
+  domain: Risks
+  description: A new risk was added to a risk register.
+- event: risk.level_updated
+  label: Risk level update
+  domain: Risks
+  description: The level of an existing risk changed.
+actions_available:
+- webhook (POST to a customer URL)
+- notify (in-app / email notification)
+- create a Jira ticket
+- auto-downgrade control status (freeze control)
+integrations_documented:
+- Slack incoming webhooks
+- Microsoft Teams
+- Jira
+- Tines
+- n8n
+notes:
+- >-
+  Because the provider publishes no AsyncAPI and no payload schemas, nothing beyond the event names,
+  domains and filter dimensions above is asserted here. No channel bindings or message schemas were
+  invented.
+- >-
+  This is the only event surface Anecdotes exposes; there is no streaming, queue or server-sent-events
+  API in the published documentation.

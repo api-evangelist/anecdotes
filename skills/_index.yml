@@ -1,0 +1,33 @@
+generated: '2026-07-31'
+method: generated
+source: openapi/anecdotes-grc-openapi.yml, openapi/anecdotes-fedramp-20x-openapi.yml
+note: >-
+  Packaged operating instructions for the marquee Anecdotes flows. Every operationId referenced was
+  verified to exist verbatim in the referenced spec. Anecdotes publishes no AGENTS.md or first-party
+  skill files, so these are generated from the harvested contracts plus the conventions, errors and
+  lifecycle artifacts in this repo.
+skills:
+- file: anecdotes-authenticate.md
+  name: Authenticate against the Anecdotes API
+  api: openapi/anecdotes-grc-openapi.yml
+  operations: [exchangeApiKey, getFrameworks]
+- file: anecdotes-push-custom-evidence.md
+  name: Push custom evidence into Anecdotes
+  api: openapi/anecdotes-grc-openapi.yml
+  operations: [exchangeApiKey, createEvidenceCollection, uploadManualEvidence, attachEvidenceToCollection, attachEvidenceIpe, getEvidence, getCollectionMultiHistory]
+- file: anecdotes-export-framework-posture.md
+  name: Export framework and control posture
+  api: openapi/anecdotes-grc-openapi.yml
+  operations: [exchangeApiKey, getFrameworks, getControlsByFramework, getControlsByIds, listRequirements, getRequirementById, exportFramework]
+- file: anecdotes-risk-register-sync.md
+  name: Sync a risk register with Anecdotes
+  api: openapi/anecdotes-grc-openapi.yml
+  operations: [exchangeApiKey, createRisk, getRisks, getRisk, updateRisk]
+- file: anecdotes-evidence-analysis-triage.md
+  name: Triage compliance gaps from evidence analysis
+  api: openapi/anecdotes-grc-openapi.yml
+  operations: [exchangeApiKey, getAnalysisRules, getAnalysisRulesResults, getEvidence, getEvidenceFullData, listFindings, createFinding, getFindingById, patchFinding]
+- file: anecdotes-fedramp-trust-package.md
+  name: Read the Anecdotes FedRAMP 20x trust package
+  api: openapi/anecdotes-fedramp-20x-openapi.yml
+  operations: [getPublicInfo, requestFedrampAccess, exchangeApiKeyFedramp, listFedrampTokens, getAuthorizationPackage, getKsi, getFedrampEvidence, getFedrampEvidenceHistory]

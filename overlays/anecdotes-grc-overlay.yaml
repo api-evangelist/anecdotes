@@ -1,0 +1,93 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Anecdotes GRC API
+  version: 1.0.0
+extends: openapi/anecdotes-grc-openapi.yml
+x-generated: '2026-07-31'
+x-method: generated
+x-source: >-
+  Captures the enrichment API Evangelist added on top of the operation fragments Anecdotes publishes in
+  its API reference. The harvested spec itself is left verbatim; every change below is expressed as an
+  overlay action.
+actions:
+- target: $.info
+  description: Record provenance and the harvest method for the assembled document.
+  update:
+    x-apievangelist-harvest:
+      method: searched
+      assembled_from: >-
+        53 OpenAPI 3.0.3 fragments embedded by the provider in the markdown of its API reference pages
+        at https://help.anecdotes.ai/api/*
+      fragment_count: 53
+      harvested: '2026-07-31'
+      collisions_resolved: ValidationError schema and Bearer securityScheme (richest variant kept)
+    x-apievangelist-gaps:
+      in_spec_examples: 0
+      idempotency: none
+      rfc9457_errors: false
+      deprecated_operations: 0
+- target: $.info
+  description: >-
+    Anecdotes requires a descriptive User-Agent on every request; a missing one causes a 403 that the
+    error body does not explain. This is not expressible in securitySchemes, so it is recorded as an
+    extension.
+  update:
+    x-apievangelist-required-headers:
+    - name: User-Agent
+      required: true
+      format: 'YOUR-APP-NAME/1.0 (+contact@domain.com)'
+      failure_status: 403
+      source: https://help.anecdotes.ai/api/overview
+- target: $.info
+  description: Rate-limit signalling observed live but absent from the spec and the documentation.
+  update:
+    x-apievangelist-rate-limits:
+      headers: [x-rate-limit-limit, x-rate-limit-remaining, x-rate-limit-reset]
+      observed_window: 5s
+      observed_limit: 20
+      observed: '2026-07-31'
+      documented_by_provider: false
+      artifact: rate-limits/anecdotes-rate-limits.yml
+- target: $.info
+  description: Cross-link the derived artifacts in this repo.
+  update:
+    x-apievangelist-artifacts:
+      authentication: authentication/anecdotes-authentication.yml
+      conventions: conventions/anecdotes-conventions.yml
+      errors: errors/anecdotes-problem-types.yml
+      lifecycle: lifecycle/anecdotes-lifecycle.yml
+      data_model: data-model/anecdotes-data-model.yml
+      mcp: mcp/anecdotes-mcp.yml
+      tool_crosswalk: mcp/anecdotes-tool-crosswalk.yml
+      webhooks: asyncapi/anecdotes-playbooks-webhooks.yml
+      skills: skills/_index.yml
+      examples: examples/anecdotes-examples.yml
+- target: $.info
+  description: Authorization is by API-token role rather than OAuth scope; record the role model.
+  update:
+    x-apievangelist-authorization:
+      model: role-per-token
+      roles:
+      - {name: Admin, grants: full read and write, required_for: [MCP Proxy]}
+      - {name: Integrator, grants: create evidence and push self-managed evidence data}
+      - {name: Auditor, grants: read and export accessible frameworks}
+      scopes: none
+- target: $.paths['/identity/v1/apikey/exchange'].get
+  description: Flag the token lifetime and the re-exchange contract on the exchange operation itself.
+  update:
+    x-apievangelist-token:
+      lifetime_seconds: 3600
+      response_media_type: text/plain
+      on_401: re-exchange rather than retry
+- target: $.tags
+  description: >-
+    The provider's tags split reads and writes of the same resource into separate tags (Read Controls,
+    Create Controls, Update Control Metadata). Record the resource grouping API Evangelist derived.
+  update:
+    x-apievangelist-resource-groups:
+      controls: [Read Controls, Create Controls, Update Control Metadata, Custom Fields]
+      evidence: [Read Evidence Metadata, Create Evidence, Download Evidence]
+      compliance: [Framework, Requirements, Findings, Analysis Rules]
+      risk: [Risk]
+      policy: [Policy Manager]
+      auth: [Token]

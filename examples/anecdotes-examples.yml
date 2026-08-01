@@ -1,0 +1,239 @@
+generated: '2026-07-31'
+method: searched
+source: https://help.anecdotes.ai/api/overview
+summary: >-
+  Neither Anecdotes OpenAPI document carries in-spec examples - zero of 53 GRC operations and zero of 70
+  component schemas declare an `example` or `examples`. Everything below is a real request or response
+  either published verbatim by the provider in its documentation and Postman collection, or captured live
+  from the API on 2026-07-31. Nothing here is synthesized.
+in_spec_examples:
+  operations_with_examples: 0
+  operations_total: 53
+  schemas_with_examples: 0
+  schemas_total: 70
+  note: This is a genuine gap in the provider's spec, not a harvesting failure.
+examples:
+- name: Exchange an API key for a JWT
+  kind: request
+  operation: exchangeApiKey
+  source: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  provenance: provider-published
+  language: shell
+  snippet: |
+    curl --location --request GET 'https://api.anecdotes.ai/identity/v1/apikey/exchange' \
+    --header 'x-anecdotes-api-key: <YOUR-API-TOKEN-HERE>'
+  note: Returns the JWT as text/plain. Valid for 60 minutes.
+- name: Exchange an API key with an explicit User-Agent
+  kind: request
+  operation: exchangeApiKey
+  source: https://help.anecdotes.ai/api/overview
+  provenance: provider-published
+  language: python
+  snippet: |
+    import urllib.request, os
+
+    req = urllib.request.Request(
+        "https://api.anecdotes.ai/identity/v1/apikey/exchange",
+        headers={
+         "x-anecdotes-api-key": os.environ["ANECDOTES_API_KEY"],
+         "User-Agent": "your-app-name/1.0 (+contact@domain.com)"},
+    )
+    print(urllib.request.urlopen(req).read().decode())
+- name: List frameworks with a bearer JWT
+  kind: request
+  operation: getFrameworks
+  source: https://help.anecdotes.ai/api/overview
+  provenance: provider-published
+  language: shell
+  snippet: |
+    curl --location 'https://api.anecdotes.ai/api/v1/framework' \
+    --header 'Authorization: Bearer YOUR-JWT-TOKEN'
+- name: List API tokens
+  kind: request
+  operation: null
+  source: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  provenance: provider-published
+  language: shell
+  snippet: |
+    curl --location 'https://api.anecdotes.ai/identity/v1/apikey' \
+    --header 'Authorization: Bearer <YOUR-JWT-HERE>'
+  note: >-
+    This endpoint is shown in the documentation but is not declared in the published OpenAPI reference.
+- name: Request FedRAMP Trust Center access
+  kind: request
+  operation: requestFedrampAccess
+  source: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  provenance: provider-published
+  language: shell
+  snippet: |
+    curl --location 'https://api.anecdotes.ai/fedramp20x/v1/access' \
+    --header 'Content-Type: application/json' \
+    --header 'trustcenterurl: trust.anecdotes.ai' \
+    --data-raw '{
+      "first_name": "John",
+      "last_name": "Smith",
+      "email": "john.smith@example.gov",
+      "company": "FedRAMP",
+      "job_title": "Security Analyst"
+    }'
+- name: FedRAMP access request response
+  kind: response
+  operation: requestFedrampAccess
+  source: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  provenance: provider-published
+  status: 200
+  content_type: application/json
+  snippet: |
+    {
+      "invalid_email": false,
+      "user_exists": false,
+      "user_denied_or_revoked": false,
+      "access_pending": true,
+      "previous_status": [null, "approved", "pending_nda", "denied", "requested", "revoked"]
+    }
+  note: The provider's sample enumerates the allowed previous_status values rather than showing one.
+- name: Fetch public Cloud Service Offering information
+  kind: request
+  operation: getPublicInfo
+  source: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  provenance: provider-published
+  language: shell
+  snippet: |
+    curl --location 'https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733' \
+    --header 'Accept: application/json' \
+    --header 'trustcenterurl: trust.anecdotes.ai'
+- name: Public Cloud Service Offering information
+  kind: response
+  operation: getPublicInfo
+  provenance: captured-live
+  fetched: '2026-07-31'
+  request_url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+  status: 200
+  content_type: application/json
+  snippet: |
+    [
+      {
+        "Business Category": ["Technology", "GRC"],
+        "Contact Information": "security@anecdotes.ai",
+        "Service Model": "SaaS",
+        "Nest Report Date": "Oct 15, 2026 | 00:00:00",
+        "Information Title": "Public Information",
+        "Description": "Public-facing security and compliance portal with controlled document access, NDA management, and visitor analytics.",
+        "Deployment Model": "Public Cloud",
+        "Customer Support Info": "support@anecdotes.ai"
+      }
+    ]
+- name: Public status page rollup
+  kind: response
+  operation: getPublicInfo
+  provenance: captured-live
+  fetched: '2026-07-31'
+  request_url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2666397450893
+  status: 200
+  content_type: application/json
+  snippet: |
+    [
+      {
+        "ID": "bqkz8z9sc35m",
+        "Component Name": "Trust Center",
+        "Uptime Percentage": 100,
+        "Range End": "Jul 30, 2026 | 00:00:00",
+        "Range Start": "May 02, 2026 | 00:00:00",
+        "Major Outages": 0,
+        "Partial Outages": 0,
+        "Related Events": null,
+        "Warnings": []
+      }
+    ]
+- name: Public detailed service list
+  kind: response
+  operation: getPublicInfo
+  provenance: captured-live
+  fetched: '2026-07-31'
+  request_url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2639056738947
+  status: 200
+  content_type: application/json
+  snippet: |
+    [
+      {
+        "items.[*].deployment_model": "Public Cloud",
+        "items.[*].description": "Anecdotes is a data-powered, AI-enhanced GRC platform that automates compliance and scales enterprise GRC programs.",
+        "items.[*].id": "11099482159",
+        "items.[*].impact_level": "Moderate",
+        "items.[*].name": "Anecdotes Compliance OS",
+        "items.[*].service_model": "SaaS"
+      },
+      {
+        "items.[*].deployment_model": "Public Cloud",
+        "items.[*].description": "Public-facing security and compliance portal with controlled document access, NDA management, and visitor analytics.",
+        "items.[*].id": "11099464412",
+        "items.[*].impact_level": "Moderate",
+        "items.[*].name": "Anecdotes Trust Center",
+        "items.[*].service_model": "SaaS"
+      }
+    ]
+  note: >-
+    The flattened "items.[*].field" key form is how the endpoint actually responds; it is not a
+    transcription artifact.
+- name: List MCP Proxy tools over raw JSON-RPC
+  kind: request
+  operation: null
+  source: https://help.anecdotes.ai/technical-setup/api/using-anecdotes-mcp
+  provenance: provider-published
+  language: shell
+  snippet: |
+    curl -X POST https://mcp.anecdotes.ai/all/mcp \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json, text/event-stream" \
+      -H "X-anecdotes-api-key: YOUR_API_KEY" \
+      -d '{
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "tools/list"
+      }'
+- name: Call an MCP tool
+  kind: request
+  operation: null
+  source: https://help.anecdotes.ai/technical-setup/api/using-anecdotes-mcp
+  provenance: provider-published
+  language: shell
+  snippet: |
+    curl -X POST https://mcp.anecdotes.ai/all/mcp \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json, text/event-stream" \
+      -H "X-anecdotes-api-key: YOUR_API_KEY" \
+      -d '{
+        "jsonrpc": "2.0",
+        "id": 2,
+        "method": "tools/call",
+        "params": {
+          "name": "get_controls",
+          "arguments": {}
+        }
+      }'
+- name: Claude Desktop MCP configuration
+  kind: configuration
+  source: https://help.anecdotes.ai/technical-setup/api/using-anecdotes-mcp
+  provenance: provider-published
+  language: json
+  snippet: |
+    {
+      "mcpServers": {
+        "anecdotes-main": {
+          "command": "npx",
+          "args": ["-y", "@anecdotes.ai/mcp", "https://mcp.anecdotes.ai", "all"],
+          "env": {
+            "ANECDOTES_API_KEY": "YOUR_ANECDOTES_API_KEY_HERE"
+          }
+        }
+      }
+    }
+collections:
+- type: postman
+  file: postman/anecdotes-fedramp-20x.postman_collection.json
+  name: FedRAMP 20x API
+  schema: https://schema.getpostman.com/json/collection/v2.1.0/collection.json
+  requests: 8
+  provenance: >-
+    First-party collection published by Anecdotes and retrieved from
+    https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=manual_2578511430147 on 2026-07-31.

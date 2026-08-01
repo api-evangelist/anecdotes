@@ -1,0 +1,58 @@
+generated: '2026-07-31'
+method: searched
+probe: true
+source: https://www.anecdotes.ai/trust
+url: https://trust.anecdotes.ai/
+security_page: https://www.anecdotes.ai/trust
+summary: >-
+  Anecdotes runs its trust center on its own product - trust.anecdotes.ai is an instance of the Anecdotes
+  Trust Center, which is itself one of the two Cloud Service Offerings in its FedRAMP 20x package. Gated
+  documents are released behind a request-access and NDA flow. Uniquely among providers in this catalog,
+  the trust center is also queryable as an API: the FedRAMP 20x public endpoints return CSO metadata,
+  status-page uptime and the Recommended Secure Configuration index with no authentication at all.
+certifications:
+- SOC 1
+- SOC 2
+- ISO 27001
+- ISO 27701
+- ISO 27032
+- ISO 42001
+- GDPR
+programs:
+- name: FedRAMP 20x
+  impact_level: Moderate
+  deployment_model: Public Cloud
+  service_model: SaaS
+  cloud_service_offerings:
+  - Anecdotes Compliance OS
+  - Anecdotes Trust Center
+  docs: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+practices:
+  penetration_testing: External vendors, at least once every 12 months.
+  encryption_at_rest: AES-256
+  encryption_in_transit: TLS 1.2 and above
+  hosting: Google Cloud Platform, US data centers
+  dpa: offered for GDPR compliance
+  subprocessors: published
+access_model:
+  public: CSO metadata, status page rollup, Recommended Secure Configuration index, API documentation and Postman collection
+  gated: authorization package, Key Security Indicators, evidence and evidence history
+  gating: request access (name, email, company, job title) then approval and NDA
+machine_readable:
+  api: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  openapi: openapi/anecdotes-fedramp-20x-openapi.yml
+  postman: postman/anecdotes-fedramp-20x.postman_collection.json
+  public_endpoint_verified:
+    url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=url_2037408219127
+    http_status: 200
+    fetched: '2026-07-31'
+contacts:
+  security: security@anecdotes.ai
+  support: support@anecdotes.ai
+  general: hello@anecdotes.ai
+evidence:
+- source: https://www.anecdotes.ai/trust
+  keywords: [soc 1, soc 2, iso 27001, iso 27701, iso 27032, iso 42001, gdpr, penetration test, trust center]
+- source: https://trust.anecdotes.ai/
+  http_status: 200
+  note: Client-rendered trust center application; certification detail is rendered client-side.

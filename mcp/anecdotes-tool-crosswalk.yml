@@ -1,0 +1,158 @@
+generated: '2026-07-31'
+method: derived
+source: mcp/anecdotes-mcp.yml, openapi/anecdotes-grc-openapi.yml
+summary: >-
+  Binds each tool published by the Anecdotes MCP Proxy to the REST operation(s) that back it in the
+  Anecdotes GRC API. Because the live tools/list manifest is edge-blocked to anonymous callers, tools are
+  mapped by name and by the provider's own description of each domain, and confidence is recorded
+  accordingly. Where a binding is high, the tool's real input contract is the referenced operation's
+  parameters and requestBody in openapi/anecdotes-grc-openapi.yml.
+surfaces:
+  openapi:
+    file: openapi/anecdotes-grc-openapi.yml
+    base_url: https://api.anecdotes.ai
+    operations: 53
+    gated: true
+    note: Every operation except the API key exchange requires a bearer JWT.
+  mcp:
+    url: https://mcp.anecdotes.ai/all/mcp
+    gated: true
+    note: tools/list returned HTTP 403 (Cloudflare edge) without an X-anecdotes-api-key header.
+  graphql:
+    present: false
+    note: No GraphQL surface is documented or discoverable.
+crosswalk:
+- tool: get_risks
+  domain: risk
+  category: risk
+  rest: [getRisks]
+  binding: rest
+  confidence: high
+  note: >-
+    GET /risk/v1/risk/full. The REST operation carries the risk_ids and exclude_review query parameters
+    the tool description mentions.
+- tool: get_controls
+  domain: control
+  category: controls
+  rest: [listControls, getControlById, getControlsByIds, getControlsByFramework]
+  binding: rest
+  confidence: high
+  note: >-
+    Fans out across four read operations. The tool's "filter by specific control IDs" maps to
+    getControlsByIds (POST /controls/control/read).
+- tool: update_controls
+  domain: control
+  category: controls
+  rest: [updateCustomControl]
+  binding: rest
+  confidence: high
+  note: PUT /controls/control/{control_id}. Only custom controls are updatable through this operation.
+- tool: get_evidence
+  domain: evidence
+  category: evidence
+  rest: [getEvidence, getAnEvidence]
+  binding: rest
+  confidence: high
+  note: >-
+    getEvidence lists evidence with metadata; getAnEvidence reads a single instance. The tool's "reduce
+    data size" option corresponds to the metadata-only read.
+- tool: get_evidence_run_history
+  domain: evidence
+  category: evidence
+  rest: [getCollectionMultiHistory]
+  binding: rest
+  confidence: high
+  note: GET /evidence/v1/evidence/{evidence_id}/run_history, which accepts limit and date filters.
+- tool: get_evidence_full_data
+  domain: evidence
+  category: evidence
+  rest: [getEvidenceFullData, getEvidenceFullDataOrRaw]
+  binding: rest
+  confidence: high
+  note: Returns the processed evidence data table shown in the platform UI.
+- tool: get_customer_policies
+  domain: policy
+  category: policy
+  rest: [listPolicyCustomerPolicies]
+  binding: rest
+  confidence: high
+  note: GET /policy/v1/customer-policies.
+- tool: get_frameworks
+  domain: framework
+  category: frameworks
+  rest: [getFrameworks]
+  binding: rest
+  confidence: high
+  note: GET /api/v1/framework.
+- tool: get_analysis_rules
+  domain: analysis
+  category: analysis
+  rest: [getAnalysisRules]
+  binding: rest
+  confidence: high
+  note: GET /analysis-rules/v1/analysis-rules.
+- tool: get_requirements
+  domain: requirement
+  category: requirements
+  rest: [listRequirements, getRequirementById]
+  binding: rest
+  confidence: high
+  note: GET /api/v1/requirement and GET /api/v1/requirement/{requirement_id}.
+mcp_only:
+- tool: get_user_access_review
+  domain: uar
+  reason: >-
+    User Access Review is a first-class product surface in the platform but no UAR operation is published
+    in the REST API reference, so the tool has no public REST equivalent.
+- tool: get_comments
+  domain: comments
+  reason: >-
+    Comment threads are exposed to agents but the collaboration/comments surface is absent from the public
+    REST reference.
+- tool: (semantic search)
+  domain: search
+  reason: >-
+    The provider documents a "Search" domain offering smart semantic search across risks, controls,
+    evidence, frameworks and requirements, but names no tool for it and publishes no REST equivalent.
+    This is a genuine MCP-only capability.
+- tool: list_domains
+  domain: '*'
+  reason: >-
+    Proxy-level discovery tool. It enumerates the live domains and tools and exists only in the MCP
+    surface; the provider directs callers to it because the tool set changes over time.
+rest_only:
+- capability: Evidence creation and upload
+  operations: [uploadManualEvidence, createEvidenceCollection, attachEvidenceToCollection, attachEvidenceIpe]
+- capability: Evidence raw download
+  operations: [getLatestRawData, downloadRawData, getEvidenceRaw]
+- capability: Findings
+  operations: [listFindings, createFinding, deleteFindings, getFindingById, patchFinding]
+- capability: Policy authoring and lifecycle
+  operations: [listPolicyLibraryPolicies, createPolicies, deletePolicies, updatePolicySettings, patchPolicyRelatedEvidence, listPolicyVersions]
+- capability: Requirement write operations
+  operations: [createRequirement, updateRequirement, deleteRequirement, setRequirementCustomFieldValue, listRequirementCustomFieldValues]
+- capability: Custom fields
+  operations: [listCustomFields, createCustomField, getCustomField, getControlCustomFieldValues, patchControlCustomField]
+- capability: Risk write operations
+  operations: [createRisk, getRisk, updateRisk]
+- capability: Control creation and deletion
+  operations: [createCustomControl, deleteCustomControl]
+- capability: Analysis rule authoring and results
+  operations: [createAnalysisRule, getAnalysisRulesResults]
+- capability: Framework export
+  operations: [exportFramework]
+- capability: Authentication
+  operations: [exchangeApiKey]
+coverage:
+  tools_named: 14
+  tools_bound_to_rest: 10
+  mcp_only: 4
+  rest_operations_total: 53
+  rest_operations_with_a_tool: 16
+  rest_operations_without_a_tool: 37
+observations:
+- The MCP surface is overwhelmingly read-oriented - update_controls is the only documented write tool,
+  while the REST surface exposes creates, updates and deletes across risks, controls, requirements,
+  policies, findings, custom fields and evidence.
+- Two whole product areas reachable by agents (User Access Review, Comments) have no public REST
+  operation, so the MCP proxy is not a strict subset of the REST API.

@@ -1,0 +1,45 @@
+generated: '2026-07-31'
+method: searched
+source: https://registry.npmjs.org/@anecdotes.ai/mcp
+docs: https://help.anecdotes.ai/technical-setup/api/using-anecdotes-mcp
+summary: >-
+  Anecdotes publishes one first-party client library: the @anecdotes.ai/mcp npm bridge that connects an
+  MCP client (Claude Desktop, Cursor, Copilot and other MCP-capable tools) to the hosted Anecdotes MCP
+  Proxy. No conventional per-language REST SDK is published for the Anecdotes GRC API - the documentation
+  shows raw cURL, Python urllib and third-party automation platforms (Tines, n8n) calling the REST
+  endpoints directly.
+packages:
+- language: javascript
+  registry: npm
+  name: '@anecdotes.ai/mcp'
+  kind: mcp-bridge
+  version: 1.1.0
+  description: MCP bridge for Anecdotes HTTP servers.
+  url: https://www.npmjs.com/package/@anecdotes.ai/mcp
+  install: npx -y @anecdotes.ai/mcp https://mcp.anecdotes.ai all
+  license: MIT
+  first_published: '2025-08-10'
+  last_published: '2025-08-28'
+  official: true
+  evidence: >-
+    Scoped to the anecdotes.ai npm org and documented as the supported install path at
+    https://help.anecdotes.ai/technical-setup/api/using-anecdotes-mcp
+registries_checked:
+- registry: npm
+  result: '@anecdotes.ai/mcp found'
+- registry: pypi
+  result: no first-party package (anecdotes, anecdotes-ai, anecdotes-sdk all 404)
+- registry: rubygems
+  result: not checked - no Ruby surface documented
+- registry: packagist
+  result: not checked - no PHP surface documented
+- registry: crates.io
+  result: not checked - no Rust surface documented
+- registry: maven-central
+  result: not checked - no JVM surface documented
+- registry: nuget
+  result: not checked - no .NET surface documented
+notes: >-
+  A ServiceNow store app ("Anecdotes GRC Integration") and an AuditBoard / LogicGate integration are
+  distributed through those vendors' own marketplaces rather than a language package registry - see
+  https://help.anecdotes.ai/product-tour/data-engines/servicenow-app-setup

@@ -1,0 +1,39 @@
+generated: '2026-07-31'
+method: probed
+source: live response headers from https://api.anecdotes.ai
+summary: >-
+  The Anecdotes API returns rate-limit signalling headers on every response, including unauthenticated
+  ones. The provider does not publish a rate-limit reference page, so the values below are recorded from
+  observed responses rather than from documentation; only the header contract is asserted, not a
+  guaranteed quota.
+signalling:
+  style: custom-headers
+  standard: none
+  headers:
+  - name: x-rate-limit-limit
+    description: The rate-limit window, expressed as a duration.
+    observed_value: 5s
+  - name: x-rate-limit-remaining
+    description: Requests remaining in the current window.
+    observed_value: '19'
+  - name: x-rate-limit-reset
+    description: ISO 8601 timestamp at which the current window resets.
+    observed_value: '2026-08-01T01:44:11.7322624Z'
+  retry_after: not observed
+  exhaustion_status: not observed
+limits:
+- scope: unauthenticated request to https://api.anecdotes.ai/api/*
+  window: 5s
+  limit_count: 20
+  evidence: >-
+    x-rate-limit-limit: 5s with x-rate-limit-remaining: 19 on the first request in a window implies a
+    ceiling of 20 requests per 5 seconds on this path. Observed 2026-07-31, not published by the provider.
+    Treat as indicative.
+related:
+- header contract also documented indirectly by the 403 troubleshooting note requiring a descriptive
+  User-Agent - see conventions/anecdotes-conventions.yml
+x-evidence:
+  fetched: '2026-07-31'
+  url: https://api.anecdotes.ai/api/openapi.json
+  http_status: 401
+  headers_present: [x-rate-limit-limit, x-rate-limit-remaining, x-rate-limit-reset]

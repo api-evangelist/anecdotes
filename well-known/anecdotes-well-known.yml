@@ -1,0 +1,60 @@
+generated: '2026-07-31'
+method: probed
+source: live GET probes of every host in apis.yml and every OpenAPI servers[] host
+result: none
+summary: >-
+  Anecdotes publishes no /.well-known/ discovery documents on any of its hosts. Every probe returned 404,
+  except on the two single-page-application hosts (www.anecdotes.ai and platform.anecdotes.ai) where the
+  catch-all route answers with an HTML body - those are recorded as false positives, not hits, and no
+  document was saved. No security.txt, no OpenID/OAuth discovery, no api-catalog, no ai-plugin.json and
+  no A2A agent card exist on this provider's surface.
+hosts:
+- host: https://api.anecdotes.ai
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: https://mcp.anecdotes.ai
+  documents:
+  - {path: /.well-known/oauth-authorization-server, status: 403, note: Cloudflare edge block, not a document}
+  - {path: /.well-known/oauth-protected-resource, status: 403, note: Cloudflare edge block, not a document}
+  - {path: /.well-known/agent-card.json, status: 403}
+  - {path: /.well-known/agent.json, status: 403}
+- host: https://help.anecdotes.ai
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: https://www.anecdotes.ai
+  documents:
+  - {path: /.well-known/security.txt, status: 404, body: 'Invalid .well-known request'}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: https://platform.anecdotes.ai
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 200, content_type: text/html, verdict: false-positive, note: SPA catch-all returned an HTML shell, not an OIDC document}
+  - {path: /.well-known/oauth-authorization-server, status: 200, content_type: text/html, verdict: false-positive, note: SPA catch-all returned an HTML shell, not an RFC 8414 document}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: https://gateway.anecdotes.ai
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+notes:
+- Anecdotes does publish a security contact (security@anecdotes.ai) on its trust page and through the
+  public FedRAMP 20x API, but not as an RFC 9116 security.txt - see
+  security/anecdotes-vulnerability-disclosure.yml.
+- SAML 2.0 SSO and SCIM are supported inbound (the customer's IdP is the authority), which is why no
+  OpenID Connect discovery document is served by Anecdotes itself.

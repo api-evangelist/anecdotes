@@ -1,0 +1,67 @@
+generated: '2026-07-31'
+method: searched
+source: https://help.anecdotes.ai/api/overview
+docs:
+- https://help.anecdotes.ai/release-notes/product-updates
+- https://help.anecdotes.ai/customer-notices/platform-update-notice-july-1-2026
+versioning:
+  scheme: uri-path
+  current: v1
+  note: >-
+    Versioning is per-service rather than global: /api/v1, /identity/v1, /evidence/v1, /risk/v1,
+    /compliance/v1, /custom-fields/v1, /analysis-rules/v1, /fedramp20x/v1, and Policy Manager running
+    /policy/v1 and /policy/v2 in parallel. The Recommended Secure Configuration baseline is separately
+    versioned with semver (1.0.0 as of 2026-05-25).
+  policy_url: null
+  policy_published: false
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  evidence: >-
+    No deprecation or sunset policy is published, no RFC 8594 Sunset/Deprecation header support is
+    documented, and no operation in either OpenAPI document carries `deprecated: true`. The coexistence
+    of /policy/v1 and /policy/v2 shows versions run in parallel, but no retirement timeline is stated.
+deprecated_operations: []
+status_page:
+  url: https://status.anecdotes.ai/
+  vendor: incident.io
+  alternate_url: https://anecdotes.statuspage.io/
+  summary_api: https://status.anecdotes.ai/api/v2/summary.json
+  current_status: All Systems Operational
+  observed: '2026-07-31'
+  components:
+  - FedRAMP
+  - Dashboards
+  - Platform UI
+  - Comments
+  - Plugins
+  - Policy Manager
+  - Risks Manager
+  - User Access Review
+  - Trust Center
+  - Evidence
+  - Collaboration
+  - Export API
+  - Identity
+  note: >-
+    Uptime is also exposed through the public FedRAMP endpoint
+    /fedramp20x/v1/public/info?evidence_id=builder_2666397450893, which reported 100% uptime with 0 major
+    and 0 partial outages for the Trust Center component over the 2026-05-02 to 2026-07-30 window.
+sla:
+  url: null
+  uptime_target: null
+  published: false
+  note: No public SLA or uptime commitment is published; terms are at https://www.anecdotes.ai/terms-of-use
+release_cadence:
+  style: dated product updates, roughly monthly
+  url: https://help.anecdotes.ai/release-notes/product-updates
+  artifact: changelog/anecdotes-changelog.yml
+token_lifecycle:
+  api_token: created in-platform with an explicit expiration date and role; revocable
+  jwt: 1 hour
+support:
+  help_center: https://help.anecdotes.ai/
+  contact: support@anecdotes.ai
+  general: hello@anecdotes.ai

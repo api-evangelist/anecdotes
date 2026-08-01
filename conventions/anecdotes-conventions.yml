@@ -1,0 +1,124 @@
+generated: '2026-07-31'
+method: searched
+source: https://help.anecdotes.ai/api/overview
+derived_from: openapi/anecdotes-grc-openapi.yml
+docs:
+- https://help.anecdotes.ai/api/overview
+- https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+summary: >-
+  Cross-cutting request and response semantics for the Anecdotes GRC API and the FedRAMP 20x Trust Center
+  API. Both live on https://api.anecdotes.ai and share the same two-step authentication.
+authentication:
+  style: api-key-exchanged-for-jwt
+  steps:
+  - Create an API token in the platform under Administration -> API tokens (name, expiration date, role).
+  - GET /identity/v1/apikey/exchange with header `x-anecdotes-api-key: <token>` returns a JWT as text/plain.
+  - Send `Authorization: Bearer <JWT>` on every other request.
+  token_lifetime: 3600 seconds (1 hour)
+  refresh: re-exchange the API key when a 401 is returned
+  roles:
+  - name: Admin
+    description: Pull or push any data and perform any available action.
+  - name: Integrator
+    description: Create new evidence and push data into self-managed evidence.
+  - name: Auditor
+    description: Read general info about, and export, frameworks the auditor has access to.
+  artifact: authentication/anecdotes-authentication.yml
+required_headers:
+- header: Authorization
+  value: Bearer <JWT>
+  applies_to: all endpoints except the key exchange and the FedRAMP public endpoints
+- header: User-Agent
+  required: true
+  format: 'YOUR-APP-NAME/1.0 (+contact@domain.com)'
+  note: >-
+    A descriptive User-Agent is mandatory and identifies the calling application. A missing or
+    unacceptable User-Agent is the documented cause of a 403 even when the JWT is valid.
+- header: trustcenterurl
+  value: trust.anecdotes.ai
+  applies_to: FedRAMP 20x endpoints only
+idempotency:
+  supported: false
+  evidence: >-
+    No Idempotency-Key header, no idempotency parameter and no retry-safety guidance appears in the
+    OpenAPI or in the published documentation. Write operations (POST/PATCH/PUT/DELETE) carry no
+    de-duplication contract.
+pagination:
+  style: limit-offset
+  parameters:
+  - name: limit
+    in: query
+    used_by: [getEvidence, getCollectionMultiHistory, listFindings, listRequirements]
+  - name: offset
+    in: query
+    used_by: [getEvidence, getCollectionMultiHistory, listFindings, listRequirements]
+  fedramp_variant:
+    style: page-number
+    parameters:
+    - {name: page, default: 1, note: 1-indexed, json responses only}
+    - {name: page_size, default: 100, maximum: 1000}
+    - {name: limit, default: 100, minimum: 1, maximum: 10000, applies_to: evidence history}
+    - {name: from_date, format: iso-8601}
+    - {name: to_date, format: iso-8601}
+  response_fields: >-
+    The FedRAMP evidence history response carries a `pagination` object alongside `metadata` and `data`.
+    The GRC API responses are not documented with a uniform envelope.
+filtering:
+  style: query-parameter filters, id-list filters and one POST-based bulk read
+  examples:
+  - {operation: getControlsByIds, note: POST /controls/control/read accepts a body of control ids}
+  - {operation: getRisks, parameters: [risk_ids, exclude_review]}
+  - {operation: getAnalysisRules, parameters: [rule_type, rule_state]}
+content_negotiation:
+  request: application/json
+  responses:
+  - application/json (default)
+  - text/csv (FedRAMP token list and public info)
+  - application/pdf (FedRAMP authorization package and KSI)
+  - application/octet-stream (file-backed evidence and published documents)
+  - text/plain (the JWT returned by the key exchange)
+versioning:
+  scheme: uri-path
+  current: v1
+  note: >-
+    Version is a per-service path segment rather than a global prefix - /api/v1, /identity/v1,
+    /evidence/v1, /risk/v1, /policy/v1, /policy/v2, /compliance/v1, /custom-fields/v1,
+    /analysis-rules/v1, /fedramp20x/v1. The Policy Manager already runs v1 and v2 in parallel.
+  artifact: lifecycle/anecdotes-lifecycle.yml
+error_envelope:
+  format: non-standard
+  rfc9457: false
+  shapes:
+  - name: ValidationError
+    status: 422
+    shape: '{"detail": [{"loc": [...], "msg": "...", "type": "...", "ctx": {...}}]}'
+    note: FastAPI-style validation error; each item in detail describes one validation failure.
+  - name: DetailMessage
+    status: [400, 404]
+    shape: '{"detail": "..."}'
+  content_type: application/json
+  artifact: errors/anecdotes-problem-types.yml
+rate_limiting:
+  signalled: true
+  headers: [x-rate-limit-limit, x-rate-limit-remaining, x-rate-limit-reset]
+  documented: false
+  artifact: rate-limits/anecdotes-rate-limits.yml
+request_tracing:
+  request_id_header: none published
+  observed: x-cloud-trace-context is returned by the edge but is not documented as a caller-facing trace id
+field_expansion:
+  supported: false
+metadata:
+  custom_fields: >-
+    Anecdotes exposes a first-class custom-field system rather than a free-form metadata bag - see the
+    Custom Fields tag (listCustomFields, createCustomField, getCustomField) and the per-entity field
+    setters (patchControlCustomField, setRequirementCustomFieldValue).
+events:
+  outbound_webhooks: true
+  artifact: asyncapi/anecdotes-playbooks-webhooks.yml
+identity_federation:
+  sso: SAML 2.0 (Okta, Microsoft Entra ID, OneLogin, JumpCloud, PingIdentity)
+  provisioning: SCIM 2.0
+  docs:
+  - https://help.anecdotes.ai/technical-setup/sso
+  - https://help.anecdotes.ai/technical-setup/scim

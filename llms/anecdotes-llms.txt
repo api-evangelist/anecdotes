@@ -1,0 +1,639 @@
+# Anecdotes Help Center
+
+## Anecdotes Help Center
+
+- [Welcome to anecdotes](https://help.anecdotes.ai/welcome-to-anecdotes.md)
+- [Getting Started](https://help.anecdotes.ai/product-tour/getting-started.md): When starting using anecdotes, these videos will make your life easier
+- [anecdotes overview](https://help.anecdotes.ai/product-tour/getting-started/anecdotes-overview.md)
+- [Automated evidence collection](https://help.anecdotes.ai/product-tour/getting-started/automated-evidence-collection.md)
+- [Evidence Overview](https://help.anecdotes.ai/product-tour/getting-started/evidence-overview.md)
+- [Control status](https://help.anecdotes.ai/product-tour/getting-started/control-status.md)
+- [Frameworks](https://help.anecdotes.ai/product-tour/frameworks.md)
+- [Anecdotes terminology and framework hierarchy](https://help.anecdotes.ai/product-tour/frameworks/anecdotes-terminology-and-framework-hierarchy.md)
+- [How to create a custom framework](https://help.anecdotes.ai/product-tour/frameworks/how-to-create-a-custom-framework.md): Learn how to create a custom framework and import controls in bulk
+- [Edit a custom framework from template](https://help.anecdotes.ai/product-tour/frameworks/edit-a-custom-framework-from-template.md)
+- [Duplicate framework](https://help.anecdotes.ai/product-tour/frameworks/duplicate-framework.md): Learn how to duplicate an existing framework
+- [Plugins scoping](https://help.anecdotes.ai/product-tour/frameworks/plugins-scoping.md): Select the plugins that will be included within the scope of a specific framework.
+- [Controls](https://help.anecdotes.ai/product-tour/frameworks/controls.md)
+- [Auto-downgrade Control status](https://help.anecdotes.ai/product-tour/frameworks/controls/auto-downgrade-control-status.md)
+- [Control Assistant - AI Agent](https://help.anecdotes.ai/product-tour/frameworks/controls/control-assistant-ai-agent.md)
+- [Control-Requirements Recommendations](https://help.anecdotes.ai/product-tour/frameworks/controls/control-assistant-ai-agent/control-requirements-recommendations.md)
+- [Control insights - Control maturity level](https://help.anecdotes.ai/product-tour/frameworks/controls/control-assistant-ai-agent/control-insights-control-maturity-level.md)
+- [Control insights - Control effectiveness](https://help.anecdotes.ai/product-tour/frameworks/controls/control-assistant-ai-agent/control-insights-control-effectiveness.md)
+- [Related Policy Statements](https://help.anecdotes.ai/product-tour/frameworks/controls/control-assistant-ai-agent/related-policy-statements.md)
+- [Control-Risk Recommendations](https://help.anecdotes.ai/product-tour/frameworks/controls/control-assistant-ai-agent/control-risk-recommendations.md)
+- [Add or Edit controls](https://help.anecdotes.ai/product-tour/frameworks/controls/add-or-edit-controls.md)
+- [Bulk Edit Custom Fields for Controls](https://help.anecdotes.ai/product-tour/frameworks/controls/bulk-edit-custom-fields-for-controls.md)
+- [Automatic control status change](https://help.anecdotes.ai/product-tour/frameworks/controls/automatic-control-status-change.md): Automate controls status based on evidence analysis
+- [Requirements](https://help.anecdotes.ai/product-tour/frameworks/requirements.md)
+- [Add or Edit requirements](https://help.anecdotes.ai/product-tour/frameworks/requirements/add-or-edit-requirements.md)
+- [Requirement Detachment](https://help.anecdotes.ai/product-tour/frameworks/requirements/requirement-detachment.md)
+- [Evidence](https://help.anecdotes.ai/product-tour/frameworks/evidence.md)
+- [Evidence Scoping](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-scoping.md)
+- [Custom evidence](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence.md)
+- [Custom evidence introduction](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/custom-evidence-introduction.md)
+- [How to create custom evidence from GitHub Issues](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-github-issues.md)
+- [How to create custom population evidence from GitHub](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-population-evidence-from-github.md)
+- [How to create custom evidence from AWS Cloud Watch](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-aws-cloud-watch.md)
+- [How to create custom evidence from Zendesk](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-zendesk.md)
+- [How to create custom evidence from Okta](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-okta.md)
+- [How to create custom evidence from Jamf Pro](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-jamf-pro.md)
+- [How to create custom evidence from Jira Server](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-jira-server.md)
+- [How to create custom evidence from Jira Cloud](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-jira-cloud.md)
+- [How to create custom evidence from Salesforce](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-salesforce.md)
+- [How to create custom evidence from Snowflake](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-snowflake.md)
+- [How to create custom evidence from Elastic](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-elastic.md)
+- [How to create custom evidence from Splunk Enterprise](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-splunk-enterprise.md)
+- [How to create custom evidence from Sumo Logic](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-sumo-logic.md)
+- [How to create custom evidence from Splunk Cloud](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-splunk-cloud.md)
+- [How to create custom evidence from Asana](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-asana.md)
+- [How to create custom evidence from Slack](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-slack.md)
+- [How to create custom evidence from Hubspot](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-hubspot.md)
+- [How to create custom evidence from ServiceNow](https://help.anecdotes.ai/product-tour/frameworks/evidence/custom-evidence/how-to-create-custom-evidence-from-servicenow.md)
+- [Evidence status](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-status.md)
+- [Evidence views](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-views.md)
+- [Apply a filter](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-views/apply-a-filter.md)
+- [Save a view](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-views/save-a-view.md)
+- [Auditor View](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-views/auditor-view.md)
+- [Filter conditions](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-views/filter-conditions.md)
+- [Export to XLSX](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-views/export-to-xlsx.md)
+- [Evidence Best Practice](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-best-practice.md)
+- [Evidence monitoring](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-monitoring.md)
+- [Analysis Rules](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-monitoring/analysis-rules.md)
+- [Library Rules](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-monitoring/library-rules.md)
+- [Custom Gap Rules](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-monitoring/custom-gap-rules.md)
+- [Evidence Data](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-monitoring/evidence-data.md)
+- [Notifications](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-monitoring/notifications.md)
+- [Status Transitions](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-monitoring/status-transitions.md)
+- [Copy of Evidence](https://help.anecdotes.ai/product-tour/frameworks/copy-of-evidence.md)
+- [Evidence Scoping](https://help.anecdotes.ai/product-tour/frameworks/copy-of-evidence/evidence-scoping.md)
+- [Evidence status](https://help.anecdotes.ai/product-tour/frameworks/copy-of-evidence/evidence-status.md)
+- [Findings](https://help.anecdotes.ai/product-tour/findings.md)
+- [Findings Management](https://help.anecdotes.ai/product-tour/findings/findings-management.md): Findings Management helps you track and resolve compliance gaps, control deficiencies and risk events.
+- [Findings Playbooks](https://help.anecdotes.ai/product-tour/findings/findings-playbooks.md)
+- [Agent Studio](https://help.anecdotes.ai/product-tour/agent-studio.md)
+- [Getting Started with Agent Studio](https://help.anecdotes.ai/product-tour/agent-studio/getting-started-with-agent-studio.md)
+- [Agent Studio Supported Actions](https://help.anecdotes.ai/product-tour/agent-studio/agent-studio-supported-actions.md)
+- [Editing a Published Agent](https://help.anecdotes.ai/product-tour/agent-studio/editing-a-published-agent.md)
+- [Using Variables in Agent Studio](https://help.anecdotes.ai/product-tour/agent-studio/using-variables-in-agent-studio.md)
+- [Agent Studio FAQ](https://help.anecdotes.ai/product-tour/agent-studio/agent-studio-faq.md)
+- [ChatGRC](https://help.anecdotes.ai/product-tour/chatgrc.md): Your Conversational GRC Specialist
+- [ChatGRC (Beta)](https://help.anecdotes.ai/product-tour/chatgrc/chatgrc-beta.md): Your Conversational GRC Specialist
+- [Recipes](https://help.anecdotes.ai/product-tour/chatgrc/recipes.md)
+- [ChatGRC - FAQ](https://help.anecdotes.ai/product-tour/chatgrc/chatgrc-faq.md)
+- [Evidence](https://help.anecdotes.ai/product-tour/evidence.md)
+- [Evidence Builder](https://help.anecdotes.ai/product-tour/evidence/evidence-builder.md)
+- [Evidence Creation with AI in Evidence Builder](https://help.anecdotes.ai/product-tour/evidence/evidence-builder/evidence-creation-with-ai-in-evidence-builder.md)
+- [AI-Driven API Endpoint Suggestions in Evidence Builder](https://help.anecdotes.ai/product-tour/evidence/evidence-builder/ai-driven-api-endpoint-suggestions-in-evidence-builder.md)
+- [AI-Powered Compliance Suggestions in Evidence Builder](https://help.anecdotes.ai/product-tour/evidence/evidence-builder/ai-powered-compliance-suggestions-in-evidence-builder.md)
+- [Auto-generated Evidence name and description in Evidence Builder](https://help.anecdotes.ai/product-tour/evidence/evidence-builder/auto-generated-evidence-name-and-descriptioni-in-evidence-builder.md)
+- [Evidence Builder Known Limitations](https://help.anecdotes.ai/product-tour/evidence/evidence-builder/evidence-builder-known-limitations.md)
+- [Evidence Builder Column Selection](https://help.anecdotes.ai/product-tour/evidence/evidence-builder/evidence-builder-known-limitations/evidence-builder-column-selection.md)
+- [Evidence Queries (AQL)](https://help.anecdotes.ai/product-tour/evidence/evidence-queries-aql.md): This article describes how to use anecdotes query language to query data over an evidence
+- [Logical Operator Precedence in AQL](https://help.anecdotes.ai/product-tour/evidence/evidence-queries-aql/logical-operator-precedence-in-aql.md)
+- [Grouped Conditions in AQL](https://help.anecdotes.ai/product-tour/evidence/evidence-queries-aql/grouped-conditions-in-aql.md)
+- [Available Conditions in AQL](https://help.anecdotes.ai/product-tour/evidence/evidence-queries-aql/available-conditions-in-aql.md)
+- [Applying Filters to Evidence](https://help.anecdotes.ai/product-tour/evidence/evidence-queries-aql/applying-filters-to-evidence.md)
+- [Filter with AI](https://help.anecdotes.ai/product-tour/evidence/evidence-queries-aql/filter-with-ai.md)
+- [Evidence Views](https://help.anecdotes.ai/product-tour/evidence/evidence-views.md): What Are Evidence Views?
+- [Apply a filter](https://help.anecdotes.ai/product-tour/evidence/evidence-views/apply-a-filter.md)
+- [Why use Evidence Views?](https://help.anecdotes.ai/product-tour/evidence/evidence-views/why-use-evidence-views.md)
+- [How to use Evidence Views?](https://help.anecdotes.ai/product-tour/evidence/evidence-views/how-to-use-evidence-views.md)
+- [Linking views to controls](https://help.anecdotes.ai/product-tour/evidence/evidence-views/linking-views-to-controls.md): How to Link Evidence Views to Controls
+- [View Account Scoping](https://help.anecdotes.ai/product-tour/evidence/evidence-views/view-account-scoping.md)
+- [View Rules Scoping](https://help.anecdotes.ai/product-tour/evidence/evidence-views/view-rules-scoping.md)
+- [What Triggers an Evidence View Status Calculation?](https://help.anecdotes.ai/product-tour/evidence/evidence-views/what-triggers-an-evidence-view-status-calculation.md)
+- [Evidence View’s status calculation](https://help.anecdotes.ai/product-tour/evidence/evidence-views/evidence-views-status-calculation.md)
+- [Save a view](https://help.anecdotes.ai/product-tour/evidence/evidence-views/save-a-view.md)
+- [Auditor View](https://help.anecdotes.ai/product-tour/evidence/evidence-views/auditor-view.md)
+- [Export to XLSX](https://help.anecdotes.ai/product-tour/evidence/evidence-views/export-to-xlsx.md)
+- [Merged Evidence](https://help.anecdotes.ai/product-tour/evidence/merged-evidence.md)
+- [Creating a Merged Evidence](https://help.anecdotes.ai/product-tour/evidence/merged-evidence/creating-a-merged-evidence.md)
+- [Creating a 3-way Merged Evidence](https://help.anecdotes.ai/product-tour/evidence/merged-evidence/creating-a-3-way-merged-evidence.md)
+- [Merged vs Non-merged Evidence](https://help.anecdotes.ai/product-tour/evidence/merged-evidence/merged-vs-non-merged-evidence.md)
+- [New Merged Evidence Collections](https://help.anecdotes.ai/product-tour/evidence/merged-evidence/new-merged-evidence-collections.md)
+- [Three-Way Merge Use Cases](https://help.anecdotes.ai/product-tour/evidence/merged-evidence/three-way-merge-use-cases.md)
+- [Merge Examples](https://help.anecdotes.ai/product-tour/evidence/merged-evidence/merge-examples.md)
+- [Evidence AI Features](https://help.anecdotes.ai/product-tour/evidence/evidence-ai-features.md)
+- [Screenshot Naming Suggestion](https://help.anecdotes.ai/product-tour/evidence/evidence-ai-features/screenshot-naming-suggestion.md)
+- [Document Summary Suggestion](https://help.anecdotes.ai/product-tour/evidence/evidence-ai-features/document-summary-suggestion.md)
+- [Evidence monitoring](https://help.anecdotes.ai/product-tour/evidence/evidence-monitoring.md)
+- [Analysis Rules](https://help.anecdotes.ai/product-tour/evidence/evidence-monitoring/analysis-rules.md)
+- [Library Rules](https://help.anecdotes.ai/product-tour/evidence/evidence-monitoring/library-rules.md)
+- [Custom Gap Rules](https://help.anecdotes.ai/product-tour/evidence/evidence-monitoring/custom-gap-rules.md)
+- [Evidence Data](https://help.anecdotes.ai/product-tour/evidence/evidence-monitoring/evidence-data.md)
+- [Notifications](https://help.anecdotes.ai/product-tour/evidence/evidence-monitoring/notifications.md)
+- [Status Transitions](https://help.anecdotes.ai/product-tour/evidence/evidence-monitoring/status-transitions.md)
+- [Unique Data Artifact (UDA)](https://help.anecdotes.ai/product-tour/evidence/unique-data-artifact-uda.md)
+- [Custom evidence creation](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation.md)
+- [Custom evidence introduction](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/custom-evidence-introduction.md)
+- [How to create custom evidence from GitHub Issues](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-github-issues.md)
+- [How to create custom population evidence from GitHub](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-population-evidence-from-github.md)
+- [How to create custom evidence from Zendesk](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-zendesk.md)
+- [How to create custom evidence from Okta](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-okta.md)
+- [How to create custom evidence from Hubspot](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-hubspot.md)
+- [How to create custom evidence from Service Now](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-service-now.md)
+- [How to create custom evidence from AWS Cloud Watch](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-aws-cloud-watch.md)
+- [How to create custom evidence from Jamf Pro](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-jamf-pro.md)
+- [How to create custom evidence from Jira Server](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-jira-server.md)
+- [How to create custom evidence from Jira Cloud](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-jira-cloud.md)
+- [How to create custom evidence from Salesforce](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-salesforce.md)
+- [How to create custom evidence from Snowflake](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-snowflake.md)
+- [How to create custom evidence from Elastic](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-elastic.md)
+- [How to create custom evidence from Splunk Enterprise](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-splunk-enterprise.md)
+- [How to create custom evidence from Sumo Logic](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-sumo-logic.md)
+- [How to create custom evidence from Splunk Cloud](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-splunk-cloud.md)
+- [How to create custom evidence from Asana](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-asana.md)
+- [How to create custom evidence from Slack](https://help.anecdotes.ai/product-tour/evidence/custom-evidence-creation/how-to-create-custom-evidence-from-slack.md)
+- [Evidence Best Practice](https://help.anecdotes.ai/product-tour/evidence/evidence-best-practice.md)
+- [Plugin Builder](https://help.anecdotes.ai/product-tour/plugin-builder.md)
+- [Building a custom plugin](https://help.anecdotes.ai/product-tour/plugin-builder/building-a-custom-plugin.md)
+- [Plugin Builder AI](https://help.anecdotes.ai/product-tour/plugin-builder/plugin-builder-ai.md)
+- [How To Connect](https://help.anecdotes.ai/product-tour/plugin-builder/how-to-connect.md)
+- [Plugin Builder Known Limitations](https://help.anecdotes.ai/product-tour/plugin-builder/plugin-builder-known-limitations.md): This page describes the known limitations for the Custom Plugin Builder
+- [Custom fields](https://help.anecdotes.ai/product-tour/custom-fields.md)
+- [Share](https://help.anecdotes.ai/product-tour/share.md)
+- [Share entity](https://help.anecdotes.ai/product-tour/share/share-entity.md)
+- [Assign entity ownership](https://help.anecdotes.ai/product-tour/share/assign-entity-ownership.md)
+- [Unified Controls View](https://help.anecdotes.ai/product-tour/unified-controls-view.md)
+- [Requirement Hub](https://help.anecdotes.ai/product-tour/requirement-hub.md)
+- [Getting started - Requirement Hub](https://help.anecdotes.ai/product-tour/requirement-hub/getting-started-requirement-hub.md)
+- [Why use the anecdotes requirements hub?](https://help.anecdotes.ai/product-tour/requirement-hub/why-use-the-anecdotes-requirements-hub.md)
+- [Requirements Hub - Requirement status](https://help.anecdotes.ai/product-tour/requirement-hub/requirements-hub-requirement-status.md)
+- [Requirement Views](https://help.anecdotes.ai/product-tour/requirement-hub/requirement-views.md)
+- [Evidence Lab](https://help.anecdotes.ai/product-tour/evidence-lab.md)
+- [Getting started - Evidence Lab](https://help.anecdotes.ai/product-tour/evidence-lab/getting-started-evidence-lab.md)
+- [Why use the evidence lab?](https://help.anecdotes.ai/product-tour/evidence-lab/why-use-the-evidence-lab.md)
+- [Risk Manager](https://help.anecdotes.ai/product-tour/risk-manager.md)
+- [Risk Assistant - AI Agent](https://help.anecdotes.ai/product-tour/risk-manager/risk-assistant-ai-agent.md)
+- [Risk - Mitigating Controls Recommendations](https://help.anecdotes.ai/product-tour/risk-manager/risk-assistant-ai-agent/risk-mitigating-controls-recommendations.md)
+- [Risk - Supporting Evidence Recommendations](https://help.anecdotes.ai/product-tour/risk-manager/risk-assistant-ai-agent/risk-supporting-evidence-recommendations.md)
+- [Risk – Suggested Mitigation Plan](https://help.anecdotes.ai/product-tour/risk-manager/risk-assistant-ai-agent/risk-suggested-mitigation-plan.md)
+- [Getting started - Risk management](https://help.anecdotes.ai/product-tour/risk-manager/getting-started-risk-management.md)
+- [Import your risks](https://help.anecdotes.ai/product-tour/risk-manager/import-your-risks.md)
+- [Defining a risk](https://help.anecdotes.ai/product-tour/risk-manager/defining-a-risk.md)
+- [Risk details and analysis](https://help.anecdotes.ai/product-tour/risk-manager/risk-details-and-analysis.md)
+- [Risk treatment plan](https://help.anecdotes.ai/product-tour/risk-manager/risk-treatment-plan.md)
+- [Automated residual risk calculation](https://help.anecdotes.ai/product-tour/risk-manager/automated-residual-risk-calculation.md)
+- [Residual risk automatic calculation - The formula](https://help.anecdotes.ai/product-tour/risk-manager/automated-residual-risk-calculation/residual-risk-automatic-calculation-the-formula.md)
+- [Working with Multiple Risk Registers](https://help.anecdotes.ai/product-tour/risk-manager/working-with-multiple-risk-registers.md)
+- [Customize Risk Fields](https://help.anecdotes.ai/product-tour/risk-manager/customize-risk-fields.md)
+- [Setting and Enforcing Risk Appetite](https://help.anecdotes.ai/product-tour/risk-manager/setting-and-enforcing-risk-appetite.md)
+- [Risk Hierarchy](https://help.anecdotes.ai/product-tour/risk-manager/risk-hierarchy.md): Organize risks using parent-child relationships
+- [TPRM](https://help.anecdotes.ai/product-tour/tprm.md)
+- [Page 1](https://help.anecdotes.ai/product-tour/tprm/page-1.md)
+- [Policy Manager](https://help.anecdotes.ai/product-tour/policy-manager.md)
+- [Getting started - Policy manager](https://help.anecdotes.ai/product-tour/policy-manager/getting-started-policy-manager.md)
+- [Uploading policies](https://help.anecdotes.ai/product-tour/policy-manager/uploading-policies.md)
+- [Configuring approval cycle](https://help.anecdotes.ai/product-tour/policy-manager/configuring-approval-cycle.md)
+- [Managing the approval cycle](https://help.anecdotes.ai/product-tour/policy-manager/managing-the-approval-cycle.md)
+- [Policy statuses](https://help.anecdotes.ai/product-tour/policy-manager/policy-statuses.md)
+- [Version history](https://help.anecdotes.ai/product-tour/policy-manager/version-history.md)
+- [Policy Guardian](https://help.anecdotes.ai/product-tour/policy-manager/policy-guardian.md)
+- [User Access](https://help.anecdotes.ai/product-tour/user-access.md)
+- [Getting started - User access review](https://help.anecdotes.ai/product-tour/user-access/getting-started-user-access-review.md)
+- [Creating a UAR](https://help.anecdotes.ai/product-tour/user-access/creating-a-uar.md)
+- [The review process](https://help.anecdotes.ai/product-tour/user-access/the-review-process.md)
+- [Send filtered evidence for review](https://help.anecdotes.ai/product-tour/user-access/send-filtered-evidence-for-review.md): How to send a specific evidence view (filtered evidence) for review
+- [UAR statuses](https://help.anecdotes.ai/product-tour/user-access/uar-statuses.md)
+- [Diverging from the automatic UAR process](https://help.anecdotes.ai/product-tour/user-access/diverging-from-the-automatic-uar-process.md)
+- [The reviewer’s experience](https://help.anecdotes.ai/product-tour/user-access/the-reviewers-experience.md)
+- [Troubleshooting](https://help.anecdotes.ai/product-tour/user-access/troubleshooting.md)
+- [User access review - custom evidence](https://help.anecdotes.ai/product-tour/user-access/user-access-review-custom-evidence.md)
+- [List of employees - source of truth](https://help.anecdotes.ai/product-tour/user-access/list-of-employees-source-of-truth.md): On this page, you will discover the advantages of establishing the list of employees as the definitive source of information for the organization.
+- [User Access Monitoring](https://help.anecdotes.ai/product-tour/user-access/user-access-monitoring.md): This guide will walk you through the key features and steps to effectively utilize the UAM.
+- [Playbooks](https://help.anecdotes.ai/product-tour/playbooks.md)
+- [Getting started - Playbooks](https://help.anecdotes.ai/product-tour/playbooks/getting-started-playbooks.md)
+- [Playbooks - Values and Use cases](https://help.anecdotes.ai/product-tour/playbooks/playbooks-values-and-use-cases.md)
+- [How to define a Playbook's trigger](https://help.anecdotes.ai/product-tour/playbooks/how-to-define-a-playbooks-trigger.md)
+- [How to define the action that will be performed from the trigger](https://help.anecdotes.ai/product-tour/playbooks/how-to-define-the-action-that-will-be-performed-from-the-trigger.md)
+- [Playbook action - 'Notify'](https://help.anecdotes.ai/product-tour/playbooks/playbook-action-notify.md)
+- [Usage example](https://help.anecdotes.ai/product-tour/playbooks/usage-example.md)
+- [How to create a Webhook from anecdotes to Slack](https://help.anecdotes.ai/product-tour/playbooks/how-to-create-a-webhook-from-anecdotes-to-slack.md)
+- [Create a Webhook from Anecdotes to Microsoft Teams](https://help.anecdotes.ai/product-tour/playbooks/create-a-webhook-from-anecdotes-to-microsoft-teams.md)
+- [Using Playbooks to create Jira tickets](https://help.anecdotes.ai/product-tour/playbooks/using-playbooks-to-create-jira-tickets.md)
+- [Using Playbooks with Tines](https://help.anecdotes.ai/product-tour/playbooks/using-playbooks-with-tines.md): How to use anecdotes׳ playbooks with Tines
+- [Trust Center](https://help.anecdotes.ai/product-tour/trust-center.md)
+- [Trust Center - Configuration](https://help.anecdotes.ai/product-tour/trust-center/trust-center-configuration.md): How to enable Trust Center in anecdotes
+- [Trust Center - Getting started](https://help.anecdotes.ai/product-tour/trust-center/trust-center-getting-started.md): Getting started with your Trust Center - Initial configuration guide
+- [Trust Center - Settings](https://help.anecdotes.ai/product-tour/trust-center/trust-center-settings.md)
+- [Trust Center - Notifications](https://help.anecdotes.ai/product-tour/trust-center/trust-center-settings/trust-center-notifications.md)
+- [Trust Center - Legal](https://help.anecdotes.ai/product-tour/trust-center/trust-center-settings/trust-center-legal.md)
+- [Trust Center - Automations](https://help.anecdotes.ai/product-tour/trust-center/trust-center-settings/trust-center-automations.md)
+- [Trust Center - Branding](https://help.anecdotes.ai/product-tour/trust-center/trust-center-settings/trust-center-branding.md)
+- [Trust Center - Permission profiles](https://help.anecdotes.ai/product-tour/trust-center/trust-center-settings/trust-center-permission-profiles.md): Set pre-defined profiles that users can be assigned to, limiting access to specific files or file types.
+- [Trust Center - Editor](https://help.anecdotes.ai/product-tour/trust-center/trust-center-editor.md)
+- [Trust Center - FAQs](https://help.anecdotes.ai/product-tour/trust-center/trust-center-editor/trust-center-faqs.md)
+- [Trust Center - Access Manager](https://help.anecdotes.ai/product-tour/trust-center/trust-center-access-manager.md)
+- [Trust Center - Activity dashboard](https://help.anecdotes.ai/product-tour/trust-center/trust-center-activity-dashboard.md)
+- [Collaboration](https://help.anecdotes.ai/product-tour/collaboration.md)
+- [Comments](https://help.anecdotes.ai/product-tour/collaboration/comments.md)
+- [Tasks](https://help.anecdotes.ai/product-tour/collaboration/tasks.md)
+- [How to send Email evidence requests](https://help.anecdotes.ai/product-tour/collaboration/tasks/how-to-send-email-evidence-requests.md)
+- [How to send evidence requests via Microsoft Teams](https://help.anecdotes.ai/product-tour/collaboration/tasks/how-to-send-evidence-requests-via-microsoft-teams.md)
+- [How to send evidence requests via Slack](https://help.anecdotes.ai/product-tour/collaboration/tasks/how-to-send-evidence-requests-via-slack.md)
+- [How to create a Jira ticket from anecdotes' platform](https://help.anecdotes.ai/product-tour/collaboration/tasks/how-to-create-a-jira-ticket-from-anecdotes-platform.md)
+- [How to create a ServiceNow ticket from anecdotes' platform](https://help.anecdotes.ai/product-tour/collaboration/tasks/how-to-create-a-servicenow-ticket-from-anecdotes-platform.md)
+- [How to create a Jira Server ticket from anecdotes' platform](https://help.anecdotes.ai/product-tour/collaboration/tasks/how-to-create-a-jira-server-ticket-from-anecdotes-platform.md)
+- [How to create a Freshservice ticket from anecdotes' platform](https://help.anecdotes.ai/product-tour/collaboration/tasks/how-to-create-a-freshservice-ticket-from-anecdotes-platform.md)
+- [My anecdotes](https://help.anecdotes.ai/product-tour/collaboration/my-anecdotes.md)
+- [Custom evidence](https://help.anecdotes.ai/product-tour/collaboration/custom-evidence.md)
+- [Auditor management](https://help.anecdotes.ai/product-tour/auditor-management.md)
+- [Auditor view and permissions](https://help.anecdotes.ai/product-tour/auditor-management/auditor-view-and-permissions.md): In this guide, we’ll describe auditor permissions and views - which data auditors can see and which actions they can perform.
+- [Auditor portal](https://help.anecdotes.ai/product-tour/auditor-management/auditor-portal.md)
+- [Auditor management](https://help.anecdotes.ai/product-tour/auditor-management/auditor-management.md)
+- [Limited evidence visibility for Auditors](https://help.anecdotes.ai/product-tour/auditor-management/limited-evidence-visibility-for-auditors.md)
+- [Evidence visibility dates](https://help.anecdotes.ai/product-tour/auditor-management/evidence-visibility-dates.md)
+- [Fieldguide Integration](https://help.anecdotes.ai/product-tour/auditor-management/fieldguide-integration.md)
+- [Users](https://help.anecdotes.ai/product-tour/users.md)
+- [Users Page](https://help.anecdotes.ai/product-tour/users/users-page.md)
+- [User Roles](https://help.anecdotes.ai/product-tour/users/user-roles.md)
+- [Contributor & Viewer Roles](https://help.anecdotes.ai/product-tour/users/contributor-and-viewer-roles.md)
+- [Dashboards](https://help.anecdotes.ai/product-tour/dashboards.md)
+- [Custom Reporting](https://help.anecdotes.ai/product-tour/dashboards/custom-reporting.md)
+- [Basic Interactions](https://help.anecdotes.ai/product-tour/dashboards/custom-reporting/basic-interactions.md)
+- [Data Exploration](https://help.anecdotes.ai/product-tour/dashboards/custom-reporting/data-exploration.md)
+- [Exporting Data](https://help.anecdotes.ai/product-tour/dashboards/custom-reporting/exporting-data.md)
+- [Building Reports](https://help.anecdotes.ai/product-tour/dashboards/custom-reporting/building-reports.md)
+- [Release Notes](https://help.anecdotes.ai/product-tour/dashboards/release-notes.md)
+- [ROI Dashboard](https://help.anecdotes.ai/product-tour/dashboards/roi-dashboard.md)
+- [UDA Overview](https://help.anecdotes.ai/product-tour/dashboards/uda-overview.md)
+- [Table Schema Reference](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference.md)
+- [Administration & Logging](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/administration-logging.md)
+- [Findings](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/findings.md)
+- [Evidence](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/evidence.md)
+- [Compliance](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/compliance.md)
+- [Collaboration](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/collaboration.md)
+- [Policy Manager](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/policy-manager.md)
+- [Trust Center](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/trust-center.md)
+- [ROI](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/roi.md)
+- [Support & Feedback](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/support-feedback.md)
+- [Plugins](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/plugins.md)
+- [Custom Fields](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/custom-fields.md)
+- [UDA](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/uda.md)
+- [Risks](https://help.anecdotes.ai/product-tour/dashboards/table-schema-reference/risks.md)
+- [Notifications](https://help.anecdotes.ai/product-tour/notifications.md)
+- [Alerts and Notifications Guide](https://help.anecdotes.ai/product-tour/notifications/alerts-and-notifications-guide.md)
+- [Data Engines](https://help.anecdotes.ai/product-tour/data-engines.md)
+- [ServiceNow App Setup](https://help.anecdotes.ai/product-tour/data-engines/servicenow-app-setup.md): This guide provides setup guidance for configuring your "Anecdotes GRC Integration" in your ServiceNow environment.
+- [AuditBoard integration](https://help.anecdotes.ai/product-tour/data-engines/auditboard-integration.md)
+- [LogicGate integration](https://help.anecdotes.ai/product-tour/data-engines/logicgate-integration.md)
+- [SSO](https://help.anecdotes.ai/technical-setup/sso.md)
+- [How to Configure Okta SAML 2.0 for anecdotes](https://help.anecdotes.ai/technical-setup/sso/how-to-configure-okta-saml-2.0-for-anecdotes.md): How to setup Okta as the SSO method for authenticating into Anecdotes
+- [How to Configure Azure AD SAML 2.0 for anecdotes (Microsoft Entra ID)](https://help.anecdotes.ai/technical-setup/sso/how-to-configure-azure-ad-saml-2.0-for-anecdotes-microsoft-entra-id.md)
+- [How to Configure OneLogin SAML 2.0 for anecdotes](https://help.anecdotes.ai/technical-setup/sso/how-to-configure-onelogin-saml-2.0-for-anecdotes.md)
+- [How to Configure Jumpcloud SAML 2.0 for anecdotes](https://help.anecdotes.ai/technical-setup/sso/how-to-configure-jumpcloud-saml-2.0-for-anecdotes.md)
+- [How to Configure PingIdentity SAML 2.0 for anecdotes](https://help.anecdotes.ai/technical-setup/sso/how-to-configure-pingidentity-saml-2.0-for-anecdotes.md)
+- [SCIM](https://help.anecdotes.ai/technical-setup/scim.md)
+- [SCIM Provisioning of Users with OKTA](https://help.anecdotes.ai/technical-setup/scim/scim-provisioning-of-users-with-okta.md)
+- [SCIM with Microsoft EntraID](https://help.anecdotes.ai/technical-setup/scim/scim-with-microsoft-entraid.md)
+- [Anecdotes Roles with SCIM](https://help.anecdotes.ai/technical-setup/scim/anecdotes-roles-with-scim.md): Anecdotes supports SCIM to standardize how user identities are managed and exchanged with your identity platform.
+- [Connectors](https://help.anecdotes.ai/technical-setup/connectors.md)
+- [Connector Setup and Requirements](https://help.anecdotes.ai/technical-setup/connectors/connector-setup-and-requirements.md)
+- [Running with Docker](https://help.anecdotes.ai/technical-setup/connectors/running-with-docker.md)
+- [Running with Kubernetes](https://help.anecdotes.ai/technical-setup/connectors/running-with-kubernetes.md)
+- [Troubleshooting and FAQs](https://help.anecdotes.ai/technical-setup/connectors/troubleshooting-and-faqs.md)
+- [Data Delegation](https://help.anecdotes.ai/technical-setup/data-delegation.md)
+- [Data Delegation Tutorial - AWS](https://help.anecdotes.ai/technical-setup/data-delegation/data-delegation-tutorial-aws.md): Enable Data Delegation for AWS.
+- [Using an S3 Access Point](https://help.anecdotes.ai/technical-setup/data-delegation/data-delegation-tutorial-aws/using-an-s3-access-point.md): S3 Access Points can be used instead of renaming and migrating your bucket
+- [Data Delegation Tutorial - GCP](https://help.anecdotes.ai/technical-setup/data-delegation/gcp.md): Enable Data Delegation for Google Cloud Platform (GCP)
+- [Data Delegation Tutorial - Azure](https://help.anecdotes.ai/technical-setup/data-delegation/data-delegation-tutorial-azure.md): Create the necessary resources in your Azure account to enable anecdotes Data Delegation to Azure.
+- [Delegation FAQs](https://help.anecdotes.ai/technical-setup/data-delegation/delegation-faqs.md)
+- [CORS Policy for Large Evidence Uploads](https://help.anecdotes.ai/technical-setup/data-delegation/cors-policy-for-large-evidence-uploads.md)
+- [Iceberg Evidence Performance Setup](https://help.anecdotes.ai/technical-setup/data-delegation/iceberg.md): This article describes the Iceberg integration available as part of the Anecdotes Data Delegation setup.
+- [Iceberg Setup - AWS](https://help.anecdotes.ai/technical-setup/data-delegation/iceberg/aws.md): How to setup Anecdotes Iceberg within an AWS Data Delegated environment.
+- [Iceberg Setup - GCP](https://help.anecdotes.ai/technical-setup/data-delegation/iceberg/gcp.md): How to setup Anecdotes Iceberg within a GCP Data Delegated environment.
+- [Iceberg Setup - Azure](https://help.anecdotes.ai/technical-setup/data-delegation/iceberg/azure.md): How to setup Anecdotes Iceberg within an Azure Data Delegated environment.
+- [Connected App](https://help.anecdotes.ai/technical-setup/connected-app.md)
+- [Bring your own bucket Connected App](https://help.anecdotes.ai/technical-setup/connected-app/bring-your-own-bucket-connected-app.md)
+- [Connected App using AWS S3 bucket](https://help.anecdotes.ai/technical-setup/connected-app/bring-your-own-bucket-connected-app/connected-app-using-aws-s3-bucket.md)
+- [Connected App using GCP bucket](https://help.anecdotes.ai/technical-setup/connected-app/bring-your-own-bucket-connected-app/connected-app-using-gcp-bucket.md)
+- [Snowflake Connected App](https://help.anecdotes.ai/technical-setup/connected-app/snowflake-connected-app.md)
+- [Snowflake visualization guide](https://help.anecdotes.ai/technical-setup/connected-app/snowflake-visualization-guide.md)
+- [Release Notes](https://help.anecdotes.ai/technical-setup/connected-app/release-notes.md)
+- [API](https://help.anecdotes.ai/technical-setup/api.md)
+- [Using the Anecdotes API](https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api.md): The Anecdotes API can be used to do a variety of custom actions using a tool of your choice.
+- [Creating Custom Evidence with the API](https://help.anecdotes.ai/technical-setup/api/creating-custom-evidence-with-the-api.md): Using the Anecdotes API, you can create custom evidence from your own services.
+- [Using Large Manual Evidence](https://help.anecdotes.ai/technical-setup/api/creating-custom-evidence-with-the-api/using-large-manual-evidence.md): How to upload large manual evidence via the Anecdotes API.
+- [Auditor API - get the client framework](https://help.anecdotes.ai/technical-setup/api/auditor-api-get-the-client-framework.md): This article will guide you through the steps to get a client's framework using anecdotes Auditor's API.
+- [Create an API token](https://help.anecdotes.ai/technical-setup/api/create-an-api-token.md)
+- [Using Tines with the Anecdotes API](https://help.anecdotes.ai/technical-setup/api/using-tines-with-the-anecdotes-api.md)
+- [Using n8n with the Anecdotes API](https://help.anecdotes.ai/technical-setup/api/using-n8n-with-the-anecdotes-api.md)
+- [Using MCP with Anecdotes](https://help.anecdotes.ai/technical-setup/api/using-anecdotes-mcp.md): Connect your AI assistant to Anecdotes data and tools using Model Context Protocol (MCP).
+- [Import Risks via Anecdotes API](https://help.anecdotes.ai/technical-setup/api/import-risks-via-anecdotes-api.md): This guide explains how to upload a list of Risks into Anecdotes using the public API in the Production environment. The import is performed by uploading an Excel (.xlsx) file via an API request.
+- [FedRAMP 20x - Trust Center and API](https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api.md)
+- [Recommended Secure Configuration](https://help.anecdotes.ai/technical-setup/recommended-secure-configuration.md): Anecdotes' Recommended Secure Configuration — the baseline of recommended security settings for an Anecdotes tenant and the security implications of deviating from each recommendation.
+- [Runtime API](https://help.anecdotes.ai/technical-setup/recommended-secure-configuration/runtime-api.md): Programmatic surface for the Recommended Secure Configuration — read endpoints that expose a tenant's current security settings, the recommended baseline, and a per-field comparison.
+- [Public Static IPs](https://help.anecdotes.ai/technical-setup/public-static-ips.md)
+- [Terraform](https://help.anecdotes.ai/technical-setup/terraform.md): How to use the Anecdotes Terraform Provider for GRC as Code operations
+- [Cloud Infrastructure](https://help.anecdotes.ai/plugins/cloud-infrastructure.md)
+- [Using Multiple Accounts in Anecdotes](https://help.anecdotes.ai/plugins/cloud-infrastructure/using-multiple-accounts-in-anecdotes.md)
+- [AWS](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws.md)
+- [AWS - Use a single IAM Role for multiple plugins](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-use-a-single-iam-role-for-multiple-plugins.md)
+- [Connect a single AWS account using CloudFormation](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/connect-a-single-aws-account-using-cloudformation.md)
+- [AWS - Connect Cloud Organization](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-connect-cloud-organization.md)
+- [AWS Plugins](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins.md)
+- [AWS ACM](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-acm.md): How to connect AWS ACM plugin
+- [AWS Backup](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-backup.md): How to connect AWS Backup plugin
+- [AWS CloudTrail](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-cloudtrail.md): How to connect AWS CloudTrail plugin
+- [AWS CloudWatch](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-cloudwatch.md): How to connect AWS CloudWatch plugin
+- [AWS Config](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-config.md): How to connect AWS Config plugin
+- [AWS Control Tower](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-control-tower.md): How to connect AWS Control Tower plugin
+- [AWS DevOps Guru](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-devops-guru.md): How to connect AWS DevOps Guru plugin
+- [AWS DynamoDB](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-dynamodb.md): How to connect AWS DynamoDB plugin
+- [AWS EC2](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-ec2.md): How to connect AWS EC2 plugin
+- [AWS ECR](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-ecr.md): How to connect AWS ECR plugin
+- [AWS EKS](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-eks.md): How to connect AWS EKS plugin
+- [AWS GuardDuty](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-guardduty.md): How to connect AWS GuardDuty plugin
+- [AWS IAM](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-iam.md): How to connect AWS IAM plugin
+- [AWS KMS](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-kms.md): How to connect AWS KMS plugin
+- [AWS Lambda](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-lambda.md): How to connect AWS Lambda plugin
+- [AWS Macie](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-macie.md): How to connect AWS Macie plugin
+- [AWS RDS](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-rds.md): How to connect AWS RDS plugin
+- [AWS Redshift](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-redshift.md): How to connect AWS Redshift plugin
+- [AWS S3](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-s3.md): How to connect AWS S3 plugin
+- [AWS SQS](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-sqs.md): How to connect AWS SQS plugin
+- [AWS SSO](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-sso.md): How to connect AWS SSO plugin
+- [AWS Security Hub](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-security-hub.md): How to connect AWS Security Hub plugin
+- [AWS WAF](https://help.anecdotes.ai/plugins/cloud-infrastructure/aws/aws-plugins/aws-waf.md): How to connect AWS WAF plugin
+- [GCP](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp.md)
+- [Connect multiple GCP plugins and projects using a single Service Account](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/connect-multiple-gcp-plugins-and-projects-using-a-single-service-account.md): A single SA can be used to support a large number of GCP projects within an Organization.
+- [GCP plugins](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/gcp-plugins.md)
+- [GCP BigQuery](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/gcp-plugins/gcp_big_query-plugin.md): How to connect GCP BigQuery plugin
+- [GCP Compute Engine](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/gcp-plugins/gcp-compute-engine.md): How to connect GCP Compute Engine plugin
+- [GCP IAM](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/gcp-plugins/gcp-iam.md): How to connect GCP IAM plugin
+- [GCP KMS](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/gcp-plugins/gcp-kms.md): How to connect GCP KMS plugin
+- [GCP Kubernetes](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/gcp-plugins/gcp-kubernetes.md): How to connect GCP Kubernetes plugin
+- [GCP Logging](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/gcp-plugins/gcp-logging.md): How to connect GCP Logging plugin
+- [GCP SQL](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/gcp-plugins/gcp-sql.md): How to connect GCP SQL plugin
+- [GCP Cloud Asset Inventory Plugin](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/gcp-plugins/gcp-cloud-asset-inventory-plugin.md): How to connect GCP CAI
+- [GCP Security Command Center](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/gcp-plugins/gcp-security-command-center.md): How to connect GCP Security Command Center plugin
+- [GCP Storage](https://help.anecdotes.ai/plugins/cloud-infrastructure/gcp/gcp-plugins/gcp-storage.md): How to connect GCP Storage plugin
+- [Azure](https://help.anecdotes.ai/plugins/cloud-infrastructure/azure.md)
+- [Connecting multiple Azure plugins using a single custom role](https://help.anecdotes.ai/plugins/cloud-infrastructure/azure/connecting-multiple-azure-plugins-using-a-single-custom-role.md)
+- [Azure Plugins](https://help.anecdotes.ai/plugins/cloud-infrastructure/azure/azure-plugins.md)
+- [Azure Key Vault](https://help.anecdotes.ai/plugins/cloud-infrastructure/azure/azure-plugins/azure-key-vault.md): How to connect Azure Key Vault plugin
+- [Azure Virtual Machine](https://help.anecdotes.ai/plugins/cloud-infrastructure/azure/azure-plugins/azure-virtual-machine.md): How to connect Azure Virtual Machine plugin
+- [Azure Storage Account](https://help.anecdotes.ai/plugins/cloud-infrastructure/azure/azure-plugins/azure-storage-account.md): How to connect Azure Storage Account plugin
+- [Azure SQL Database](https://help.anecdotes.ai/plugins/cloud-infrastructure/azure/azure-plugins/azure-sql-database.md): How to connect Azure SQL Database plugin
+- [Azure Sentinel (Beta)](https://help.anecdotes.ai/plugins/cloud-infrastructure/azure/azure-plugins/azure-sentinel-beta.md): How to connect Azure Sentinel plugin
+- [Azure DevOps](https://help.anecdotes.ai/plugins/cloud-infrastructure/azure/azure-plugins/azure-devops.md): How to connect Azure DevOps plugin
+- [Collaboration](https://help.anecdotes.ai/plugins/collaboration.md)
+- [Office 365 plugin](https://help.anecdotes.ai/plugins/collaboration/office-365-plugin.md): How to connect Office 365 plugin
+- [Grant access to specific SharePoint sites](https://help.anecdotes.ai/plugins/collaboration/office-365-plugin/grant-access-to-specific-sharepoint-sites.md): Limit the Office 365 plugin to specific SharePoint sites (and optionally folders) instead of granting tenant-wide read access.
+- [Guru plugin](https://help.anecdotes.ai/plugins/collaboration/guru-plugin.md): How to connect Guru plugin
+- [Google Drive Picker plugin](https://help.anecdotes.ai/plugins/collaboration/google-drive-picker-plugin.md): How to connect Google Drive Picker plugin
+- [Google Drive plugin](https://help.anecdotes.ai/plugins/collaboration/google-drive-plugin.md): How to connect Google Drive plugin
+- [Dropbox plugin](https://help.anecdotes.ai/plugins/collaboration/dropbox-plugin.md): How to connect Dropbox plugin
+- [Confluence Server plugin](https://help.anecdotes.ai/plugins/collaboration/confluence-server-plugin.md): How to connect Confluence Server plugin
+- [Confluence Cloud plugin](https://help.anecdotes.ai/plugins/collaboration/confluence-cloud-plugin.md): How to connect Confluence Cloud plugin
+- [Atlassian plugin](https://help.anecdotes.ai/plugins/collaboration/atlassian-plugin.md): How to connect Atlassian plugin
+- [Box plugin](https://help.anecdotes.ai/plugins/collaboration/box-plugin.md): The Box plugin allows you to upload custom files as evidence using a shared link.
+- [Amazon Workspaces (Beta)](https://help.anecdotes.ai/plugins/collaboration/amazon-workspaces-beta.md): How to connect Amazon Workspaces plugin
+- [Coda plugin](https://help.anecdotes.ai/plugins/collaboration/coda-plugin.md): Coda is a cloud-based collaborative document platform - part spreadsheet, part word processor, part app builder.
+- [Developer Tools](https://help.anecdotes.ai/plugins/developer-tools.md)
+- [Snowflake plugin](https://help.anecdotes.ai/plugins/developer-tools/snowflake-plugin.md): How to connect Snowflake plugin
+- [Snowflake - Getting Started (through User Interface)](https://help.anecdotes.ai/plugins/developer-tools/snowflake-plugin/snowflake-getting-started-through-user-interface.md): How to connect Snowflake plugin through Snowflake User Interface
+- [PagerDuty plugin](https://help.anecdotes.ai/plugins/developer-tools/pagerduty-plugin.md): How to connect PagerDuty plugin
+- [MongoDB plugin](https://help.anecdotes.ai/plugins/developer-tools/mongodb-plugin.md): How to connect MongoDB plugin
+- [Buildkite plugin](https://help.anecdotes.ai/plugins/developer-tools/buildkite-plugin.md): How to connect Buildkite plugin
+- [New Relic plugin](https://help.anecdotes.ai/plugins/developer-tools/new-relic-plugin.md): How to connect New Relic plugin
+- [Jenkins plugin](https://help.anecdotes.ai/plugins/developer-tools/jenkins-plugin.md): How to connect Jenkins plugin
+- [Spinnaker plugin](https://help.anecdotes.ai/plugins/developer-tools/spinnaker-plugin.md): How to connect Spinnaker plugin
+- [JFrog Artifactory plugin](https://help.anecdotes.ai/plugins/developer-tools/jfrog-artifactory-plugin.md): How to connect JFrog Artifactory plugin
+- [Heroku plugin](https://help.anecdotes.ai/plugins/developer-tools/heroku-plugin.md): How to connect Heroku plugin
+- [Grafana Plugin](https://help.anecdotes.ai/plugins/developer-tools/grafana-plugin.md): How to connect Grafana Plugin
+- [Grafana OSS Plugin](https://help.anecdotes.ai/plugins/developer-tools/grafana-oss-plugin.md): How to connect Grafana OSS Plugin
+- [GitLab plugin](https://help.anecdotes.ai/plugins/developer-tools/gitlab-plugin.md): The GitLab plugin and its automated evidence satisfying secure development, security operations, and access management controls.
+- [GitLab Self-Managed (Private cloud)](https://help.anecdotes.ai/plugins/developer-tools/gitlab-plugin/gitlab-self-managed-private-cloud.md): How to connect GitLab Self-Managed plugin
+- [GitLab plugin - Questions and troubleshooting](https://help.anecdotes.ai/plugins/developer-tools/gitlab-plugin/gitlab-plugin-questions-and-troubleshooting.md)
+- [GitHub plugin](https://help.anecdotes.ai/plugins/developer-tools/github-plugin.md): The GitHub plugin and its automated evidence satisfying secure development, security operations, and access management controls.
+- [GitHub Enterprise Server (Private cloud)](https://help.anecdotes.ai/plugins/developer-tools/github-plugin/github-enterprise-server-private-cloud.md): How to connect GitHub Enterprise Server plugin
+- [GitHub plugin - Questions and troubleshooting](https://help.anecdotes.ai/plugins/developer-tools/github-plugin/github-plugin-questions-and-troubleshooting.md)
+- [Datadog plugin](https://help.anecdotes.ai/plugins/developer-tools/datadog-plugin.md): How to connect Datadog plugin
+- [Fivetran plugin](https://help.anecdotes.ai/plugins/developer-tools/fivetran-plugin.md): How to connect Fivetran plugin
+- [CircleCI plugin](https://help.anecdotes.ai/plugins/developer-tools/circleci-plugin.md): How to connect CircleCI plugin
+- [Bitbucket plugin](https://help.anecdotes.ai/plugins/developer-tools/bitbucket-plugin.md): How to connect Bitbucket plugin
+- [Bitbucket Server (Private cloud) plugin](https://help.anecdotes.ai/plugins/developer-tools/bitbucket-server-private-cloud-plugin.md)
+- [Opsgenie plugin](https://help.anecdotes.ai/plugins/developer-tools/opsgenie-plugin.md): How to connect Opsgenie plugin
+- [Rootly plugin](https://help.anecdotes.ai/plugins/developer-tools/rootly-plugin.md): How to connect Rootly plugin
+- [Workato plugin](https://help.anecdotes.ai/plugins/developer-tools/workato-plugin.md): How to connect Workato plugin
+- [Qase plugin](https://help.anecdotes.ai/plugins/developer-tools/qase-plugin.md)
+- [Databricks plugin](https://help.anecdotes.ai/plugins/developer-tools/databricks-plugin.md)
+- [Postman plugin](https://help.anecdotes.ai/plugins/developer-tools/postman-plugin.md)
+- [Axiom Plugin](https://help.anecdotes.ai/plugins/developer-tools/axiom-plugin.md): Axiom is a cloud‑native, serverless platform that enables teams to efficiently collect, store, and analyze all their event and telemetry data at massive scale.
+- [Cortex Plugin](https://help.anecdotes.ai/plugins/developer-tools/cortex-plugin.md): Cortex is an Internal Developer Portal (IDP) designed to help engineering teams centralize ownership, enforce standards, automate workflows, and boost developer productivity.
+- [Octopus Deploy Plugin](https://help.anecdotes.ai/plugins/developer-tools/octopus-deploy-plugin.md): Octopus Deploy is a deployment automation and release management tool. It is built to manage and automate deployments of software, manage environments, processes, configuration, and runbooks.
+- [Coralogix Plugin](https://help.anecdotes.ai/plugins/developer-tools/coralogix-plugin.md): Coralogix is a SaaS platform that analyzes log, metric, and security data in real-time and uses machine learning to streamline delivery and maintenance processes for software providers.
+- [Financial tools](https://help.anecdotes.ai/plugins/financial-tools.md)
+- [Oracle Fusion Cloud Financial Plugin](https://help.anecdotes.ai/plugins/financial-tools/oracle-fusion-cloud-financial-plugin.md): The Oracle Fusion Cloud Financial and its automated evidence satisfying access management and financial controls.
+- [HR tools](https://help.anecdotes.ai/plugins/hr-tools.md)
+- [Workday plugin](https://help.anecdotes.ai/plugins/hr-tools/workday-plugin.md): How to connect Workday plugin
+- [SAP Success Factors plugin](https://help.anecdotes.ai/plugins/hr-tools/sap-success-factors-plugin.md): How to connect SAP Success Factors plugin
+- [Rippling plugin](https://help.anecdotes.ai/plugins/hr-tools/rippling-plugin.md): How to connect Rippling plugin
+- [Lever plugin](https://help.anecdotes.ai/plugins/hr-tools/lever-plugin.md): How to connect Lever plugin
+- [HiBob plugin](https://help.anecdotes.ai/plugins/hr-tools/hibob-plugin.md): How to connect HiBob plugin
+- [UKG Pro plugin](https://help.anecdotes.ai/plugins/hr-tools/ukg-pro-plugin.md): How to connect UKG Pro plugin
+- [Paylocity plugin](https://help.anecdotes.ai/plugins/hr-tools/paylocity-plugin.md): How to connect Paylocity plugin
+- [ADP Workforce Now plugin](https://help.anecdotes.ai/plugins/hr-tools/adp-workforce-now-plugin.md): How to connect ADP Workforce Now plugin
+- [Greenhouse plugin](https://help.anecdotes.ai/plugins/hr-tools/greenhouse-plugin.md): How to connect Greenhouse plugin
+- [Comeet plugin](https://help.anecdotes.ai/plugins/hr-tools/comeet-plugin.md): How to connect Comeet plugin
+- [BambooHR plugin](https://help.anecdotes.ai/plugins/hr-tools/bamboohr-plugin.md): How to connect BambooHR plugin
+- [Checkr plugin](https://help.anecdotes.ai/plugins/hr-tools/checkr-plugin.md): How to connect Checkr plugin
+- [Justworks plugin](https://help.anecdotes.ai/plugins/hr-tools/justworks-plugin.md): How to connect Justworks plugin
+- [Oracle HRIS plugin](https://help.anecdotes.ai/plugins/hr-tools/oracle-hris-plugin.md): How to connect Oracle HRIS (HCM) plugin
+- [Dayforce HCM plugin](https://help.anecdotes.ai/plugins/hr-tools/dayforce-hcm-plugin.md): The Dayforce HCM plugin allows you to automate evidence collection from the Dayforce platform.
+- [IRIS Cascade HR (Beta)](https://help.anecdotes.ai/plugins/hr-tools/iris-cascade-hr-beta.md): How to connect IRIS Cascade plugin
+- [Ashby plugin](https://help.anecdotes.ai/plugins/hr-tools/ashby-plugin.md)
+- [Certn plugin (Beta)](https://help.anecdotes.ai/plugins/hr-tools/certn-plugin-beta.md): The Certn plugin allows you to automate evidence collection from the Certn platform.
+- [Identity providers](https://help.anecdotes.ai/plugins/identity-providers.md)
+- [strongDM plugin](https://help.anecdotes.ai/plugins/identity-providers/strongdm-plugin.md): How to connect strongDM plugin
+- [OneLogin plugin](https://help.anecdotes.ai/plugins/identity-providers/onelogin-plugin.md): How to connect OneLogin plugin
+- [PingOne plugin](https://help.anecdotes.ai/plugins/identity-providers/pingone-plugin.md): How to connect PingOne plugin
+- [Okta plugin](https://help.anecdotes.ai/plugins/identity-providers/okta-plugin.md): How to connect Okta plugin
+- [Okta Identity Governance Plugin](https://help.anecdotes.ai/plugins/identity-providers/okta-identity-governance-plugin.md): How to connect Okta Identity Governance plugin
+- [JumpCloud plugin](https://help.anecdotes.ai/plugins/identity-providers/jumpcloud-plugin.md): How to connect JumpCloud plugin
+- [Google Workspace (G-Suite) plugin](https://help.anecdotes.ai/plugins/identity-providers/google-workspace-g-suite-plugin.md): How to connect Google Workspace (G-Suite) plugin
+- [Google Identity Platform plugin](https://help.anecdotes.ai/plugins/identity-providers/google-identity-platform-plugin.md): How to connect Google Identity Platform plugin
+- [Azure Active Directory plugin (Microsoft Entra ID)](https://help.anecdotes.ai/plugins/identity-providers/azure-active-directory-plugin-microsoft-entra-id.md): How to connect Azure Active Directory (Microsoft Entra ID) plugin
+- [Auth0 plugin](https://help.anecdotes.ai/plugins/identity-providers/auth0-plugin.md): How to connect Auth0 plugin
+- [Active Directory plugin](https://help.anecdotes.ai/plugins/identity-providers/active-directory-plugin.md): How to connect Active Directory (on-premise) plugin
+- [SailPoint IdentityNow plugin](https://help.anecdotes.ai/plugins/identity-providers/sailpoint-identitynow-plugin.md): How to connect SailPoint IdentityNow plugin
+- [Azure PIM](https://help.anecdotes.ai/plugins/identity-providers/azure-pim.md): How to connect Azure PIM plugin
+- [MDM](https://help.anecdotes.ai/plugins/mdm.md)
+- [Workspace ONE UEM (AirWatch) plugin](https://help.anecdotes.ai/plugins/mdm/workspace-one-uem-airwatch-plugin.md): How to connect Workspace ONE UEM (AirWatch) plugin
+- [MobileIron plugin](https://help.anecdotes.ai/plugins/mdm/mobileiron-plugin.md): How to connect MobileIron plugin
+- [Miradore plugin](https://help.anecdotes.ai/plugins/mdm/miradore-plugin.md): How to connect Miradore plugin
+- [Tanium plugin](https://help.anecdotes.ai/plugins/mdm/tanium-plugin.md): How to connect Tanium plugin
+- [Microsoft Endpoint Manager (Intune) plugin](https://help.anecdotes.ai/plugins/mdm/microsoft-endpoint-manager-intune-plugin.md): How to connect Microsoft Endpoint Manager (Intune) plugin
+- [Kolide plugin](https://help.anecdotes.ai/plugins/mdm/kolide-plugin.md): How to connect Kolide plugin
+- [Kandji plugin](https://help.anecdotes.ai/plugins/mdm/kandji-plugin.md): How to connect Kandji plugin
+- [Jamf Pro plugin](https://help.anecdotes.ai/plugins/mdm/jamf-pro-plugin.md): How to connect Jamf Pro plugin
+- [Organizational Tools](https://help.anecdotes.ai/plugins/organizational-tools.md)
+- [Monday plugin](https://help.anecdotes.ai/plugins/organizational-tools/monday-plugin.md): How to connect Monday plugin
+- [Coupa plugin](https://help.anecdotes.ai/plugins/organizational-tools/coupa-plugin.md): How to connect Coupa plugin
+- [Clickup plugin](https://help.anecdotes.ai/plugins/organizational-tools/clickup-plugin.md): ClickUp is a versatile productivity platform that combines project management, task tracking, and collaboration tools into a unified workspace.
+- [1Password plugin](https://help.anecdotes.ai/plugins/organizational-tools/1password-plugin.md): How to connect 1Password plugin
+- [HubSpot plugin](https://help.anecdotes.ai/plugins/organizational-tools/hubspot-plugin.md): How to connect HubSpot plugin
+- [Lattice plugin](https://help.anecdotes.ai/plugins/organizational-tools/lattice-plugin.md): How to connect Lattice plugin
+- [Slack plugin](https://help.anecdotes.ai/plugins/organizational-tools/slack-plugin.md): How to connect Slack plugin
+- [Slack - How to add anecdotes bot to a channel](https://help.anecdotes.ai/plugins/organizational-tools/slack-plugin/slack-how-to-add-anecdotes-bot-to-a-channel.md)
+- [Salesforce plugin](https://help.anecdotes.ai/plugins/organizational-tools/salesforce-plugin.md): How to connect Salesforce plugin
+- [NetSuite plugin](https://help.anecdotes.ai/plugins/organizational-tools/netsuite-plugin.md): How to connect NetSuite plugin
+- [Looker plugin](https://help.anecdotes.ai/plugins/organizational-tools/looker-plugin.md): How to connect Looker plugin
+- [Intercom plugin](https://help.anecdotes.ai/plugins/organizational-tools/intercom-plugin.md): How to connect Intercom plugin
+- [DocuSign plugin](https://help.anecdotes.ai/plugins/organizational-tools/docusign-plugin.md): How to connect DocuSign plugin
+- [Notion plugin](https://help.anecdotes.ai/plugins/organizational-tools/notion-plugin.md): How to connect Notion plugin
+- [HackEDU plugin (Beta)](https://help.anecdotes.ai/plugins/organizational-tools/hackedu-plugin-beta.md): How to connect HackEDU plugin
+- [Microsoft Teams plugin](https://help.anecdotes.ai/plugins/organizational-tools/microsoft-teams-plugin.md): How to connect Microsoft Teams plugin
+- [ZipHQ plugin](https://help.anecdotes.ai/plugins/organizational-tools/ziphq-plugin.md): How to connect ZipHQ plugin
+- [Miro Plugin](https://help.anecdotes.ai/plugins/organizational-tools/miro-plugin.md): The Miro plugin and its automated evidence satisfying access controls and audit logging requirements.
+- [Security](https://help.anecdotes.ai/plugins/security.md)
+- [Wiz plugin](https://help.anecdotes.ai/plugins/security/wiz-plugin.md): How to connect Wiz plugin
+- [Exabeam plugin (Beta)](https://help.anecdotes.ai/plugins/security/exabeam-plugin-beta.md): How to connect Exabeam plugin
+- [Axonius plugin](https://help.anecdotes.ai/plugins/security/axonius-plugin.md): How to connect Axonius plugin
+- [Armis plugin](https://help.anecdotes.ai/plugins/security/armis-plugin.md): How to connect Armis plugin
+- [AppOmni plugin (Beta)](https://help.anecdotes.ai/plugins/security/appomni-plugin-beta.md): How to connect AppOmni plugin
+- [Tenable.io plugin](https://help.anecdotes.ai/plugins/security/tenable.io-plugin.md): How to connect Tenable.io plugin
+- [Snyk plugin](https://help.anecdotes.ai/plugins/security/snyk-plugin.md): How to connect Snyk plugin
+- [Bitsight plugin](https://help.anecdotes.ai/plugins/security/bitsight-plugin.md): How to connect Bitsight plugin
+- [Zilla Security Plugin](https://help.anecdotes.ai/plugins/security/zilla-security-plugin.md): How to connect Zilla Security plugin
+- [Zscaler ZIA plugin](https://help.anecdotes.ai/plugins/security/zscaler-zia-plugin.md): How to connect Zscaler ZIA plugin
+- [Proofpoint TAP Plugin](https://help.anecdotes.ai/plugins/security/proofpoint-tap-plugin.md): How to connect Proofpoint Targeted Attack Protection (TAP) plugin
+- [Imperva Application Security Plugin](https://help.anecdotes.ai/plugins/security/imperva-application-security-plugin.md): How to connect Imperva Application Security plugin
+- [Proofpoint PSAT Plugin](https://help.anecdotes.ai/plugins/security/proofpoint-psat-plugin.md): How to connect Proofpoint Security Awareness Training (PSAT) plugin
+- [Zscaler ZPA plugin](https://help.anecdotes.ai/plugins/security/zscaler-zpa-plugin.md): How to connect Zscaler ZPA plugin
+- [Jit.io plugin](https://help.anecdotes.ai/plugins/security/jit.io-plugin.md): How to connect Jit.io plugin
+- [SentinelOne plugin](https://help.anecdotes.ai/plugins/security/sentinelone-plugin.md): How to connect SentinelOne plugin
+- [Qualys plugin](https://help.anecdotes.ai/plugins/security/qualys-plugin.md): How to connect Qualys plugin
+- [Prisma Cloud plugin](https://help.anecdotes.ai/plugins/security/prisma-cloud-plugin.md): How to connect Prisma Cloud plugin
+- [Panorays plugin](https://help.anecdotes.ai/plugins/security/panorays-plugin.md): How to connect Panorays plugin
+- [Splunk Cloud plugin](https://help.anecdotes.ai/plugins/security/splunk-cloud-plugin.md): How to connect Splunk Cloud plugin
+- [Sumo Logic plugin](https://help.anecdotes.ai/plugins/security/sumo-logic-plugin.md): How to connect Sumo Logic plugin
+- [Cybsafe plugin (Beta)](https://help.anecdotes.ai/plugins/security/cybsafe-plugin-beta.md): How to connect Cybsafe plugin
+- [ComplyAdvantage plugin (Beta)](https://help.anecdotes.ai/plugins/security/complyadvantage-plugin-beta.md): How to connect ComplyAdvantage plugin
+- [Veracode (Beta)](https://help.anecdotes.ai/plugins/security/veracode-beta.md): How to connect Veracode plugin
+- [Rapid7 insightCloudSec plugin](https://help.anecdotes.ai/plugins/security/rapid7-insightcloudsec-plugin.md): Rapid7 InsightCloudSec is a fully-integrated, cloud-native application protection platform (CNAPP) that delivers continuous visibility, compliance management, and risk-based prioritization.
+- [Rapid7 insightAppSec plugin](https://help.anecdotes.ai/plugins/security/rapid7-insightappsec-plugin.md): How to connect Rapid7 insightAppSec plugin
+- [Rapid7 insightVM plugin](https://help.anecdotes.ai/plugins/security/rapid7-insightvm-plugin.md): How to connect Rapid7 insightVM plugin
+- [Rapid7 insightAccount plugin](https://help.anecdotes.ai/plugins/security/rapid7-insightaccount-plugin.md): How to connect Rapid7 insightAccount plugin
+- [Rapid7 insightIDR plugin](https://help.anecdotes.ai/plugins/security/rapid7-insightidr-plugin.md): How to connect Rapid7 insightIDR plugin
+- [Splunk Enterprise plugin](https://help.anecdotes.ai/plugins/security/splunk-enterprise-plugin.md): How to connect Splunk Enterprise plugin
+- [Elastic plugin](https://help.anecdotes.ai/plugins/security/elastic-plugin.md): How to connect Elastic plugin
+- [Orca Security plugin](https://help.anecdotes.ai/plugins/security/orca-security-plugin.md): How to connect Orca Security plugin
+- [Lacework plugin](https://help.anecdotes.ai/plugins/security/lacework-plugin.md): How to connect Lacework plugin
+- [CrowdStrike plugin](https://help.anecdotes.ai/plugins/security/crowdstrike-plugin.md): How to connect CrowdStrike plugin
+- [Cortex XSOAR plugin](https://help.anecdotes.ai/plugins/security/cortex-xsoar-plugin.md): How to connect Cortex XSOAR plugin
+- [Cisco Meraki plugin](https://help.anecdotes.ai/plugins/security/cisco-meraki-plugin.md): How to connect Cisco Meraki plugin
+- [Cloudflare plugin](https://help.anecdotes.ai/plugins/security/cloudflare-plugin.md): How to connect Cloudflare plugin
+- [Cortex XDR plugin](https://help.anecdotes.ai/plugins/security/cortex-xdr-plugin.md): How to connect Cortex XDR  plugin
+- [Panther plugin](https://help.anecdotes.ai/plugins/security/panther-plugin.md): How to connect Panther plugin
+- [Torq plugin](https://help.anecdotes.ai/plugins/security/torq-plugin.md): How to connect Torq plugin
+- [Prevalent plugin](https://help.anecdotes.ai/plugins/security/prevalent-plugin.md): How to connect Prevalent plugin
+- [Microsoft Defender ATP (Beta)](https://help.anecdotes.ai/plugins/security/microsoft-defender-atp-beta.md): How to connect Microsoft Defender ATP plugin
+- [Illumio (Private cloud) Plugin (Beta)](https://help.anecdotes.ai/plugins/security/illumio-private-cloud-plugin-beta.md): The Illumio plugin and its automated evidence satisfying security operations, and access management controls.
+- [Cyera Plugin](https://help.anecdotes.ai/plugins/security/cyera-plugin.md): Cyera is a data security company that helps discover, classify, and protect data while maintaining continuous scanning and posture management.
+- [Cyberark Privileged Access Manager Plugin Cloud (Beta)](https://help.anecdotes.ai/plugins/security/cyberark-privileged-access-manager-plugin-cloud-beta.md): ​CyberArk Privileged Access Manager (PAM) is a comprehensive solution designed to protect, control, and monitor privileged access across on-premises, cloud, and hybrid infrastructures.
+- [Cyberark Privileged Cloud Shared Services (Beta)](https://help.anecdotes.ai/plugins/security/cyberark-privileged-cloud-shared-services-beta.md)
+- [Cyberark Privileged Access Manager Plugin OnPrem (Beta)](https://help.anecdotes.ai/plugins/security/cyberark-privileged-access-manager-plugin-onprem-beta.md): ​CyberArk Privileged Access Manager (PAM) Self-Hosted is a comprehensive solution designed to protect, control, and monitor privileged access across on-premises, cloud, and hybrid infrastructures. It
+- [CyberArk Secrets Hub Plugin](https://help.anecdotes.ai/plugins/security/cyberark-secrets-hub-plugin.md): CyberArk Secrets Hub is a Software as a Service (SaaS) solution designed to centralize the management and visibility of secrets across various cloud platforms.
+- [CyberArk Endpoint Privilege Manager Plugin](https://help.anecdotes.ai/plugins/security/cyberark-endpoint-privilege-manager-plugin.md): CyberArk Endpoint Privilege Manager (EPM) is a least-privilege and application-control solution that removes permanent local-admin rights and elevates privilege only when justified.
+- [Sentra Plugin](https://help.anecdotes.ai/plugins/security/sentra-plugin.md): The Sentra plugin and its automated evidence satisfying security operations, and access management controls.
+- [Tailscale](https://help.anecdotes.ai/plugins/security/tailscale.md): How to connect Tailscale plugin
+- [Opal Security plugin (Beta)](https://help.anecdotes.ai/plugins/security/opal-security-plugin-beta.md): How to connect Opal Security plugin
+- [Secure Code Warrior Plugin](https://help.anecdotes.ai/plugins/security/secure-code-warrior-plugin.md): The Secure Code Warrior plugin and its automated evidence satisfying security operations, and access management controls.
+- [Airlock Digital Plugin](https://help.anecdotes.ai/plugins/security/airlock-digital-plugin.md): The Airlock Digital plugin and its automated evidence satisfying security operations, and access management controls..
+- [Expel Plugin (Beta)](https://help.anecdotes.ai/plugins/security/expel-plugin-beta.md)
+- [Mimecast Cloud Gateway Plugin](https://help.anecdotes.ai/plugins/security/mimecast-cloud-gateway-plugin.md)
+- [Material Security plugin](https://help.anecdotes.ai/plugins/security/material-security-plugin.md)
+- [Druva plugin](https://help.anecdotes.ai/plugins/security/druva-plugin.md)
+- [Duo Plugin](https://help.anecdotes.ai/plugins/security/duo-plugin.md): The Duo plugin and its automated evidence satisfying security operations, and access management controls.
+- [Globalscape SFTP Plugin](https://help.anecdotes.ai/plugins/security/globalscape-sftp-plugin.md): Globalscape's Enhanced File Transfer (EFT) platform offers a Secure File Transfer Protocol (SFTP) module to enables secure data transfers between clients and servers.
+- [Hook Security Plugin](https://help.anecdotes.ai/plugins/security/hook-security-plugin.md): Hook Security is a cloud‑based Security Awareness Training and phishing simulation platform designed to reduce human risk through engaging training and real-time phishing exercises.
+- [Chronicle Security plugin](https://help.anecdotes.ai/plugins/security/chronicle-security-plugin.md): How to connect Chronicle Security plugin
+- [Fastly plugin](https://help.anecdotes.ai/plugins/security/fastly-plugin.md): How to connect Fastly Next-Gen WAF plugin
+- [Ticketing](https://help.anecdotes.ai/plugins/ticketing.md)
+- [Jira Cloud plugin](https://help.anecdotes.ai/plugins/ticketing/jira-cloud-plugin.md): How to connect Jira cloud plugin
+- [Jira Server plugin](https://help.anecdotes.ai/plugins/ticketing/jira-server-plugin.md): How to connect Jira Server plugin
+- [Asana plugin](https://help.anecdotes.ai/plugins/ticketing/asana-plugin.md): How to connect Asana plugin
+- [Freshservice plugin](https://help.anecdotes.ai/plugins/ticketing/freshservice-plugin.md): How to connect Freshservice plugin
+- [Zendesk plugin](https://help.anecdotes.ai/plugins/ticketing/zendesk-plugin.md): How to connect Zendesk plugin
+- [ServiceNow plugin](https://help.anecdotes.ai/plugins/ticketing/servicenow-plugin.md): How to connect ServiceNow plugin
+- [Linear Plugin](https://help.anecdotes.ai/plugins/ticketing/linear-plugin.md): How to connect Linear plugin
+- [Other](https://help.anecdotes.ai/plugins/other.md)
+- [anecdotes plugin](https://help.anecdotes.ai/plugins/other/anecdotes-plugin.md): How to connect anecdotes plugin
+- [Microsoft SCOM Plugin](https://help.anecdotes.ai/plugins/other/microsoft-scom-plugin.md): SCOM is a cross-platform data center monitoring system that uses a centralized console and agent-based architecture to track the state, health, and performance of servers, applications, and services.
+- [Intigriti Plugin](https://help.anecdotes.ai/plugins/other/intigriti-plugin.md): How to connect Intigriti plugin
+- [Ivanti Plugin](https://help.anecdotes.ai/plugins/other/ivanti-plugin.md): Ivanti is an enterprise IT service management platform focused on ticketing workflows—incidents, service requests, problems, changes, and knowledge.
+- [BigID plugin](https://help.anecdotes.ai/plugins/other/bigid-plugin.md): How to connect BigID plugin
+- [Tableau Plugin](https://help.anecdotes.ai/plugins/other/tableau-plugin.md): How to connect Tableau plugin
+- [Curricula plugin](https://help.anecdotes.ai/plugins/other/curricula-plugin.md): How to connect Curricula plugin
+- [KnowBe4 plugin](https://help.anecdotes.ai/plugins/other/knowbe4-plugin.md): How to connect KnowBe4 plugin
+- [Docebo plugin](https://help.anecdotes.ai/plugins/other/docebo-plugin.md): How to connect Docebo plugin
+- [Lessonly plugin](https://help.anecdotes.ai/plugins/other/lessonly-plugin.md): How to connect Lessonly plugin
+- [Whistic plugin](https://help.anecdotes.ai/plugins/other/whistic-plugin.md): How to connect Whistic plugin
+- [Wizer plugin](https://help.anecdotes.ai/plugins/other/wizer-plugin.md): How to connect Wizer plugin
+- [Hexnode plugin](https://help.anecdotes.ai/plugins/other/hexnode-plugin.md): How to connect Hexnode plugin
+- [MuleSoft plugin](https://help.anecdotes.ai/plugins/other/mulesoft-plugin.md): How to connect MuleSoft plugin
+- [Terraform plugin](https://help.anecdotes.ai/plugins/other/terraform-plugin.md): How to connect Terraform plugin
+- [LucidChart plugin](https://help.anecdotes.ai/plugins/other/lucidchart-plugin.md): How to connect LucidChart plugin
+- [Ironclad plugin (Beta)](https://help.anecdotes.ai/plugins/other/ironclad-plugin-beta.md): How to connect Ironclad plugin
+- [Absorb LMS plugin](https://help.anecdotes.ai/plugins/other/absorb-lms-plugin.md): How to connect Absorb LMS plugin
+- [Zoom Plugin](https://help.anecdotes.ai/plugins/other/zoom-plugin.md): Zoom Plugin is an integration that enables synchronization, monitoring, and control of Zoom meeting data, streamlining communication and enhancing visibility across your organization’s ecosystem.
+- [Haekka Plugin](https://help.anecdotes.ai/plugins/other/haekka-plugin.md): Haekka is a modern security awareness and compliance training platform designed to deliver engaging, microlearning content directly within Slack.
+- [OneTrust Plugin](https://help.anecdotes.ai/plugins/other/onetrust-plugin.md): The OneTrust plugin and its automated evidence satisfy vendor management, third-party risk management, and access management controls.
+- [Enable Support Access](https://help.anecdotes.ai/plugins/enable-support-access.md): Enable Anecdotes support team to login
+- [Product Updates](https://help.anecdotes.ai/release-notes/product-updates.md)
+- [Platform Update Notice - July 1, 2026](https://help.anecdotes.ai/customer-notices/platform-update-notice-july-1-2026.md)
+
+## Anecdotes API
+
+- [Overview](https://help.anecdotes.ai/api/overview.md): The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks, requirements, risks, controls, policies, evidence, findings, and more.
+- [Token](https://help.anecdotes.ai/api/token.md)
+- [Framework](https://help.anecdotes.ai/api/framework.md)
+- [Analysis Rules](https://help.anecdotes.ai/api/analysis-rules.md)
+- [Risk](https://help.anecdotes.ai/api/risk.md)
+- [Evidence](https://help.anecdotes.ai/api/evidence.md)
+- [Read Evidence Metadata](https://help.anecdotes.ai/api/evidence/read-evidence-metadata.md)
+- [Download Evidence](https://help.anecdotes.ai/api/evidence/download-evidence.md)
+- [Create Evidence](https://help.anecdotes.ai/api/evidence/create-evidence.md)
+- [Requirements](https://help.anecdotes.ai/api/requirements.md)
+- [Custom Fields](https://help.anecdotes.ai/api/custom-fields.md)
+- [Controls](https://help.anecdotes.ai/api/controls.md)
+- [Read Controls](https://help.anecdotes.ai/api/controls/read-controls.md)
+- [Create Controls](https://help.anecdotes.ai/api/controls/create-controls.md)
+- [Update Control Metadata](https://help.anecdotes.ai/api/controls/update-control-metadata.md)
+- [Custom Fields](https://help.anecdotes.ai/api/controls/custom-fields.md)
+- [Findings](https://help.anecdotes.ai/api/findings.md)
+- [Policy Manager](https://help.anecdotes.ai/api/policy-manager.md)
+
+## ServiceNow-Anecdotes GRC Data Engine
+
+- [Overview](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/readme.md)
+- [CCM Hub](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/ccm-management/ccm-hub.md)
+- [Controls Library](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/ccm-management/controls-library.md)
+- [Evidence Hub](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/data/evidence-hub.md)
+- [Evidence Page](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/data/evidence-page.md)
+- [Connectors](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/data/connectors.md)
+- [Agents Overview](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/agents/agent-studio.md)
+- [Document Analyzer](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/agents/document-analyzer.md)
+- [Issue Creator](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/agents/issue-creator.md)
+- [Compliance-as-Code](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/agents/compliance-as-code.md)
+- [Installing the App](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/configuration/installation.md)
+- [Configuration](https://help.anecdotes.ai/servicenow-anecdotes-grc-data-engine/configuration/configuration.md)
+
+
+---
+
+# Agent Instructions
+This documentation is published with GitBook. GitBook is the documentation platform designed so that both humans and AI agents can read, navigate, and reason over technical content effectively. Learn more at gitbook.com.
+
+## Querying This Documentation
+If you need additional information, you can query the documentation dynamically by asking a question.
+Perform an HTTP GET request on a page URL with the `ask` query parameter:
+```
+GET https://help.anecdotes.ai/welcome-to-anecdotes.md?ask=<question>
+```
+The question should be specific, self-contained, and written in natural language.
+The response will contain a direct answer to the question and relevant excerpts and sources from the documentation.
+Use this mechanism when the answer is not explicitly present in the current page, you need clarification or additional context, or you want to retrieve related documentation sections.

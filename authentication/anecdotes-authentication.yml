@@ -1,0 +1,96 @@
+generated: '2026-07-31'
+method: searched
+source: https://help.anecdotes.ai/api/overview
+derived_from: openapi/anecdotes-grc-openapi.yml, openapi/anecdotes-fedramp-20x-openapi.yml
+docs:
+- https://help.anecdotes.ai/api/token
+- https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+- https://help.anecdotes.ai/technical-setup/api/create-an-api-token
+summary:
+  types:
+  - apiKey
+  - http
+  api_key_in:
+  - header
+  oauth2_flows: []
+  model: two-step - static API key exchanged for a short-lived JWT
+  token_lifetime_seconds: 3600
+schemes:
+- name: ApiKey
+  type: apiKey
+  in: header
+  parameter: x-anecdotes-api-key
+  description: >-
+    Static API key created in the Anecdotes platform under Administration -> API tokens, with a name,
+    expiration date and role. Used only for the exchange endpoint.
+  used_by: [exchangeApiKey, exchangeApiKeyFedramp]
+  sources:
+  - openapi/anecdotes-grc-openapi.yml
+  - openapi/anecdotes-fedramp-20x-openapi.yml
+- name: Bearer
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: >-
+    Short-lived JWT obtained from GET /identity/v1/apikey/exchange. Valid for 1 hour; re-exchange on 401.
+    Sent as `Authorization: Bearer <token>` on every operation other than the exchange itself and the
+    FedRAMP public endpoints.
+  sources:
+  - openapi/anecdotes-grc-openapi.yml
+  - openapi/anecdotes-fedramp-20x-openapi.yml
+flow:
+- step: 1
+  action: Create an API token in the platform (Administration -> API tokens), assigning name, expiration date and role.
+- step: 2
+  action: 'GET https://api.anecdotes.ai/identity/v1/apikey/exchange with header x-anecdotes-api-key: <token>'
+  returns: JWT as text/plain
+- step: 3
+  action: 'Send Authorization: Bearer <JWT> on all subsequent requests.'
+- step: 4
+  action: On 401, repeat step 2 - JWTs expire after 60 minutes.
+additional_requirements:
+- header: User-Agent
+  required: true
+  format: 'YOUR-APP-NAME/1.0 (+contact@domain.com)'
+  note: >-
+    A descriptive User-Agent identifying the calling application is mandatory. The documented cause of a
+    403 despite a valid JWT is a missing or unacceptable User-Agent.
+- header: trustcenterurl
+  required: true
+  applies_to: FedRAMP 20x endpoints
+  example: trust.anecdotes.ai
+authorization:
+  model: role-based, assigned per API token
+  roles:
+  - name: Admin
+    description: Can pull or push any data and perform any available action on the system. Required for the MCP Proxy.
+  - name: Integrator
+    description: Can create new evidence and push data into self-managed evidence.
+  - name: Auditor
+    description: Can read general information about, and export, the frameworks the auditor has access to.
+  scopes: none - Anecdotes has no OAuth scope surface; authorization is by token role.
+anonymous_access:
+  present: true
+  endpoints:
+  - POST /fedramp20x/v1/access
+  - GET /fedramp20x/v1/public/info
+  note: >-
+    The FedRAMP 20x public tier requires no credentials at all; verified live on 2026-07-31 with HTTP 200.
+mcp:
+  scheme: api-key
+  header: X-anecdotes-api-key
+  note: The MCP Proxy takes the raw API key directly rather than an exchanged JWT, and requires the Admin role.
+  artifact: mcp/anecdotes-mcp.yml
+federated_identity:
+  sso:
+    protocol: SAML 2.0
+    providers: [Okta, Microsoft Entra ID, OneLogin, JumpCloud, PingIdentity]
+    docs: https://help.anecdotes.ai/technical-setup/sso
+  provisioning:
+    protocol: SCIM
+    providers: [Okta, Microsoft Entra ID]
+    role_mapping: true
+    docs: https://help.anecdotes.ai/technical-setup/scim
+  note: >-
+    SSO and SCIM govern human access to the platform, not API token authentication. Anecdotes is a
+    service provider, not an identity provider, so it serves no OIDC discovery document.

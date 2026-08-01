@@ -1,0 +1,147 @@
+generated: '2026-07-31'
+method: derived
+source: openapi/anecdotes-grc-openapi.yml, openapi/anecdotes-fedramp-20x-openapi.yml
+docs: https://help.anecdotes.ai/api/overview
+format: custom
+rfc9457: false
+summary: Derived from every 4xx/5xx response declared across both Anecdotes OpenAPI documents. Anecdotes does not
+  use RFC 9457 application/problem+json; errors are returned as application/json with either a FastAPI-style ValidationError
+  detail array (422) or a plain detail string (400/404).
+envelopes:
+- name: ValidationError
+  status: 422
+  content_type: application/json
+  shape: '{"detail": [{"loc": [string|integer, ...], "msg": string, "type": string, "ctx": object}]}'
+  description: Each item in detail describes one validation failure. ctx carries optional machine context such as
+    enum_values for enum validation errors.
+- name: DetailMessage
+  status:
+  - 400
+  - 404
+  content_type: application/json
+  shape: '{"detail": string}'
+problems:
+- status: 400
+  occurrences: 2
+  content_types:
+  - application/json
+  schemas:
+  - Evidence_ErrorResponse
+  titles:
+  - Invalid control payload.
+  - The target evidence is not API (customer-pushed) evidence and cannot be written to.
+  operations:
+  - attachEvidenceToCollection
+  - createCustomControl
+  operations_truncated: false
+- status: 401
+  occurrences: 59
+  content_types:
+  - none declared
+  schemas: null
+  titles:
+  - Unauthorized — JWT is missing, invalid, or expired.
+  - Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+  - Unauthorized.
+  - Unauthorized - JWT is missing, invalid, or expired.
+  - Unauthorized - JWT missing, invalid or expired.
+  - Unauthorized - API key is missing or invalid.
+  operations:
+  - attachEvidenceIpe
+  - attachEvidenceToCollection
+  - createAnalysisRule
+  - createCustomControl
+  - createCustomField
+  - createEvidenceCollection
+  - createFinding
+  - createPolicies
+  - createRequirement
+  - createRisk
+  - deleteCustomControl
+  - deleteFindings
+  operations_truncated: true
+- status: 403
+  occurrences: 5
+  content_types:
+  - none declared
+  schemas: null
+  titles:
+  - Forbidden — caller cannot access this framework.
+  - Forbidden — caller cannot access this control.
+  - Forbidden — auditors cannot edit custom fields.
+  - Forbidden — only an admin or manager can create a custom field.
+  - Forbidden - the caller is not an approved FedRAMP user.
+  operations:
+  - createCustomField
+  - getAuthorizationPackage
+  - getControlById
+  - getControlsByFramework
+  - patchControlCustomField
+  operations_truncated: false
+- status: 404
+  occurrences: 18
+  content_types:
+  - application/json
+  schemas:
+  - Evidence_ErrorResponse
+  titles:
+  - Requirement not found.
+  - Control not found.
+  - Evidence instance not found.
+  - Finding not found.
+  - Evidence not found.
+  - One or more controls not found.
+  operations:
+  - attachEvidenceIpe
+  - deleteCustomControl
+  - deleteRequirement
+  - downloadRawData
+  - getAnEvidence
+  - getControlById
+  - getControlsByIds
+  - getEvidenceFullData
+  - getFedrampEvidence
+  - getFedrampEvidenceHistory
+  - getFindingById
+  - getKsi
+  operations_truncated: true
+- status: 422
+  occurrences: 38
+  content_types:
+  - application/json
+  schemas:
+  - ValidationError
+  titles:
+  - Validation error.
+  - Validation Error - The request body or parameters failed validation.
+  - Validation error — invalid request body or parameters.
+  - 'Validation Error. Possible causes and body shapes:'
+  - Validation Error
+  - Validation error — the request failed validation.
+  operations:
+  - attachEvidenceIpe
+  - attachEvidenceToCollection
+  - createAnalysisRule
+  - createCustomControl
+  - createCustomField
+  - createEvidenceCollection
+  - createFinding
+  - createPolicies
+  - createRequirement
+  - createRisk
+  - deleteFindings
+  - deletePolicies
+  operations_truncated: true
+- status: 500
+  occurrences: 2
+  content_types:
+  - none declared
+  schemas: null
+  titles:
+  - Internal server error, including when the **`field_id`** does not exist or **`value`** does not match the field
+    type (for example a list sent to a **d
+  - Internal server error, including when the custom field does not exist.
+  operations:
+  - getCustomField
+  - setRequirementCustomFieldValue
+  operations_truncated: false

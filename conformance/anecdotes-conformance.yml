@@ -1,0 +1,106 @@
+generated: '2026-07-31'
+method: searched
+source: https://www.anecdotes.ai/trust
+derived_from: openapi/anecdotes-grc-openapi.yml, openapi/anecdotes-fedramp-20x-openapi.yml
+summary: >-
+  Two distinct things are recorded here. First, the cross-cutting technical standards the Anecdotes APIs
+  do or do not conform to, derived from the OpenAPI documents. Second, the compliance certifications
+  Anecdotes holds as an organization - which for a GRC vendor is also the product's proof point. The
+  certifications are published on the trust page and, uniquely, machine-readably through the FedRAMP 20x
+  Trust Center API.
+standards:
+- id: openapi-3.0
+  conforms: true
+  evidence: >-
+    The provider publishes OpenAPI 3.0.3 documents embedded in its API reference pages; 53 operations
+    harvested to openapi/anecdotes-grc-openapi.yml.
+- id: oauth2
+  conforms: false
+  evidence: No oauth2 securityScheme is declared and no OAuth flow is documented.
+- id: oidc
+  conforms: false
+  evidence: >-
+    No OpenID Connect discovery document is served. Anecdotes is an SP, not an IdP - it consumes the
+    customer's identity provider over SAML.
+- id: saml-2.0
+  conforms: true
+  evidence: >-
+    SAML 2.0 SSO is documented for Okta, Microsoft Entra ID, OneLogin, JumpCloud and PingIdentity -
+    https://help.anecdotes.ai/technical-setup/sso
+- id: scim-2.0
+  conforms: true
+  evidence: >-
+    SCIM user provisioning documented for Okta and Microsoft Entra ID, including role mapping -
+    https://help.anecdotes.ai/technical-setup/scim
+- id: jwt-rfc7519
+  conforms: true
+  evidence: The API key exchange returns a JWT bearer token used for all subsequent requests.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Errors are returned as application/json with a FastAPI-style detail array or detail string, not
+    application/problem+json. See errors/anecdotes-problem-types.yml.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: No /.well-known/security.txt is served on any host. See well-known/anecdotes-well-known.yml.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No Sunset or Deprecation header support is documented.
+- id: rfc8615-well-known
+  conforms: false
+  evidence: No /.well-known/ documents are published.
+- id: model-context-protocol
+  conforms: true
+  evidence: >-
+    A hosted MCP Proxy is published at https://mcp.anecdotes.ai speaking JSON-RPC 2.0 over streamable
+    HTTP, with a first-party @anecdotes.ai/mcp bridge. See mcp/anecdotes-mcp.yml.
+- id: a2a-agent-card
+  conforms: false
+  evidence: >-
+    /.well-known/agent-card.json and /.well-known/agent.json return 404 on every Anecdotes host.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    An outbound webhook event surface exists (Playbooks) but no AsyncAPI document is published. See
+    asyncapi/anecdotes-playbooks-webhooks.yml.
+- id: iceberg
+  conforms: true
+  evidence: >-
+    Apache Iceberg is supported as a data-delegation target for evidence at scale -
+    https://help.anecdotes.ai/technical-setup/data-delegation/iceberg
+- id: postman-collection-v2.1
+  conforms: true
+  evidence: >-
+    A first-party Postman v2.1.0 collection for the FedRAMP 20x API is published through the public API.
+certifications:
+  source: https://www.anecdotes.ai/trust
+  published: true
+  held:
+  - SOC 1
+  - SOC 2
+  - ISO 27001
+  - ISO 27701
+  - ISO 27032
+  - ISO 42001
+  - GDPR
+  programs:
+  - name: FedRAMP 20x
+    status: >-
+      Anecdotes publishes a FedRAMP 20x authorization package through its Trust Center and a dedicated
+      API, with Key Security Indicators and the underlying evidence exposed to approved FedRAMP users.
+      Cloud Service Offerings "Anecdotes Compliance OS" and "Anecdotes Trust Center" are both listed at
+      Moderate impact level, Public Cloud, SaaS.
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+    machine_readable: true
+  practices:
+  - Penetration tests by external vendors at least once every 12 months.
+  - Data at rest encrypted with AES-256.
+  - Data in transit over TLS 1.2 and above.
+  - US data centers on Google Cloud Platform.
+  - DPA offered for GDPR; subprocessor list published.
+frameworks_supported_as_product:
+  note: >-
+    Distinct from the certifications Anecdotes itself holds - the platform ships a framework library of
+    60+ compliance frameworks (ISO 27001, HIPAA, PCI DSS, SOC 2 and others) that customers map evidence
+    against.
+  url: https://www.anecdotes.ai/framework-library

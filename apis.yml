@@ -1,23 +1,187 @@
 aid: anecdotes
 name: anecdotes
-description: 'anecdotes is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'anecdotes is an enterprise Governance, Risk and Compliance (GRC) platform,
+  founded in 2020 and headquartered in Tel Aviv, that pairs a GRC data engine with AI agents
+  to replace point-in-time audit cycles with continuous, evidence-backed compliance. Its
+  Compliance OS collects evidence automatically from 230+ pre-built plugins into 1,000+
+  predefined artifacts, maps that evidence across 60+ frameworks at once, and drives core
+  applications for controls, requirements, risk, policy management, findings and user access
+  review. Developers reach the platform through a documented REST API at api.anecdotes.ai
+  (API key exchanged for a short-lived JWT), a hosted MCP Proxy at mcp.anecdotes.ai that
+  exposes GRC domains as agent tools, a FedRAMP 20x Trust Center API with genuinely public
+  endpoints, SAML SSO and SCIM provisioning, and outbound event webhooks driven by Playbooks.'
 url: https://raw.githubusercontent.com/api-evangelist/anecdotes/refs/heads/main/apis.yml
+image: https://kinlane-productions2.s3.amazonaws.com/api-evangelist-site/companies/anecdotes.jpg
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-07-31'
 modified: '2026-07-31'
 tags:
 - Company
-apis: []
+- Compliance
+- Governance
+- Risk
+- Security
+- GRC
+- Audit
+- Evidence
+- Continuous Compliance
+- FedRAMP
+- Artificial Intelligence
+- Agents
+apis:
+- aid: anecdotes:anecdotes-grc-api
+  name: Anecdotes GRC API
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform:
+    frameworks, requirements, controls, custom fields, risks, findings, policies, analysis
+    rules and evidence. Authentication is two-step - an API token created in the platform is
+    exchanged at GET /identity/v1/apikey/exchange for a JWT valid for one hour, which is then
+    sent as a bearer token on every other call. A descriptive User-Agent header is required or
+    the API returns 403.'
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Compliance
+  - Governance
+  - Risk
+  - Evidence
+  - Controls
+  - Policy
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-grc-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+- aid: anecdotes:anecdotes-fedramp-20x-api
+  name: Anecdotes FedRAMP 20x Trust Center API
+  description: 'A three-tier API over the Anecdotes Trust Center. Public endpoints require no
+    authentication and return Cloud Service Offering metadata, the status-page rollup, the
+    Recommended Secure Configuration index and downloadable API documentation. An authorization
+    tier exchanges an API key for a JWT, and gated endpoints return the full authorization
+    package, individual Key Security Indicators, and the evidence and evidence history behind
+    each one.'
+  humanURL: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - FedRAMP
+  - Trust Center
+  - Compliance
+  - Evidence
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-fedramp-20x-openapi.yml
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-mcp-proxy
+  name: Anecdotes MCP Proxy
+  description: 'A hosted Model Context Protocol proxy that exposes Anecdotes GRC domains -
+    risk, control, evidence, policy, framework, uar, analysis, comments, requirement and
+    semantic search - to any MCP-capable AI client. Reachable over streamable HTTP at
+    https://mcp.anecdotes.ai/{domain}/mcp with an X-anecdotes-api-key header, or through the
+    first-party @anecdotes.ai/mcp npm bridge. Requires an Admin-privileged API token and an
+    active AI suite entitlement.'
+  humanURL: https://help.anecdotes.ai/technical-setup/api/using-anecdotes-mcp
+  baseURL: https://mcp.anecdotes.ai
+  tags:
+  - MCP
+  - Agents
+  - Compliance
+  properties:
+  - type: MCPServer
+    url: mcp/anecdotes-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/anecdotes-tool-crosswalk.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api/using-anecdotes-mcp
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: AgenticAccess
+  url: agentic-access/anecdotes-agentic-access.yml
 - type: Website
-  url: https://forgeglobal.com/anecdotes_stock/
+  url: https://www.anecdotes.ai/
+- type: DeveloperPortal
+  url: https://help.anecdotes.ai/technical-setup/api
+- type: Documentation
+  url: https://help.anecdotes.ai/
+- type: APIReference
+  url: https://help.anecdotes.ai/api/overview
+- type: GettingStarted
+  url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+- type: Support
+  url: https://help.anecdotes.ai/
+- type: Blog
+  url: https://www.anecdotes.ai/blog
+- type: GitHubOrganization
+  url: https://github.com/anecdotes-ai
+- type: Pricing
+  url: https://www.anecdotes.ai/pricing
+- type: SignUp
+  url: https://www.anecdotes.ai/get-started
+- type: Login
+  url: https://platform.anecdotes.ai/
+- type: TermsOfService
+  url: https://www.anecdotes.ai/terms-of-use
+- type: PrivacyPolicy
+  url: https://www.anecdotes.ai/privacy-policy
+- type: Postman
+  url: postman/anecdotes-fedramp-20x.postman_collection.json
+- type: LLMsTxt
+  url: llms/anecdotes-llms.txt
+- type: Packages
+  url: packages/anecdotes-packages.yml
+- type: SDKs
+  url: packages/anecdotes-packages.yml
+- type: Authentication
+  url: authentication/anecdotes-authentication.yml
+- type: Conventions
+  url: conventions/anecdotes-conventions.yml
+- type: RateLimits
+  url: rate-limits/anecdotes-rate-limits.yml
+- type: ErrorCatalog
+  url: errors/anecdotes-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/anecdotes-lifecycle.yml
+- type: StatusPage
+  url: https://status.anecdotes.ai/
+- type: ChangeLog
+  url: changelog/anecdotes-changelog.yml
+- type: DataModel
+  url: data-model/anecdotes-data-model.yml
+- type: Conformance
+  url: conformance/anecdotes-conformance.yml
+- type: Compliance
+  url: https://www.anecdotes.ai/trust
+- type: TrustCenter
+  url: security/anecdotes-trust-center.yml
+- type: DomainSecurity
+  url: security/anecdotes-domain-security.yml
+- type: VulnerabilityDisclosure
+  url: security/anecdotes-vulnerability-disclosure.yml
+- type: Security
+  url: https://www.anecdotes.ai/trust
+- type: Webhooks
+  url: asyncapi/anecdotes-playbooks-webhooks.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Overlay
+  url: overlays/anecdotes-grc-overlay.yaml
+- type: Examples
+  url: examples/anecdotes-examples.yml
+x-enrichment:
+  date: '2026-07-31'
+  status: enriched
+  artifacts_added: 31
+  pass: local-v1

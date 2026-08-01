@@ -1,0 +1,454 @@
+openapi: 3.0.3
+info:
+  title: Anecdotes FedRAMP 20x Trust Center API
+  version: '1.0.0'
+  description: |-
+    The FedRAMP 20x API exposes the contents of the Anecdotes Trust Center (https://trust.anecdotes.ai/)
+    programmatically. It is divided into three tiers: public endpoints that require no authentication,
+    an authorization tier that exchanges a static API key for a short-lived JWT, and gated endpoints that
+    return the authorization package, Key Security Indicators (KSIs) and the evidence behind them.
+
+    Derived by API Evangelist from the provider's own published Postman collection
+    (FEDRAMP-20X-API.postman_collection.json, retrieved from the public /fedramp20x/v1/public/info
+    endpoint) and the documented endpoint tables at
+    https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api.
+    Paths, methods, parameters, headers and content types are transcribed from those sources only;
+    no response schemas were invented where the provider did not publish one.
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+    email: security@anecdotes.ai
+servers:
+  - url: https://api.anecdotes.ai
+    description: Production
+externalDocs:
+  description: FedRAMP 20x - Trust Center and API
+  url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+tags:
+  - name: Public
+    description: Public Trust Center information. No authentication required.
+  - name: Authorization
+    description: API key to JWT exchange and token management.
+  - name: Gated
+    description: Authorization package, KSI and evidence endpoints. Require an approved FedRAMP user JWT.
+paths:
+  /fedramp20x/v1/access:
+    post:
+      tags: [Public]
+      operationId: requestFedrampAccess
+      summary: Request access
+      description: >-
+        Requests access to the gated FedRAMP Trust Center APIs. An email containing access information is
+        sent upon approval.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/TrustCenterUrl'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessRequest'
+            example:
+              first_name: John
+              last_name: Smith
+              email: john.smith@example.gov
+              company: FedRAMP
+              job_title: Security Analyst
+      responses:
+        '200':
+          description: Access request outcome.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessRequestResult'
+              example:
+                invalid_email: false
+                user_exists: false
+                user_denied_or_revoked: false
+                access_pending: true
+                previous_status: null
+  /fedramp20x/v1/public/info:
+    get:
+      tags: [Public]
+      operationId: getPublicInfo
+      summary: Public information (CSO)
+      description: >-
+        Returns public Trust Center information for the given evidence_id. With Accept application/json or
+        text/csv the endpoint returns structured metadata; documents published as files (the API
+        documentation and the Postman collection) are returned with Accept application/octet-stream.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/TrustCenterUrl'
+        - name: evidence_id
+          in: query
+          required: true
+          description: >-
+            Identifier for the document or section to return.
+          schema:
+            type: string
+            enum:
+              - url_2037408219127
+              - builder_2666397450893
+              - builder_2795822335733
+              - builder_2110205339759
+              - manual_2454242086620
+              - manual_2578511430147
+              - builder_2639056738947
+          example: builder_2795822335733
+      responses:
+        '200':
+          description: Public Trust Center information.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+              example:
+                - Business Category: [Technology, GRC]
+                  Contact Information: security@anecdotes.ai
+                  Service Model: SaaS
+                  Information Title: Public Information
+                  Description: Public-facing security and compliance portal with controlled document access, NDA management, and visitor analytics.
+                  Deployment Model: Public Cloud
+                  Customer Support Info: support@anecdotes.ai
+            text/csv:
+              schema:
+                type: string
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /identity/v1/apikey/exchange:
+    get:
+      tags: [Authorization]
+      operationId: exchangeApiKeyFedramp
+      summary: Exchange API key
+      description: >-
+        Exchange a static API key for a short-lived JWT, valid for 1 hour. Use the returned JWT as
+        `Authorization: Bearer <token>` on the gated endpoints.
+      security:
+        - ApiKey: []
+      parameters:
+        - name: x-anecdotes-api-key
+          in: header
+          required: true
+          description: Anecdotes API key created in the platform or the Trust Center API Token tab.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: JWT token string, valid for 1 hour.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - API key is missing or invalid.
+  /fedramp20x/v1/access/token:
+    get:
+      tags: [Authorization]
+      operationId: listFedrampTokens
+      summary: List tokens
+      description: >-
+        Retrieve metadata for all active tokens. Response includes id, nickname, key, created_at,
+        expiration_date, is_revoked and last_used_date.
+      responses:
+        '200':
+          description: Token metadata.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TokenMetadata'
+            text/csv:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - JWT missing, invalid or expired.
+  /fedramp20x/v1/authorization-package:
+    get:
+      tags: [Gated]
+      operationId: getAuthorizationPackage
+      summary: Get authorization package
+      description: >-
+        Returns the comprehensive compliance posture, including Key Security Indicators and their
+        evidence mappings.
+      parameters:
+        - name: include_evidence_ids
+          in: query
+          required: false
+          description: Include evidence IDs for each KSI.
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Authorization package.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT missing, invalid or expired.
+        '403':
+          description: Forbidden - the caller is not an approved FedRAMP user.
+  /fedramp20x/v1/ksi/{ksi_code}:
+    get:
+      tags: [Gated]
+      operationId: getKsi
+      summary: Get KSI
+      description: >-
+        Retrieve a specific Key Security Indicator by code. The response includes
+        metrics.analysis_rules_coverage.
+      parameters:
+        - name: ksi_code
+          in: path
+          required: true
+          description: KSI code, for example FRR-IAM-01.
+          schema:
+            type: string
+          example: FRR-IAM-01
+      responses:
+        '200':
+          description: KSI detail.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT missing, invalid or expired.
+        '404':
+          description: KSI not found.
+  /fedramp20x/v1/evidence/{evidence_id}:
+    get:
+      tags: [Gated]
+      operationId: getFedrampEvidence
+      summary: Get evidence
+      description: >-
+        Retrieve a specific evidence artifact. File-backed evidence is downloaded with
+        Accept application/octet-stream.
+      parameters:
+        - $ref: '#/components/parameters/EvidenceId'
+        - name: version
+          in: query
+          required: false
+          description: Full ISO 8601 datetime. Omit for the latest version.
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          required: false
+          description: Page number, 1-indexed. JSON responses only.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          required: false
+          description: Items per page. JSON responses only.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+      responses:
+        '200':
+          description: Evidence artifact.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT missing, invalid or expired.
+        '404':
+          description: Evidence not found.
+  /fedramp20x/v1/evidence/{evidence_id}/history:
+    get:
+      tags: [Gated]
+      operationId: getFedrampEvidenceHistory
+      summary: Get evidence history
+      description: >-
+        List the collection history for an evidence artifact. The response carries metadata, a data array
+        of evidence_instance_id / collection_date / is_latest, and pagination.
+      parameters:
+        - $ref: '#/components/parameters/EvidenceId'
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of history entries to return.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10000
+            default: 100
+        - name: from_date
+          in: query
+          required: false
+          description: Only versions collected on or after this ISO 8601 date.
+          schema:
+            type: string
+            format: date-time
+        - name: to_date
+          in: query
+          required: false
+          description: Only versions collected on or before this ISO 8601 date.
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Evidence collection history.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvidenceHistory'
+        '401':
+          description: Unauthorized - JWT missing, invalid or expired.
+        '404':
+          description: Evidence not found.
+security:
+  - Bearer: []
+components:
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: Static API key. Used only for the exchange endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Short-lived JWT (1 hour) obtained from /identity/v1/apikey/exchange.
+  parameters:
+    TrustCenterUrl:
+      name: trustcenterurl
+      in: header
+      required: true
+      description: Host name of the Anecdotes Trust Center being queried.
+      schema:
+        type: string
+      example: trust.anecdotes.ai
+    EvidenceId:
+      name: evidence_id
+      in: path
+      required: true
+      description: Evidence artifact identifier.
+      schema:
+        type: string
+      example: '659414963'
+  schemas:
+    AccessRequest:
+      type: object
+      required: [first_name, last_name, email, company, job_title]
+      properties:
+        first_name:
+          type: string
+          description: Requester's first name.
+        last_name:
+          type: string
+          description: Requester's last name.
+        email:
+          type: string
+          format: email
+          description: Requester's email, for example a .gov or .mil address.
+        company:
+          type: string
+          description: Requester's company. Should be set to "FedRAMP".
+        job_title:
+          type: string
+          description: Requester's job title.
+    AccessRequestResult:
+      type: object
+      properties:
+        invalid_email:
+          type: boolean
+          description: Whether the submitted email was invalid.
+        user_exists:
+          type: boolean
+          description: Whether a user with this email already exists.
+        user_denied_or_revoked:
+          type: boolean
+          description: Whether the user was previously denied or had access revoked.
+        access_pending:
+          type: boolean
+          description: Whether an access request is now pending.
+        previous_status:
+          type: string
+          nullable: true
+          description: Previous user or request status, if any.
+          enum: [approved, pending_nda, denied, requested, revoked]
+    TokenMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        nickname:
+          type: string
+        key:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        expiration_date:
+          type: string
+          format: date-time
+        is_revoked:
+          type: boolean
+        last_used_date:
+          type: string
+          format: date-time
+          nullable: true
+    EvidenceHistory:
+      type: object
+      properties:
+        metadata:
+          type: object
+          additionalProperties: true
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              evidence_instance_id:
+                type: string
+              collection_date:
+                type: string
+                format: date-time
+              is_latest:
+                type: boolean
+        pagination:
+          type: object
+          additionalProperties: true
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+    - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+    - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+    - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+      http_status: 200
+      content_type: application/json
+      fetched: '2026-07-31'

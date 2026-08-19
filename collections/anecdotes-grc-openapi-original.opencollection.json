@@ -1,0 +1,1108 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Anecdotes API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Analysis Rules",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Analysis Rules",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/analysis-rules/v1/analysis-rules"
+          },
+          "docs": "Gets analysis rules of the specified analysis rules ids if provided, otherwise get all analysis rules instances.\n\nEach rule includes its query definition, alert level, origin, active state, and account scoping configuration. The list is a merge of global (library) rules and customer-specific rules, with customer overrides taking precedence."
+        },
+        {
+          "info": {
+            "name": "Create Analysis Rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/analysis-rules/v1/analysis-rules",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new custom analysis rule.\n\nDefine the rule query, alert level, and scoping to control how evidence data is analyzed. The rule will be applied during subsequent evidence collection runs."
+        },
+        {
+          "info": {
+            "name": "Get rules and their results",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/analysis-rules/v1/analysis-rules/rule_results_by_filter",
+            "params": [
+              {
+                "name": "rule_type",
+                "value": "",
+                "type": "query",
+                "description": "Filter by analysis rule type."
+              },
+              {
+                "name": "rule_state",
+                "value": "",
+                "type": "query",
+                "description": "Filter by whether the rule is active or not."
+              }
+            ]
+          },
+          "docs": "This endpoint returns a list of tuples of rules and evidence instances, including the results of the analysis."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Framework",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get frameworks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/api/v1/framework",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of frameworks to return per page."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of frameworks to skip (for pagination)."
+              }
+            ]
+          },
+          "docs": "Returns a JSON **array** of frameworks in the customer environment. Optional query parameters `limit` and `offset` slice the result; the response body does **not** include a separate total-count or pagination envelope—only the array of framework objects.\n\nEach item includes its ID, name, folder, and metadata. See [Anecdotes terminology and framework hierarchy](https://help.anecdotes.ai/product-tour/frameworks/anecdotes-terminology-and-framework-hierarchy)."
+        },
+        {
+          "info": {
+            "name": "Export a framework",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/api/v1/framework/:framework_id/download",
+            "params": [
+              {
+                "name": "framework_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the framework to export."
+              }
+            ]
+          },
+          "docs": "Exports a framework and its controls. Actual **Content-Type** depends on tenant/export configuration—typically structured **JSON** or **CSV** text, or a downloadable file stream."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Requirements",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get all requirements",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/api/v1/requirement",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of requirements to return in this response."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of requirements to skip before returning results (pagination)."
+              }
+            ]
+          },
+          "docs": "Returns requirement objects for the authenticated tenant. Use optional **`limit`** and **`offset`** to page through the catalog (typical page sizes are in the hundreds).\n\nThe response is a **JSON array** of requirement objects, or in some gateways a wrapper object; clients should accept either an **array** or an object containing a **`requirements`** array.\n\nFor one id and the fullest payload (for example **`requirement_scoping_overrides`**), use **`GET /api/v1/requirement/{requirement_id}`**."
+        },
+        {
+          "info": {
+            "name": "Create a custom requirement",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/api/v1/requirement/",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new **custom** requirement. Link it to **controls** and **frameworks** with optional arrays of prefixed ids (`control_…`, `framework_…`).\n\n**201** response body is often the new **`requirement_id`** string; some responses return a full **`Requirement`** object instead — clients should accept either."
+        },
+        {
+          "info": {
+            "name": "Get requirement by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/api/v1/requirement/:requirement_id"
+          },
+          "docs": "Returns one requirement. The body may be a single **`Requirement`** object or a **one-element array** — clients should accept both shapes."
+        },
+        {
+          "info": {
+            "name": "Update a requirement",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.anecdotes.ai/api/v1/requirement/:requirement_id/",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Partial update for a single requirement. Wrap mutable fields under **`requirement`**. Optional **`context`** (e.g. **`control_id`**) may be required for certain scoping updates.\n\nSuccessful responses typically return **200** with the updated resource or an empty body depending on gateway version — re-**GET** the requirement if you need a guaranteed full payload."
+        },
+        {
+          "info": {
+            "name": "Delete a requirement",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.anecdotes.ai/api/v1/requirement/:requirement_id/"
+          },
+          "docs": "Deletes the requirement identified by **`requirement_id`**."
+        },
+        {
+          "info": {
+            "name": "Set a custom field value on a requirement",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.anecdotes.ai/api/v1/requirement/:requirement_id/fields/:field_id",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Sets (or clears) the value of one **custom field** on one requirement.\n\nThe **`value`** shape depends on the field type:\n- **Free text** — a plain string, e.g. **`\"True\"`**.\n- **Dropdown** — a single **option id** (a key of the field's **`field_metadata.values`** map), e.g. **`\"option_…\"`** — not the label.\n- **Multi-select** — an **array** of option ids.\n- Send **`null`** to clear the value.\n\nTo turn a desired label (e.g. `Sync-To-Archer` = `True`) into the option id to send, read the field def"
+        },
+        {
+          "info": {
+            "name": "Get all requirement custom field values",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/api/v1/requirements/fields"
+          },
+          "docs": "Returns every **custom field value** set on requirements for the authenticated tenant, as a nested map: **`{ requirement_id: { field_id: { \"value\": … } } }`**.\n\nValues are stored as raw **option ids** for **dropdown** / **multi-select** fields — resolve the human-readable label with **`GET /custom-fields/v1/fields/{field_id}`** (see **`field_metadata.values`**) — and as plain strings for **free-text** fields. Requirements with no value set are omitted; when nothing is set at all the body is an e"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Findings",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get all findings",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/compliance/v1/findings",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of findings to return in this response."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of findings to skip before returning results (pagination)."
+              }
+            ]
+          },
+          "docs": "Returns **`findings`** and **`pagination`**. Use **`limit`** and **`offset`** to page results."
+        },
+        {
+          "info": {
+            "name": "Create finding",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/compliance/v1/findings",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "finding_data",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Creates a finding. Send **`multipart/form-data`** with **`finding_data`** as a JSON string of finding fields."
+        },
+        {
+          "info": {
+            "name": "Delete findings",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.anecdotes.ai/compliance/v1/findings",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deletes findings by internal **`id`**. Request body: **`ids`** array. Response: **`deleted_count`**."
+        },
+        {
+          "info": {
+            "name": "Get finding by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/compliance/v1/findings/:finding_id"
+          },
+          "docs": "Returns one finding by **`finding_id`**."
+        },
+        {
+          "info": {
+            "name": "Update finding status",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.anecdotes.ai/compliance/v1/findings/:finding_id",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates a finding. Send fields to change (e.g. **`status`**: `Open`, `In progress`, `Resolved`)."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Read Controls",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get all controls",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/controls/control"
+          },
+          "docs": "Returns every applicable control in the tenant as a JSON **array**. Auditor tokens are scoped to the active audit's frameworks."
+        },
+        {
+          "info": {
+            "name": "Get controls by framework",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/controls/control/framework/:framework_id"
+          },
+          "docs": "Returns all controls in **`framework_id`** as a JSON array."
+        },
+        {
+          "info": {
+            "name": "Get controls by ids",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/controls/control/read",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns full control objects for **`controls_ids`** without listing the entire catalog."
+        },
+        {
+          "info": {
+            "name": "Get control by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/controls/control/:control_id"
+          },
+          "docs": "Returns one control by **`control_id`**. Returns **403** when the caller lacks framework access."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Create Controls",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create custom control",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/controls/control",
+            "params": [
+              {
+                "name": "control_framework",
+                "value": "",
+                "type": "query",
+                "description": "Framework id (`framework_…`) the new control belongs to."
+              },
+              {
+                "name": "notify",
+                "value": "",
+                "type": "query",
+                "description": "Whether to notify the platform UI of the change."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a **custom control** in the framework from query parameter **`control_framework`**. Send one object or an array for bulk create; **201** returns the created record(s)."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Update Control Metadata",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Update custom control",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.anecdotes.ai/controls/control/:control_id",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates name, description, category, implementation, and related-control links on a **custom control**."
+        },
+        {
+          "info": {
+            "name": "Delete custom control",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.anecdotes.ai/controls/control/:control_id"
+          },
+          "docs": "Permanently deletes a **custom control**."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Custom Fields",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get all control custom field values",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/controls/controls/fields"
+          },
+          "docs": "Returns all control custom-field values for the tenant as a JSON object."
+        },
+        {
+          "info": {
+            "name": "Update control custom field",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.anecdotes.ai/controls/controls/:control_id/fields/:field_id",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Sets **`value`** on the given **`field_id`** for **`control_id`**."
+        },
+        {
+          "info": {
+            "name": "List custom field definitions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/custom-fields/v1/fields"
+          },
+          "docs": "Returns all **custom field definitions** for the authenticated tenant. Use this (or **`GET /custom-fields/v1/fields/{field_id}`**) to discover a field's **`id`** and its **`field_metadata.values`** (the `{option_id: label}` map) before setting a value on a requirement."
+        },
+        {
+          "info": {
+            "name": "Create a custom field definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/custom-fields/v1/fields",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new **custom field definition**. Scope it to requirements with **`resource_types: [\"REQUIREMENT\"]`**. For **dropdown** / **multi-select** fields, define the selectable options under **`field_metadata.values`** as a `{option_id: label}` map.\n\nRequires an **admin** or **manager** role. The **201** response body is the new **`field_…`** id string."
+        },
+        {
+          "info": {
+            "name": "Get a custom field definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/custom-fields/v1/fields/:field_id"
+          },
+          "docs": "Returns a single **custom field definition**, including **`field_metadata.values`** — the `{option_id: label}` map you use to translate a desired label into the **option id** to send when setting a **dropdown** / **multi-select** value on a requirement."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Read Evidence Metadata",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get All Evidence Metadata",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence"
+          },
+          "docs": "Returns all evidence metadata from within the Anecdotes account."
+        },
+        {
+          "info": {
+            "name": "Get Evidence Metadata",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence/:evidence_id",
+            "params": [
+              {
+                "name": "evidence_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the evidence item."
+              }
+            ]
+          },
+          "docs": "Returns evidence metadata of the specified evidence_id."
+        },
+        {
+          "info": {
+            "name": "Get Evidence Run History",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence/:evidence_id/run_history",
+            "params": [
+              {
+                "name": "evidence_id",
+                "value": "",
+                "type": "path",
+                "description": "The evidence ID to retrieve history for."
+              }
+            ]
+          },
+          "docs": "Returns a list of evidence instances for the specified evidence id."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Create Evidence",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create Manual Evidence",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "evidence_file",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "evidence_id",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Upload any filetype as evidence without the use of an Evidence Collection. This evidence will display as Manual Evidence from within the Evidence Pool."
+        },
+        {
+          "info": {
+            "name": "Create an Evidence Collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence/create",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "service_id",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "evidence_name",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "evidence_help",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "empty_state",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "is_uar",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "is_sot",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "evidence_file",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "evidence_preview_rules",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "evidence_api_query",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "ipe_file",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Create a new API Evidence Collection, used to attach evidence data into using the **Attach Evidence** endpoint. Successful response provides the resulting 'evidence_id'. \n\n**IPE (optional):** you may attach **IPE** (Information Produced by Entity) — the structured queries that produced the data — via `evidence_api_query` (inline JSON-stringified array of query strings) **or** `ipe_file` (a JSON file), but **not both**. IPE is tied to a data collection, so it is stored **only when `evidence_file`"
+        },
+        {
+          "info": {
+            "name": "Create Evidence within a Collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence/:evidence_id/attach",
+            "params": [
+              {
+                "name": "evidence_id",
+                "value": "",
+                "type": "path",
+                "description": "The evidence_id to attach this collection to."
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "evidence_file",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "evidence_api_query",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "ipe_file",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Create JSON or CSV formatted evidence for an existing Evidence Collection. The collection is specified with the `evidence_id` path parameter. Send the file as **multipart/form-data** using the `evidence_file` field.\n\n**IPE (optional):** attach **IPE** (Information Produced by Entity) for this collection via `evidence_api_query` (inline JSON-stringified array of query strings) **or** `ipe_file` (a JSON file), but **not both**. Attaching IPE here **replaces** any IPE previously set on this collect"
+        },
+        {
+          "info": {
+            "name": "Add IPE to a Collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence/:evidence_instance_id/ipe",
+            "params": [
+              {
+                "name": "evidence_instance_id",
+                "value": "",
+                "type": "path",
+                "description": "The evidence_instance_id of the collection to attach IPE to (from GET /evidence/v1/evidence/{evidence_id}/run_history)."
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "evidence_api_query",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "ipe_file",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Add or **replace** IPE (Information Produced by Entity — the structured queries that produced the data) on an evidence collection that was **already pushed**, identified by its `evidence_instance_id`. Use this to add IPE to data sent before IPE was supported, or to update it later.\n\nGet the `evidence_instance_id` from `GET /evidence/v1/evidence/{evidence_id}/run_history`.\n\nSupply IPE via `evidence_api_query` (inline JSON-stringified array of query strings) **or** `ipe_file` (a JSON file), but **"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Download Evidence",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Latest Raw Data",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence/:evidence_id/latest_raw",
+            "params": [
+              {
+                "name": "evidence_id",
+                "value": "",
+                "type": "path",
+                "description": "The evidence ID."
+              }
+            ]
+          },
+          "docs": "Returns the raw data of the latest evidence instance."
+        },
+        {
+          "info": {
+            "name": "Download Raw Data",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence/:evidence_instance_id/download_raw",
+            "params": [
+              {
+                "name": "evidence_instance_id",
+                "value": "",
+                "type": "path",
+                "description": "The evidence instance identifier."
+              }
+            ]
+          },
+          "docs": "Download the **raw** evidence payload for an instance. The response is a **binary stream** (`application/octet-stream`)."
+        },
+        {
+          "info": {
+            "name": "Get Evidence Full Data (preview table)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence/:evidence_instance_id/full_data",
+            "params": [
+              {
+                "name": "evidence_instance_id",
+                "value": "",
+                "type": "path",
+                "description": "The evidence instance identifier."
+              }
+            ]
+          },
+          "docs": "Path segment `full_data` returns the **processed evidence table** (the same logical preview grid as in the platform UI), streamed with `Content-Type: application/octet-stream` (often JSON bytes for the table)."
+        },
+        {
+          "info": {
+            "name": "Get Full Data Or Raw",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence/:evidence_instance_id/fulldata_or_raw",
+            "params": [
+              {
+                "name": "evidence_instance_id",
+                "value": "",
+                "type": "path",
+                "description": "The evidence instance identifier (from GET /evidence/v1/evidence)."
+              }
+            ]
+          },
+          "docs": "Returns the full data for evidence if exists, else the raw file data."
+        },
+        {
+          "info": {
+            "name": "Get Raw Data",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/evidence/v1/evidence/:evidence_instance_id/raw",
+            "params": [
+              {
+                "name": "evidence_instance_id",
+                "value": "",
+                "type": "path",
+                "description": "The evidence instance identifier (from GET /evidence/v1/evidence)."
+              }
+            ]
+          },
+          "docs": "Returns the raw data file of the requested evidence_instance_id."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Token",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Exchange API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/identity/v1/apikey/exchange",
+            "headers": [
+              {
+                "name": "x-anecdotes-api-key",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Exchange an API key created in the Anecdotes platform for a short-lived JWT (valid for 1 hour).\n\n1. Create an API key in the Anecdotes platform under your project settings.\n2. Use the exchange endpoint with the key as `x-anecdotes-api-key` header.\n3. Use the result JWT token as `Authorization: Bearer <token>` header."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Policy Manager",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List customer policies",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/policy/v1/customer-policies"
+          },
+          "docs": "Returns policies created for your organization (custom policies), including status, approval workflow settings, stakeholders, and scheduling metadata."
+        },
+        {
+          "info": {
+            "name": "List library policies",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/policy/v1/library-policies"
+          },
+          "docs": "Returns out-of-the-box policy templates from the policy library that customers can adopt."
+        },
+        {
+          "info": {
+            "name": "Delete policies",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.anecdotes.ai/policy/v1/policies/delete-policies",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deletes one or more customer policies by id. Send a JSON array of `policy_id` strings (e.g. `policy_<numeric>`)."
+        },
+        {
+          "info": {
+            "name": "Update policy settings (approval cycle)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.anecdotes.ai/policy/v1/policies/update-settings",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates or updates an **approval cycle** for one or more policies: stakeholders (reviewers, approvers), notification `share_method`, and scheduling (`approval_frequency`, `start_from`, `approval_time`). Target policies are listed in `resource_ids`. Use `is_new_cycle` per product workflow when starting a new cycle versus updating the current one."
+        },
+        {
+          "info": {
+            "name": "Replace policy file (evidence link)",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.anecdotes.ai/policy/v1/policies/:policy_id",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path",
+                "description": "Customer policy id (`policy_<numeric>`)."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Points the policy at a different **evidence** definition—typically after uploading a replacement document to manual (or other) evidence. Send `policy_related_evidence` with the target evidence id (e.g. `manual_<id>`)."
+        },
+        {
+          "info": {
+            "name": "Create policies",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/policy/v2/policies",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates one or more policies from manual (or other) evidence definitions. The body is a **JSON array**; each element links an `evidence_id`, sets `policy_name`, and optionally maps `requirements_ids` (framework requirement ids as strings). Omit `requirements_ids` or send an empty array when no requirement mapping is needed."
+        },
+        {
+          "info": {
+            "name": "List policy versions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/policy/v2/policies/:policy_id/versions",
+            "params": [
+              {
+                "name": "policy_id",
+                "value": "",
+                "type": "path",
+                "description": "Policy identifier (e.g. `policy_<id>` for customer policies)."
+              }
+            ]
+          },
+          "docs": "Returns version history for a policy when versions exist. Policies without versions may return an empty array."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Risk",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create Risk",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/risk/v1/risk",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new risk."
+        },
+        {
+          "info": {
+            "name": "Get Risks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/risk/v1/risk/full",
+            "params": [
+              {
+                "name": "risk_ids",
+                "value": "",
+                "type": "query",
+                "description": "Optional comma-separated list of risk IDs to filter by."
+              },
+              {
+                "name": "exclude_review",
+                "value": "",
+                "type": "query",
+                "description": "When false, includes risks that have reviewer access from users with specific roles. Defaults to false."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of risks to return."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of risks to skip (for pagination)."
+              }
+            ]
+          },
+          "docs": "List of risks and its associated data."
+        },
+        {
+          "info": {
+            "name": "Get Risk",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/risk/v1/risk/:risk_id",
+            "params": [
+              {
+                "name": "risk_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the risk."
+              }
+            ]
+          },
+          "docs": "Get a Risk by its ID."
+        },
+        {
+          "info": {
+            "name": "Update Risk",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.anecdotes.ai/risk/v1/risk/:risk_id",
+            "params": [
+              {
+                "name": "risk_id",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the risk to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a specific risk."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

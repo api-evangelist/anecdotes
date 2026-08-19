@@ -1,0 +1,232 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Anecdotes FedRAMP 20x Trust Center API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Public",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Request access",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.anecdotes.ai/fedramp20x/v1/access",
+            "headers": [
+              {
+                "name": "trustcenterurl",
+                "value": "trust.anecdotes.ai"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Requests access to the gated FedRAMP Trust Center APIs. An email containing access information is sent upon approval."
+        },
+        {
+          "info": {
+            "name": "Public information (CSO)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/fedramp20x/v1/public/info",
+            "headers": [
+              {
+                "name": "trustcenterurl",
+                "value": "trust.anecdotes.ai"
+              }
+            ],
+            "params": [
+              {
+                "name": "evidence_id",
+                "value": "builder_2795822335733",
+                "type": "query",
+                "description": "Identifier for the document or section to return."
+              }
+            ]
+          },
+          "docs": "Returns public Trust Center information for the given evidence_id. With Accept application/json or text/csv the endpoint returns structured metadata; documents published as files (the API documentation and the Postman collection) are returned with Accept application/octet-stream."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Authorization",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Exchange API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/identity/v1/apikey/exchange",
+            "headers": [
+              {
+                "name": "x-anecdotes-api-key",
+                "value": ""
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "x-anecdotes-api-key",
+              "value": "{{x-anecdotes-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Exchange a static API key for a short-lived JWT, valid for 1 hour. Use the returned JWT as `Authorization: Bearer <token>` on the gated endpoints."
+        },
+        {
+          "info": {
+            "name": "List tokens",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/fedramp20x/v1/access/token"
+          },
+          "docs": "Retrieve metadata for all active tokens. Response includes id, nickname, key, created_at, expiration_date, is_revoked and last_used_date."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Gated",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get authorization package",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/fedramp20x/v1/authorization-package",
+            "params": [
+              {
+                "name": "include_evidence_ids",
+                "value": "",
+                "type": "query",
+                "description": "Include evidence IDs for each KSI."
+              }
+            ]
+          },
+          "docs": "Returns the comprehensive compliance posture, including Key Security Indicators and their evidence mappings."
+        },
+        {
+          "info": {
+            "name": "Get KSI",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/fedramp20x/v1/ksi/:ksi_code",
+            "params": [
+              {
+                "name": "ksi_code",
+                "value": "FRR-IAM-01",
+                "type": "path",
+                "description": "KSI code, for example FRR-IAM-01."
+              }
+            ]
+          },
+          "docs": "Retrieve a specific Key Security Indicator by code. The response includes metrics.analysis_rules_coverage."
+        },
+        {
+          "info": {
+            "name": "Get evidence",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/fedramp20x/v1/evidence/:evidence_id",
+            "params": [
+              {
+                "name": "evidence_id",
+                "value": "659414963",
+                "type": "path",
+                "description": "Evidence artifact identifier."
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "query",
+                "description": "Full ISO 8601 datetime. Omit for the latest version."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number, 1-indexed. JSON responses only."
+              },
+              {
+                "name": "page_size",
+                "value": "",
+                "type": "query",
+                "description": "Items per page. JSON responses only."
+              }
+            ]
+          },
+          "docs": "Retrieve a specific evidence artifact. File-backed evidence is downloaded with Accept application/octet-stream."
+        },
+        {
+          "info": {
+            "name": "Get evidence history",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.anecdotes.ai/fedramp20x/v1/evidence/:evidence_id/history",
+            "params": [
+              {
+                "name": "evidence_id",
+                "value": "659414963",
+                "type": "path",
+                "description": "Evidence artifact identifier."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of history entries to return."
+              },
+              {
+                "name": "from_date",
+                "value": "",
+                "type": "query",
+                "description": "Only versions collected on or after this ISO 8601 date."
+              },
+              {
+                "name": "to_date",
+                "value": "",
+                "type": "query",
+                "description": "Only versions collected on or before this ISO 8601 date."
+              }
+            ]
+          },
+          "docs": "List the collection history for an evidence artifact. The response carries metadata, a data array of evidence_instance_id / collection_date / is_latest, and pagination."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,1478 @@
+{
+  "item": [
+    {
+      "id": "fd2e87a4-ee97-4939-b800-63d6593864d0",
+      "name": "Public",
+      "description": {
+        "content": "Public Trust Center information. No authentication required.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "04061b4f-3722-41f3-a8aa-ce5b966d92ae",
+          "name": "Request access",
+          "request": {
+            "name": "Request access",
+            "description": {
+              "content": "Requests access to the gated FedRAMP Trust Center APIs. An email containing access information is sent upon approval.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "fedramp20x",
+                "v1",
+                "access"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Host name of the Anecdotes Trust Center being queried.",
+                "key": "trustcenterurl",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"<string>\",\n  \"last_name\": \"<string>\",\n  \"email\": \"<email>\",\n  \"company\": \"<string>\",\n  \"job_title\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "51036d10-3aa8-4eec-998a-fa6d7aada472",
+              "name": "Access request outcome.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "access"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Host name of the Anecdotes Trust Center being queried.",
+                    "key": "trustcenterurl",
+                    "value": "trust.anecdotes.ai"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Smith\",\n  \"email\": \"john.smith@example.gov\",\n  \"company\": \"FedRAMP\",\n  \"job_title\": \"Security Analyst\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"invalid_email\": false,\n  \"user_exists\": false,\n  \"user_denied_or_revoked\": false,\n  \"access_pending\": true,\n  \"previous_status\": null\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "7fa933f8-c014-4062-a703-3e1b806fc3c3",
+          "name": "Public information (CSO)",
+          "request": {
+            "name": "Public information (CSO)",
+            "description": {
+              "content": "Returns public Trust Center information for the given evidence_id. With Accept application/json or text/csv the endpoint returns structured metadata; documents published as files (the API documentation and the Postman collection) are returned with Accept application/octet-stream.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "fedramp20x",
+                "v1",
+                "public",
+                "info"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "evidence_id",
+                  "value": "<string>",
+                  "description": "(Required) Identifier for the document or section to return."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Host name of the Anecdotes Trust Center being queried.",
+                "key": "trustcenterurl",
+                "value": "<string>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "52ac6d66-a811-4b53-825e-7a84a42ba9ee",
+              "name": "Public Trust Center information.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "public",
+                    "info"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "evidence_id",
+                      "value": "builder_2795822335733"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Host name of the Anecdotes Trust Center being queried.",
+                    "key": "trustcenterurl",
+                    "value": "trust.anecdotes.ai"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"Business Category\": [\n      \"Technology\",\n      \"GRC\"\n    ],\n    \"Contact Information\": \"security@anecdotes.ai\",\n    \"Service Model\": \"SaaS\",\n    \"Information Title\": \"Public Information\",\n    \"Description\": \"Public-facing security and compliance portal with controlled document access, NDA management, and visitor analytics.\",\n    \"Deployment Model\": \"Public Cloud\",\n    \"Customer Support Info\": \"support@anecdotes.ai\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "d173cb90-7090-4e12-9016-b3560d382551",
+      "name": "Authorization",
+      "description": {
+        "content": "API key to JWT exchange and token management.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "c4cde535-2c6e-424d-b089-6f414adfde5d",
+          "name": "Exchange API key",
+          "request": {
+            "name": "Exchange API key",
+            "description": {
+              "content": "Exchange a static API key for a short-lived JWT, valid for 1 hour. Use the returned JWT as `Authorization: Bearer <token>` on the gated endpoints.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "identity",
+                "v1",
+                "apikey",
+                "exchange"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Anecdotes API key created in the platform or the Trust Center API Token tab.",
+                "key": "x-anecdotes-api-key",
+                "value": "<string>"
+              },
+              {
+                "key": "Accept",
+                "value": "text/plain"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "x-anecdotes-api-key"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}"
+                },
+                {
+                  "key": "in",
+                  "value": "header"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "2bdcc65d-52de-45cd-9c37-ab6b76a65a4e",
+              "name": "JWT token string, valid for 1 hour.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "identity",
+                    "v1",
+                    "apikey",
+                    "exchange"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-anecdotes-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Anecdotes API key created in the platform or the Trust Center API Token tab.",
+                    "key": "x-anecdotes-api-key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/plain"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "string",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "6133cc5e-d784-4b01-9d07-03098a8593dc",
+              "name": "Unauthorized - API key is missing or invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "identity",
+                    "v1",
+                    "apikey",
+                    "exchange"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-anecdotes-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) Anecdotes API key created in the platform or the Trust Center API Token tab.",
+                    "key": "x-anecdotes-api-key",
+                    "value": "<string>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1121fc53-04e7-4b0e-9c2f-5ca3580ebb48",
+          "name": "List tokens",
+          "request": {
+            "name": "List tokens",
+            "description": {
+              "content": "Retrieve metadata for all active tokens. Response includes id, nickname, key, created_at, expiration_date, is_revoked and last_used_date.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "fedramp20x",
+                "v1",
+                "access",
+                "token"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "841dda46-a833-4c2b-bbb3-701fde803afc",
+              "name": "Token metadata.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "access",
+                    "token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"string\",\n    \"nickname\": \"string\",\n    \"key\": \"string\",\n    \"created_at\": \"1957-07-05T05:49:17.940Z\",\n    \"expiration_date\": \"2009-12-08T15:23:34.321Z\",\n    \"is_revoked\": true,\n    \"last_used_date\": \"2007-08-18T23:21:16.123Z\"\n  },\n  {\n    \"id\": \"string\",\n    \"nickname\": \"string\",\n    \"key\": \"string\",\n    \"created_at\": \"1958-05-11T08:44:38.112Z\",\n    \"expiration_date\": \"1970-06-17T12:40:08.888Z\",\n    \"is_revoked\": true,\n    \"last_used_date\": \"2005-03-04T23:38:19.853Z\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "98a49f78-d765-4f10-b722-8b79953a912d",
+              "name": "Unauthorized - JWT missing, invalid or expired.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "access",
+                    "token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "74c5e48e-68ab-4e51-9a9e-c43fccb6d823",
+      "name": "Gated",
+      "description": {
+        "content": "Authorization package, KSI and evidence endpoints. Require an approved FedRAMP user JWT.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "14dac7fb-b97c-42a3-9302-324998c53eab",
+          "name": "Get authorization package",
+          "request": {
+            "name": "Get authorization package",
+            "description": {
+              "content": "Returns the comprehensive compliance posture, including Key Security Indicators and their evidence mappings.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "fedramp20x",
+                "v1",
+                "authorization-package"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "include_evidence_ids",
+                  "value": "true",
+                  "description": "Include evidence IDs for each KSI."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "28e3f513-d606-4425-a7f0-0054ac7fd5b6",
+              "name": "Authorization package.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "authorization-package"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "include_evidence_ids",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"key_0\": false,\n  \"key_1\": 2487,\n  \"key_2\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "aec63c0c-cfd2-4078-b587-3836fed78fdc",
+              "name": "Unauthorized - JWT missing, invalid or expired.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "authorization-package"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "include_evidence_ids",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4e9c92c0-b301-490c-ad87-eac42f55fe77",
+              "name": "Forbidden - the caller is not an approved FedRAMP user.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "authorization-package"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "include_evidence_ids",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "8df3df95-c7ae-4e0a-b316-a73d33258f94",
+          "name": "Get KSI",
+          "request": {
+            "name": "Get KSI",
+            "description": {
+              "content": "Retrieve a specific Key Security Indicator by code. The response includes metrics.analysis_rules_coverage.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "fedramp20x",
+                "v1",
+                "ksi",
+                ":ksi_code"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "ksi_code",
+                  "description": "(Required) KSI code, for example FRR-IAM-01."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "16771d03-b218-4da7-bb7c-e5e26618db55",
+              "name": "KSI detail.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "ksi",
+                    ":ksi_code"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ksi_code",
+                      "description": "(Required) KSI code, for example FRR-IAM-01."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"key_0\": false,\n  \"key_1\": 2487,\n  \"key_2\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "78f069d3-1684-4d11-9eb8-44dcd735e6d6",
+              "name": "Unauthorized - JWT missing, invalid or expired.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "ksi",
+                    ":ksi_code"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ksi_code",
+                      "description": "(Required) KSI code, for example FRR-IAM-01."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "fc67ceed-8aa0-40e9-bc35-cff6371409e1",
+              "name": "KSI not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "ksi",
+                    ":ksi_code"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ksi_code",
+                      "description": "(Required) KSI code, for example FRR-IAM-01."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e949d231-26fd-4a36-9601-574f195f02fb",
+          "name": "Get evidence",
+          "request": {
+            "name": "Get evidence",
+            "description": {
+              "content": "Retrieve a specific evidence artifact. File-backed evidence is downloaded with Accept application/octet-stream.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "fedramp20x",
+                "v1",
+                "evidence",
+                ":evidence_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "version",
+                  "value": "<dateTime>",
+                  "description": "Full ISO 8601 datetime. Omit for the latest version."
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number, 1-indexed. JSON responses only."
+                },
+                {
+                  "disabled": false,
+                  "key": "page_size",
+                  "value": "100",
+                  "description": "Items per page. JSON responses only."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "evidence_id",
+                  "description": "(Required) Evidence artifact identifier."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6f4d802d-68d9-46c5-811b-febf7a84bc97",
+              "name": "Evidence artifact.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "evidence",
+                    ":evidence_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "version",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "100"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "evidence_id",
+                      "description": "(Required) Evidence artifact identifier."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"key_0\": false,\n  \"key_1\": 2487,\n  \"key_2\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "609a291d-eb1b-43bd-a51d-a9e0588a26ef",
+              "name": "Unauthorized - JWT missing, invalid or expired.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "evidence",
+                    ":evidence_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "version",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "100"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "evidence_id",
+                      "description": "(Required) Evidence artifact identifier."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "9c3739e6-ddb2-4126-b958-cb3da7cc50e5",
+              "name": "Evidence not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "evidence",
+                    ":evidence_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "version",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "100"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "evidence_id",
+                      "description": "(Required) Evidence artifact identifier."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ed81d815-7d60-4d02-b6a1-fb9d75d7e60a",
+          "name": "Get evidence history",
+          "request": {
+            "name": "Get evidence history",
+            "description": {
+              "content": "List the collection history for an evidence artifact. The response carries metadata, a data array of evidence_instance_id / collection_date / is_latest, and pagination.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "fedramp20x",
+                "v1",
+                "evidence",
+                ":evidence_id",
+                "history"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "100",
+                  "description": "Maximum number of history entries to return."
+                },
+                {
+                  "disabled": false,
+                  "key": "from_date",
+                  "value": "<dateTime>",
+                  "description": "Only versions collected on or after this ISO 8601 date."
+                },
+                {
+                  "disabled": false,
+                  "key": "to_date",
+                  "value": "<dateTime>",
+                  "description": "Only versions collected on or before this ISO 8601 date."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "evidence_id",
+                  "description": "(Required) Evidence artifact identifier."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "3aa4ff00-4dce-47c9-ad5b-d7c51ed82e1d",
+              "name": "Evidence collection history.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "evidence",
+                    ":evidence_id",
+                    "history"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "100"
+                    },
+                    {
+                      "key": "from_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "to_date",
+                      "value": "<dateTime>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "evidence_id",
+                      "description": "(Required) Evidence artifact identifier."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"metadata\": {\n    \"key_0\": 4267\n  },\n  \"data\": [\n    {\n      \"evidence_instance_id\": \"string\",\n      \"collection_date\": \"2011-08-14T09:46:41.853Z\",\n      \"is_latest\": false\n    },\n    {\n      \"evidence_instance_id\": \"string\",\n      \"collection_date\": \"1986-08-23T17:31:47.569Z\",\n      \"is_latest\": false\n    }\n  ],\n  \"pagination\": {\n    \"key_0\": 9741\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2bc48827-11fe-447b-949c-d0a8520151d7",
+              "name": "Unauthorized - JWT missing, invalid or expired.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "evidence",
+                    ":evidence_id",
+                    "history"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "100"
+                    },
+                    {
+                      "key": "from_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "to_date",
+                      "value": "<dateTime>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "evidence_id",
+                      "description": "(Required) Evidence artifact identifier."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "1684511a-9bd3-47ed-9365-17314edd7461",
+              "name": "Evidence not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "fedramp20x",
+                    "v1",
+                    "evidence",
+                    ":evidence_id",
+                    "history"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "100"
+                    },
+                    {
+                      "key": "from_date",
+                      "value": "<dateTime>"
+                    },
+                    {
+                      "key": "to_date",
+                      "value": "<dateTime>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "evidence_id",
+                      "description": "(Required) Evidence artifact identifier."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.anecdotes.ai",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "6d0a5d75-8bf7-4cf4-a9cb-72890ef75f36",
+    "name": "Anecdotes FedRAMP 20x Trust Center API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The FedRAMP 20x API exposes the contents of the Anecdotes Trust Center (https://trust.anecdotes.ai/)\nprogrammatically. It is divided into three tiers: public endpoints that require no authentication,\nan authorization tier that exchanges a static API key for a short-lived JWT, and gated endpoints that\nreturn the authorization package, Key Security Indicators (KSIs) and the evidence behind them.\n\nDerived by API Evangelist from the provider's own published Postman collection\n(FEDRAMP-20X-API.postman_collection.json, retrieved from the public /fedramp20x/v1/public/info\nendpoint) and the documented endpoint tables at\nhttps://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api.\nPaths, methods, parameters, headers and content types are transcribed from those sources only;\nno response schemas were invented where the provider did not publish one.\n\nContact Support:\n Name: Anecdotes\n Email: security@anecdotes.ai",
+      "type": "text/plain"
+    }
+  }
+}

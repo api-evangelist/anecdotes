@@ -21,23 +21,21 @@ server:
 authentication:
   scheme: api-key
   header: X-anecdotes-api-key
-  notes: >-
-    Requires an Anecdotes API token created under Administration -> API Tokens with Admin privileges.
+  notes: Requires an Anecdotes API token created under Administration -> API Tokens with Admin privileges.
     The tenant must also have the AI suite package active and AI consent opted in.
   environment_variable: ANECDOTES_API_KEY
 introspection:
   attempted: '2026-07-31'
-  method: 'POST {"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  method: POST {"jsonrpc":"2.0","id":1,"method":"tools/list"}
   urls_probed:
   - https://mcp.anecdotes.ai/all/mcp
   - https://mcp.anecdotes.ai/risk/mcp
   http_status: 403
   result: gated
-  detail: >-
-    Anonymous JSON-RPC calls are rejected at the edge by Cloudflare with an HTML 403 before reaching the
-    MCP server, so the live tools/list manifest (and therefore each tool's real inputSchema) could not be
-    captured. The tool list below is transcribed verbatim from the provider's published domain/tool table
-    and carries names and descriptions only; input schemas require an authenticated introspection.
+  detail: Anonymous JSON-RPC calls are rejected at the edge by Cloudflare with an HTML 403 before reaching
+    the MCP server, so the live tools/list manifest (and therefore each tool's real inputSchema) could
+    not be captured. The tool list below is transcribed verbatim from the provider's published domain/tool
+    table and carries names and descriptions only; input schemas require an authenticated introspection.
   well_known_probed:
   - path: /.well-known/oauth-authorization-server
     status: 403
@@ -45,27 +43,30 @@ introspection:
     status: 403
 discovery_tools:
 - name: list_domains
-  description: >-
-    Discover the currently available domains and their tools. The provider states the proxy is
-    continuously growing and recommends calling list_domains rather than relying on a static list.
+  description: Discover the currently available domains and their tools. The provider states the proxy
+    is continuously growing and recommends calling list_domains rather than relying on a static list.
 domains:
 - domain: risk
-  description: Get information about risks in the system. Can filter by specific risk IDs, with an option to exclude risks currently under review.
+  description: Get information about risks in the system. Can filter by specific risk IDs, with an option
+    to exclude risks currently under review.
   tools:
   - name: get_risks
-    description: Get information about risks in your system; filter by risk IDs; option to exclude risks under review.
+    description: Get information about risks in your system; filter by risk IDs; option to exclude risks
+      under review.
 - domain: control
   description: Business controls - read and update.
   tools:
   - name: get_controls
-    description: Get information about business controls; filter by control IDs; option to exclude controls under review.
+    description: Get information about business controls; filter by control IDs; option to exclude controls
+      under review.
   - name: update_controls
     description: Update existing control information.
 - domain: evidence
   description: Evidence metadata, run history and full data tables.
   tools:
   - name: get_evidence
-    description: Get evidence information and metadata; filter by evidence IDs; option to reduce data size for faster responses.
+    description: Get evidence information and metadata; filter by evidence IDs; option to reduce data
+      size for faster responses.
   - name: get_evidence_run_history
     description: View the history of evidence runs; set limits on entries; filter by date range.
   - name: get_evidence_full_data
@@ -79,12 +80,14 @@ domains:
   description: Compliance frameworks.
   tools:
   - name: get_frameworks
-    description: Get information about compliance frameworks; filter by framework IDs; option to show only applicable frameworks.
+    description: Get information about compliance frameworks; filter by framework IDs; option to show
+      only applicable frameworks.
 - domain: uar
   description: User access review.
   tools:
   - name: get_user_access_review
-    description: Get user access review information; option to show only approved reviews; filter for latest evidence only.
+    description: Get user access review information; option to show only approved reviews; filter for
+      latest evidence only.
 - domain: analysis
   description: Analysis rules.
   tools:
@@ -94,17 +97,18 @@ domains:
   description: Comments and feedback.
   tools:
   - name: get_comments
-    description: Get comments and feedback; filter by conversation thread, search within comment text, filter by author.
+    description: Get comments and feedback; filter by conversation thread, search within comment text,
+      filter by author.
 - domain: requirement
   description: Requirements.
   tools:
   - name: get_requirements
-    description: Get requirement information; filter by requirement IDs; shows all requirements when no filter is applied.
+    description: Get requirement information; filter by requirement IDs; shows all requirements when no
+      filter is applied.
 - domain: search
-  description: >-
-    Smart semantic search across Anecdotes domains. Supports natural language queries to find risks,
-    controls, evidence, frameworks and requirements. The provider documents the domain but does not name
-    its tool in the published table.
+  description: Smart semantic search across Anecdotes domains. Supports natural language queries to find
+    risks, controls, evidence, frameworks and requirements. The provider documents the domain but does
+    not name its tool in the published table.
   tools: []
 clients_documented:
 - Claude Desktop
@@ -116,3 +120,10 @@ x-evidence:
   url: https://help.anecdotes.ai/technical-setup/api/using-anecdotes-mcp
   http_status: 200
   tool_names_from: provider documentation table (10 domains, 12 named tools)
+deployment:
+  mode: remote
+  endpoint: https://mcp.anecdotes.ai
+  verified: probed
+  probe: wall
+  checked: '2026-08-12'
+  source: catalog MCP census

@@ -14,7 +14,7 @@ url: https://raw.githubusercontent.com/api-evangelist/anecdotes/refs/heads/main/
 image: https://kinlane-productions2.s3.amazonaws.com/api-evangelist-site/companies/anecdotes.jpg
 x-type: company
 x-source: harvest:secondary-market
-specificationVersion: '0.20'
+specificationVersion: '0.23'
 created: '2026-07-31'
 modified: '2026-07-31'
 tags:

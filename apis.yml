@@ -31,64 +31,14 @@ tags:
 - Artificial Intelligence
 - Agents
 apis:
-- aid: anecdotes:anecdotes-grc-api
-  name: Anecdotes GRC API
-  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform:
-    frameworks, requirements, controls, custom fields, risks, findings, policies, analysis
-    rules and evidence. Authentication is two-step - an API token created in the platform is
-    exchanged at GET /identity/v1/apikey/exchange for a JWT valid for one hour, which is then
-    sent as a bearer token on every other call. A descriptive User-Agent header is required or
-    the API returns 403.'
-  humanURL: https://help.anecdotes.ai/api/overview
-  baseURL: https://api.anecdotes.ai
-  tags:
-  - Compliance
-  - Governance
-  - Risk
-  - Evidence
-  - Controls
-  - Policy
-  properties:
-  - type: OpenAPI
-    url: openapi/anecdotes-grc-openapi.yml
-  - type: Documentation
-    url: https://help.anecdotes.ai/technical-setup/api
-  - type: APIReference
-    url: https://help.anecdotes.ai/api/overview
-  - type: GettingStarted
-    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
-  - type: Authentication
-    url: https://help.anecdotes.ai/api/token
-- aid: anecdotes:anecdotes-fedramp-20x-api
-  name: Anecdotes FedRAMP 20x Trust Center API
-  description: 'A three-tier API over the Anecdotes Trust Center. Public endpoints require no
-    authentication and return Cloud Service Offering metadata, the status-page rollup, the
-    Recommended Secure Configuration index and downloadable API documentation. An authorization
-    tier exchanges an API key for a JWT, and gated endpoints return the full authorization
-    package, individual Key Security Indicators, and the evidence and evidence history behind
-    each one.'
-  humanURL: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
-  baseURL: https://api.anecdotes.ai
-  tags:
-  - FedRAMP
-  - Trust Center
-  - Compliance
-  - Evidence
-  properties:
-  - type: OpenAPI
-    url: openapi/anecdotes-fedramp-20x-openapi.yml
-  - type: Postman
-    url: postman/anecdotes-fedramp-20x.postman_collection.json
-  - type: Documentation
-    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
 - aid: anecdotes:anecdotes-mcp-proxy
   name: Anecdotes MCP Proxy
-  description: 'A hosted Model Context Protocol proxy that exposes Anecdotes GRC domains -
-    risk, control, evidence, policy, framework, uar, analysis, comments, requirement and
-    semantic search - to any MCP-capable AI client. Reachable over streamable HTTP at
-    https://mcp.anecdotes.ai/{domain}/mcp with an X-anecdotes-api-key header, or through the
-    first-party @anecdotes.ai/mcp npm bridge. Requires an Admin-privileged API token and an
-    active AI suite entitlement.'
+  description: >-
+    A hosted Model Context Protocol proxy that exposes Anecdotes GRC domains - risk, control, evidence,
+    policy, framework, uar, analysis, comments, requirement and semantic search - to any MCP-capable AI
+    client. Reachable over streamable HTTP at https://mcp.anecdotes.ai/{domain}/mcp with an X-anecdotes-api-key
+    header, or through the first-party @anecdotes.ai/mcp npm bridge. Requires an Admin-privileged API
+    token and an active AI suite entitlement.
   humanURL: https://help.anecdotes.ai/technical-setup/api/using-anecdotes-mcp
   baseURL: https://mcp.anecdotes.ai
   tags:
@@ -102,6 +52,409 @@ apis:
     url: mcp/anecdotes-tool-crosswalk.yml
   - type: Documentation
     url: https://help.anecdotes.ai/technical-setup/api/using-anecdotes-mcp
+- aid: anecdotes:anecdotes-analysis-rules-api
+  name: anecdotes Analysis Rules API
+  description: >-
+    **Analysis rules** evaluate evidence table rows for **gaps or warnings**; configure query, scoping,
+    and alert levels, and read **execution results** per instance. [Analysis rules (product)](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-monitoring/analysis-rules)
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Analysis Rules
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-analysis-rules-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-authorization-api
+  name: anecdotes Authorization API
+  description: API key to JWT exchange and token management.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Authorization
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-authorization-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-create-controls-api
+  name: anecdotes Create Controls API
+  description: Create one or more **custom controls** in a framework.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Create Controls
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-create-controls-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-create-evidence-api
+  name: anecdotes Create Evidence API
+  description: >-
+    Create custom **Evidence Collections**, **attach** JSON/CSV files to a collection, and upload **manual**
+    evidence of any type. Customer-pushed evidence can also carry **IPE** (Information Produced by Entity)
+    — the structured queries that produced the data — supplied inline (`evidence_api_query`) or as a JSON
+    file (`ipe_file`) on create/attach, or added later to an existing collection via the `/ipe` endpoint.
+    IPE can only be written to API (customer-pushed) evidence.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Create Evidence
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-create-evidence-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-custom-fields-api
+  name: anecdotes Custom Fields API
+  description: >-
+    **Custom fields** extend platform resources (including **requirements**) with your own **dropdown**,
+    **multi-select**, or **free-text** values. These endpoints manage the field **definitions** — create
+    one, list them, and read a single definition to discover its **`field_metadata.values`** (the `{option_id:
+    label}` map used when setting dropdown / multi-select values). Field definitions are shared across
+    resource types; scope a field to requirements with **`resource_types: ["REQUIREMENT"]`**.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Custom Fields
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-custom-fields-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-download-evidence-api
+  name: anecdotes Download Evidence API
+  description: >-
+    Download **raw** evidence payloads, processed **evidence tables**, combined full-or-raw streams, and
+    latest binary payloads.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Download Evidence
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-download-evidence-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-findings-api
+  name: anecdotes Findings API
+  description: >-
+    **Findings** record compliance gaps and issues, including links to controls, evidence, and policies.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Findings
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-findings-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-framework-api
+  name: anecdotes Framework API
+  description: >-
+    A **framework** in anecdotes is a compliance program built from a formally written standard or regulation
+    (e.g. ISO/IEC 27001, SOC 2, HIPAA, CSA STAR). It is organized into **control categories** and **control
+    titles** with control statements. **API:** list frameworks and export framework data. [Terminology](https://help.anecdotes.ai/product-tour/frameworks/anecdotes-terminology-and-framework-hierarchy)
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Framework
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-framework-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-gated-api
+  name: anecdotes Gated API
+  description: Authorization package, KSI and evidence endpoints. Require an approved FedRAMP user JWT.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Gated
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-gated-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-policy-manager-api
+  name: anecdotes Policy Manager API
+  description: >-
+    **Policy Manager** allows you to create, edit, and manage policies for your organization. List customer-owned
+    policies, library templates, policy versions, and configure approval cycles.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Policy Manager
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-policy-manager-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-public-api
+  name: anecdotes Public API
+  description: Public Trust Center information. No authentication required.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Public
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-public-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-read-controls-api
+  name: anecdotes Read Controls API
+  description: List all controls or fetch by framework or id.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Read Controls
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-read-controls-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-read-evidence-metadata-api
+  name: anecdotes Read Evidence Metadata API
+  description: >-
+    List and retrieve **evidence definitions**, **instance metadata**, and multi-instance **run history**.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Read Evidence Metadata
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-read-evidence-metadata-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-requirements-api
+  name: anecdotes Requirements API
+  description: >-
+    **Requirements** tie **controls** to expected **evidence** and framework scoping. These endpoints
+    cover listing customer requirements, simple **create / read / update / delete** for a single requirement
+    id (`requirement_…`), and reading / updating **custom field** values on requirements.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Requirements
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-requirements-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-risk-api
+  name: anecdotes Risk API
+  description: >-
+    **Risks** live in **risk registers** in Risk Manager: inherent/residual dimensions, treatment, custom
+    fields, and links to evidence. **API:** create, list (full), get, update. [Risk Manager](https://help.anecdotes.ai/product-tour/risk-manager)
+    · [Getting started](https://help.anecdotes.ai/product-tour/risk-manager/getting-started-risk-management)
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Risk
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-risk-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-token-api
+  name: anecdotes Token API
+  description: >-
+    Exchange your **API key** for a **short-lived JWT** (1 hour). Send the JWT as `Authorization: Bearer
+    <token>` on all subsequent requests.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Token
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-token-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+- aid: anecdotes:anecdotes-update-control-metadata-api
+  name: anecdotes Update Control Metadata API
+  description: Update or delete a **custom control**'s name, description, category, and implementation.
+  humanURL: https://help.anecdotes.ai/api/overview
+  baseURL: https://api.anecdotes.ai
+  tags:
+  - Update Control Metadata
+  properties:
+  - type: OpenAPI
+    url: openapi/anecdotes-update-control-metadata-api-openapi.yml
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/api
+  - type: APIReference
+    url: https://help.anecdotes.ai/api/overview
+  - type: GettingStarted
+    url: https://help.anecdotes.ai/technical-setup/api/using-the-anecdotes-api
+  - type: Authentication
+    url: https://help.anecdotes.ai/api/token
+  - type: Postman
+    url: postman/anecdotes-fedramp-20x.postman_collection.json
+  - type: Documentation
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

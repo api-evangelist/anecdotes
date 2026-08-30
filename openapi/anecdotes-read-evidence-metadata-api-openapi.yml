@@ -1,0 +1,612 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes Read Evidence Metadata API
+  version: 1.0.0
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+  description: 'Operations tagged Read Evidence Metadata across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Read Evidence Metadata
+  description: List and retrieve **evidence definitions**, **instance metadata**, and multi-instance **run history**.
+paths:
+  /evidence/v1/evidence:
+    get:
+      tags:
+      - Read Evidence Metadata
+      summary: Get All Evidence Metadata
+      description: Returns all evidence metadata from within the Anecdotes account.
+      operationId: getEvidence
+      responses:
+        '200':
+          description: Array of evidence definition objects with metadata.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Evidence_EvidenceDefinition'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /evidence/v1/evidence/{evidence_id}:
+    get:
+      tags:
+      - Read Evidence Metadata
+      summary: Get Evidence Metadata
+      description: Returns evidence metadata of the specified evidence_id.
+      operationId: getAnEvidence
+      parameters:
+      - name: evidence_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique identifier of the evidence item.
+      responses:
+        '200':
+          description: Evidence definition object with metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_EvidenceDefinition'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '404':
+          description: Evidence item not found.
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /evidence/v1/evidence/{evidence_id}/run_history:
+    get:
+      tags:
+      - Read Evidence Metadata
+      summary: Get Evidence Run History
+      description: Returns a list of evidence instances for the specified evidence id.
+      operationId: getCollectionMultiHistory
+      parameters:
+      - name: evidence_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence ID to retrieve history for.
+      responses:
+        '200':
+          description: Evidence history with details per instance and history per run.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_EvidenceRunHistory'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+components:
+  schemas:
+    Evidence_EvidenceInstance:
+      type: object
+      properties:
+        evidence_instance_id:
+          type: string
+          format: uuid
+          title: Evidence Instance Id
+          description: The unique identifier of this evidence instance.
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The id of this evidence.
+        evidence_name:
+          type: string
+          title: Evidence Name
+          description: The name of this evidence.
+        evidence_collection_timestamp:
+          type: string
+          format: date-time
+          title: Evidence Collection Timestamp
+          description: The time this specific evidence instance was collected.
+        evidence_service_id:
+          type: string
+          title: Evidence Service Id
+          description: The id related with the service that collected this evidence.
+        evidence_service_instance_id:
+          type: string
+          title: Evidence Service Instance Id
+          description: The service instance id this evidence was collected by.
+        evidence_url:
+          type: string
+          title: Evidence Url
+          description: The URL of this specific evidence.
+        evidence_items_count:
+          type: integer
+          title: Evidence Items Count
+          description: Items count in evidence full data.
+        evidence_alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+        evidence_alert_level_gap_rules_only:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+        evidence_time_frame:
+          type: string
+          title: Evidence Time Frame
+          description: Evidence time frame, in case of a log type.
+        evidence_analysis_results:
+          type: array
+          items:
+            type: object
+          title: Evidence Analysis Results
+          description: Object describing the gaps in the preview/full evidence data.
+        evidence_gap:
+          type:
+          - object
+          - 'null'
+          title: Evidence Gap
+          description: Structured gap information for preview/full evidence data; shape is evidence-type-specific.
+        evidence_collection_run_id:
+          type: string
+          title: Evidence Collection Run Id
+          description: The unique identifier of the collection run.
+        evidence_last_modified_time:
+          type: string
+          format: date-time
+          title: Evidence Last Modified Time
+          description: The last modification time of this document.
+        evidence_creation_time:
+          type: string
+          format: date-time
+          title: Evidence Creation Time
+          description: The creation time of this document.
+        evidence_last_modified_by:
+          type: string
+          title: Evidence Last Modified By
+          description: Who last modified the evidence.
+        evidence_originated_by_instance_id:
+          type: string
+          title: Evidence Originated By Instance Id
+          description: The service instance id this evidence was collected by.
+        evidence_iceberg_exists:
+          type: boolean
+          title: Evidence Iceberg Exists
+          description: Whether the evidence has iceberg view.
+        evidence_processing_state:
+          type: string
+          title: Evidence Processing State
+          description: The evidence processing status.
+        evidence_blob_path:
+          type: string
+          title: Evidence Blob Path
+          description: The path to the evidence blob in the bucket.
+        merged_items_count_by_source:
+          type: object
+          title: Merged Items Count By Source
+          description: Merged evidence items count by source.
+        evidence_left_instance_collection_time:
+          type: string
+          format: date-time
+          title: Evidence Left Instance Collection Time
+          description: The collection time of the left evidence instance (for merged evidence).
+        evidence_right_instance_collection_time:
+          type: string
+          format: date-time
+          title: Evidence Right Instance Collection Time
+          description: The collection time of the right evidence instance (for merged evidence).
+      required:
+      - evidence_instance_id
+      - evidence_id
+      - evidence_collection_timestamp
+      - evidence_service_id
+      - evidence_service_instance_id
+      - evidence_collection_run_id
+      title: EvidenceInstance
+    Evidence_EvidenceType:
+      type: string
+      enum:
+      - URL
+      - DOCUMENT
+      - LOG
+      - LIST
+      - CONFIGURATION
+      - APP
+      - UNKNOWN
+      - LINK
+      - MANUAL
+      - TICKET
+      - API
+      title: EvidenceType
+      description: The type of evidence.
+    Evidence_ColumnHelp:
+      type: object
+      properties:
+        column_name:
+          type: string
+          title: Column Name
+          description: The display name of the column.
+        help_note:
+          type: string
+          title: Help Note
+          description: The help note for the column.
+      required:
+      - column_name
+      - help_note
+      title: ColumnHelp
+    Evidence_EvidenceRunHistory:
+      type: object
+      properties:
+        details_per_instance:
+          type: object
+          title: Details Per Instance
+          description: Dictionary where the key is the instance ID and the value contains the instance display name and collection times.
+          additionalProperties:
+            $ref: '#/components/schemas/Evidence_DetailsPerRun'
+        history_per_run:
+          type: object
+          title: History Per Run
+          description: Dictionary where the key is the max collection time of a run and the value is an array of all instances collected during that run.
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/Evidence_EvidenceInstance'
+      required:
+      - details_per_instance
+      - history_per_run
+      title: EvidenceRunHistory
+      description: Evidence collection run history with details per instance and history per run.
+    Evidence_EvidenceDefinition:
+      type: object
+      properties:
+        evidence_instance_id:
+          type: string
+          format: uuid
+          title: Evidence Instance Id
+          description: The unique identifier of this evidence instance.
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The id of this evidence.
+        evidence_type:
+          $ref: '#/components/schemas/Evidence_EvidenceType'
+        evidence_name:
+          type: string
+          title: Evidence Name
+          description: The name of this evidence.
+        evidence_service_id:
+          type: string
+          title: Evidence Service Id
+          description: The id related with the service that collected this evidence.
+        evidence_service_display_name:
+          type: string
+          title: Evidence Service Display Name
+          description: The display name related to the service that collected this evidence.
+        evidence_collection_timestamp:
+          type: string
+          format: date-time
+          title: Evidence Collection Timestamp
+          description: The time this specific evidence instance was collected.
+        evidence_is_applicable:
+          type: boolean
+          title: Evidence Is Applicable
+          description: Whether this evidence is applicable for the customer.
+        evidence_url:
+          type: string
+          title: Evidence Url
+          description: The URL of this specific evidence.
+        evidence_empty_state:
+          type: string
+          title: Evidence Empty State
+          description: The empty state of this evidence.
+        evidence_items_count:
+          type: integer
+          title: Evidence Items Count
+          description: Items count in evidence full data.
+        evidence_api_query:
+          type: array
+          items:
+            type: string
+          title: Evidence Api Query
+          description: The structured queries (IPE) that produced this evidence. For API (customer-pushed) evidence this is the customer-supplied IPE; in the exported PDF it renders in the standard IPE location with a "Generated on an external system" label to distinguish it from Anecdotes-collected IPE.
+        evidence_time_frame:
+          type: string
+          title: Evidence Time Frame
+          description: Evidence time frame, in case of a log type.
+        evidence_help:
+          type: string
+          title: Evidence Help
+          description: A help phrase describing the purpose of this evidence.
+        evidence_best_practice:
+          type: string
+          title: Evidence Best Practice
+          description: A best practice usage of the evidence.
+        evidence_gap:
+          type:
+          - object
+          - 'null'
+          title: Evidence Gap
+          description: Structured gap information for preview/full evidence data; shape is evidence-type-specific.
+        evidence_gap_message:
+          type: string
+          title: Evidence Gap Message
+          description: Help on the evidence instance gap, if exists.
+        evidence_status:
+          type: object
+          title: Evidence Status
+          description: The status of this evidence per framework. Keys are framework IDs, values are EvidenceStatusDetails objects.
+          additionalProperties:
+            $ref: '#/components/schemas/Evidence_EvidenceStatusDetails'
+        evidence_is_custom:
+          type: boolean
+          title: Evidence Is Custom
+          description: Whether this evidence was created by the customer.
+        evidence_is_beta:
+          type: boolean
+          title: Evidence Is Beta
+          description: Whether this evidence is in beta mode or not.
+        evidence_tip:
+          type: string
+          title: Evidence Tip
+          description: The tip recommended for this evidence.
+        evidence_collection_run_id:
+          type: string
+          title: Evidence Collection Run Id
+          description: The unique identifier of the collection run.
+        evidence_originated_by_instance_id:
+          type: string
+          title: Evidence Originated By Instance Id
+          description: The service instance id this evidence was collected by.
+        evidence_also_collected_by_instances:
+          type: array
+          items:
+            type: string
+          title: Evidence Also Collected By Instances
+          description: List of service instance IDs for all evidence instances collected during the last runs.
+        evidence_last_modified_time:
+          type: string
+          format: date-time
+          title: Evidence Last Modified Time
+          description: The last modification time of this document.
+        evidence_creation_time:
+          type: string
+          format: date-time
+          title: Evidence Creation Time
+          description: The creation time of this document.
+        evidence_last_modified_by:
+          type: string
+          title: Evidence Last Modified By
+          description: Who last modified the evidence.
+        evidence_uploaded_by:
+          type: string
+          title: Evidence Uploaded By
+          description: This manual evidence was uploaded by this user.
+        evidence_column_help:
+          type: array
+          items:
+            $ref: '#/components/schemas/Evidence_ColumnHelp'
+          title: Evidence Column Help
+          description: List of column name/help note pairs for preview columns.
+        evidence_views:
+          type: object
+          title: Evidence Views
+          description: Evidence views keyed by view identifier.
+          additionalProperties:
+            $ref: '#/components/schemas/Evidence_EvidenceView'
+        evidence_views_map:
+          type: object
+          title: Evidence Views Map
+          description: Mapping of resource to the associated view_id.
+          additionalProperties:
+            type: object
+        evidence_source_screenshots_data:
+          type: array
+          items:
+            type: string
+          title: Evidence Source Screenshots Data
+          description: List of screenshot names in the bucket.
+        evidence_is_uar:
+          type: boolean
+          title: Evidence Is UAR
+          description: Whether the evidence can be used for user access review.
+        evidence_is_sot:
+          type: boolean
+          title: Evidence Is SOT
+          description: Whether the evidence can be used for SOT.
+        evidence_is_seen:
+          type: boolean
+          title: Evidence Is Seen
+          description: Whether evidence has been seen or not.
+        evidence_column_metadata:
+          type: object
+          title: Evidence Column Metadata
+          description: Per-column data type metadata; values are arrays of type descriptors.
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              description: Column type metadata entry (structure varies by evidence).
+        last_instances_per_service_instance:
+          type: array
+          items:
+            $ref: '#/components/schemas/Evidence_EvidenceInstance'
+          title: Last Instances Per Service Instance
+          description: List of related evidence instances.
+        evidence_alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+        freshness_timestamp:
+          type: string
+          format: date-time
+          title: Freshness Timestamp
+          description: The last timestamp evidence is validated.
+        evidence_alert_level_gap_rules_only:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+      required:
+      - evidence_instance_id
+      - evidence_id
+      - evidence_name
+      - evidence_service_id
+      - evidence_service_display_name
+      - evidence_collection_timestamp
+      - evidence_status
+      - evidence_is_custom
+      - evidence_is_beta
+      - evidence_collection_run_id
+      - evidence_originated_by_instance_id
+      - evidence_also_collected_by_instances
+      title: EvidenceDefinition
+      description: Full evidence definition with metadata and latest collection data.
+    Evidence_EvidenceStatusDetails:
+      type: object
+      properties:
+        status:
+          type: string
+          title: Status
+          description: The evidence status value.
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+          description: When this status was set.
+        updated_by:
+          type: string
+          title: Updated By
+          description: Who set this status.
+        update_mode:
+          type: string
+          title: Update Mode
+          description: The way the status was set (manual or auto).
+          enum:
+          - manual
+          - auto
+        evidence_alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+      required:
+      - status
+      - timestamp
+      title: EvidenceStatusDetails
+    Evidence_EvidenceView:
+      type: object
+      properties:
+        name:
+          type: string
+          title: Name
+        upload_time:
+          type: string
+          format: date-time
+          title: Upload Time
+        created_by:
+          type: string
+          title: Created By
+        aql:
+          type: object
+          title: AQL
+          description: AQL filter definition.
+        aql_ext:
+          type: object
+          title: AQL Ext
+          description: Extended AQL filter definition.
+        updated_by:
+          type: string
+          title: Updated By
+        updated_time:
+          type: string
+          format: date-time
+          title: Updated Time
+        id:
+          type: string
+          title: Id
+      required:
+      - name
+      - created_by
+      title: EvidenceView
+    Evidence_DetailsPerRun:
+      type: object
+      properties:
+        service_display_name:
+          type: string
+          title: Service Display Name
+          description: The display name of the instance.
+        instance_runs:
+          type: array
+          items:
+            type: string
+            format: date-time
+          title: Instance Runs
+          description: List of instance collection timestamps.
+      required:
+      - service_display_name
+      - instance_runs
+      title: DetailsPerRun
+    AnalysisRuleAlertLevel:
+      type: integer
+      enum:
+      - 3
+      - 5
+      - 10
+      - 30
+      - 50
+      title: AnalysisRuleAlertLevel
+      description: 'The alert level of the analysis rule. Values: 3 (Not Processed), 5 (No Active Rules), 10 (OK), 30 (Warning), 50 (Gap).'
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+x-refined-from:
+- anecdotes-grc-openapi-original.json
+- anecdotes-grc-openapi.yml
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

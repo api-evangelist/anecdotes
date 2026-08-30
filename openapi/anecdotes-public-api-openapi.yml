@@ -1,0 +1,211 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes FedRAMP 20x Trust Center Public API
+  version: 1.0.0
+  description: 'The FedRAMP 20x API exposes the contents of the Anecdotes Trust Center (https://trust.anecdotes.ai/)
+
+    programmatically. It is divided into three tiers: public endpoints that require no authentication,
+
+    an authorization tier that exchanges a static API key for a short-lived JWT, and gated endpoints that
+
+    return the authorization package, Key Security Indicators (KSIs) and the evidence behind them.
+
+
+    Derived by API Evangelist from the provider''s own published Postman collection
+
+    (FEDRAMP-20X-API.postman_collection.json, retrieved from the public /fedramp20x/v1/public/info
+
+    endpoint) and the documented endpoint tables at
+
+    https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api.
+
+    Paths, methods, parameters, headers and content types are transcribed from those sources only;
+
+    no response schemas were invented where the provider did not publish one.'
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+    email: security@anecdotes.ai
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Public
+  description: Public Trust Center information. No authentication required.
+paths:
+  /fedramp20x/v1/access:
+    post:
+      tags:
+      - Public
+      operationId: requestFedrampAccess
+      summary: Request access
+      description: Requests access to the gated FedRAMP Trust Center APIs. An email containing access information is sent upon approval.
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/TrustCenterUrl'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessRequest'
+            example:
+              first_name: John
+              last_name: Smith
+              email: john.smith@example.gov
+              company: FedRAMP
+              job_title: Security Analyst
+      responses:
+        '200':
+          description: Access request outcome.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessRequestResult'
+              example:
+                invalid_email: false
+                user_exists: false
+                user_denied_or_revoked: false
+                access_pending: true
+                previous_status: null
+  /fedramp20x/v1/public/info:
+    get:
+      tags:
+      - Public
+      operationId: getPublicInfo
+      summary: Public information (CSO)
+      description: Returns public Trust Center information for the given evidence_id. With Accept application/json or text/csv the endpoint returns structured metadata; documents published as files (the API documentation and the Postman collection) are returned with Accept application/octet-stream.
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/TrustCenterUrl'
+      - name: evidence_id
+        in: query
+        required: true
+        description: Identifier for the document or section to return.
+        schema:
+          type: string
+          enum:
+          - url_2037408219127
+          - builder_2666397450893
+          - builder_2795822335733
+          - builder_2110205339759
+          - manual_2454242086620
+          - manual_2578511430147
+          - builder_2639056738947
+        example: builder_2795822335733
+      responses:
+        '200':
+          description: Public Trust Center information.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+              example:
+              - Business Category:
+                - Technology
+                - GRC
+                Contact Information: security@anecdotes.ai
+                Service Model: SaaS
+                Information Title: Public Information
+                Description: Public-facing security and compliance portal with controlled document access, NDA management, and visitor analytics.
+                Deployment Model: Public Cloud
+                Customer Support Info: support@anecdotes.ai
+            text/csv:
+              schema:
+                type: string
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+components:
+  schemas:
+    AccessRequest:
+      type: object
+      required:
+      - first_name
+      - last_name
+      - email
+      - company
+      - job_title
+      properties:
+        first_name:
+          type: string
+          description: Requester's first name.
+        last_name:
+          type: string
+          description: Requester's last name.
+        email:
+          type: string
+          format: email
+          description: Requester's email, for example a .gov or .mil address.
+        company:
+          type: string
+          description: Requester's company. Should be set to "FedRAMP".
+        job_title:
+          type: string
+          description: Requester's job title.
+    AccessRequestResult:
+      type: object
+      properties:
+        invalid_email:
+          type: boolean
+          description: Whether the submitted email was invalid.
+        user_exists:
+          type: boolean
+          description: Whether a user with this email already exists.
+        user_denied_or_revoked:
+          type: boolean
+          description: Whether the user was previously denied or had access revoked.
+        access_pending:
+          type: boolean
+          description: Whether an access request is now pending.
+        previous_status:
+          type:
+          - string
+          - 'null'
+          description: Previous user or request status, if any.
+          enum:
+          - approved
+          - pending_nda
+          - denied
+          - requested
+          - revoked
+  parameters:
+    TrustCenterUrl:
+      name: trustcenterurl
+      in: header
+      required: true
+      description: Host name of the Anecdotes Trust Center being queried.
+      schema:
+        type: string
+      example: trust.anecdotes.ai
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: Static API key. Used only for the exchange endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Short-lived JWT (1 hour) obtained from /identity/v1/apikey/exchange.
+externalDocs:
+  description: FedRAMP 20x - Trust Center and API
+  url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

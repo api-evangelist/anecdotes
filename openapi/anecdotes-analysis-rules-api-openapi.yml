@@ -1,0 +1,419 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes Analysis Rules API
+  version: 1.0.0
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+  description: 'Operations tagged Analysis Rules across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Analysis Rules
+  description: '**Analysis rules** evaluate evidence table rows for **gaps or warnings**; configure query, scoping, and alert levels, and read **execution results** per instance. [Analysis rules (product)](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-monitoring/analysis-rules)'
+paths:
+  /analysis-rules/v1/analysis-rules:
+    get:
+      tags:
+      - Analysis Rules
+      summary: Get Analysis Rules
+      description: 'Gets analysis rules of the specified analysis rules ids if provided, otherwise get all analysis rules instances.
+
+
+        Each rule includes its query definition, alert level, origin, active state, and account scoping configuration. The list is a merge of global (library) rules and customer-specific rules, with customer overrides taking precedence.'
+      operationId: getAnalysisRules
+      responses:
+        '200':
+          description: List of analysis rule objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnalysisRuleModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    post:
+      tags:
+      - Analysis Rules
+      summary: Create Analysis Rule
+      description: 'Creates a new custom analysis rule.
+
+
+        Define the rule query, alert level, and scoping to control how evidence data is analyzed. The rule will be applied during subsequent evidence collection runs.'
+      operationId: createAnalysisRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomAnalysisRuleModel'
+      responses:
+        '201':
+          description: Analysis rule created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisRuleModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /analysis-rules/v1/analysis-rules/rule_results_by_filter:
+    get:
+      tags:
+      - Analysis Rules
+      summary: Get rules and their results
+      description: This endpoint returns a list of tuples of rules and evidence instances, including the results of the analysis.
+      operationId: getAnalysisRulesResults
+      parameters:
+      - name: rule_type
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/AnalysisRuleType'
+        description: Filter by analysis rule type.
+      - name: rule_state
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/AnalysisRuleActiveState'
+        description: Filter by whether the rule is active or not.
+      responses:
+        '200':
+          description: List of analysis rule result objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnalysisRuleResultModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+components:
+  schemas:
+    AccountScopingType:
+      type: string
+      enum:
+      - all_accounts
+      - included_accounts
+      - excluded_accounts
+      title: AccountScopingType
+      description: Determines which accounts the rule applies to.
+    AnalysisRuleQueryType:
+      type: string
+      enum:
+      - aql
+      - aqlext
+      - pandas
+      title: AnalysisRuleQueryType
+      description: The type of query engine used by the analysis rule.
+    AnalysisRuleModel:
+      type: object
+      properties:
+        rule_id:
+          type: string
+          title: Rule Id
+          description: Unique identifier for the analysis rule.
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The evidence ID this rule is tied to.
+        library_rule_id:
+          type: string
+          title: Library Rule Id
+          description: Library rule ID if cloned from a library rule.
+        rule_query_type:
+          $ref: '#/components/schemas/AnalysisRuleQueryType'
+        rule_query_str:
+          type: string
+          title: Rule Query Str
+          description: The rule query string.
+        rule_query_message:
+          type: string
+          title: Rule Query Message
+          description: Optional message associated with the rule query.
+        rule_name:
+          type: string
+          title: Rule Name
+          description: Human-readable name of the rule.
+        rule_message:
+          type: string
+          title: Rule Message
+          description: Message displayed when the rule triggers.
+        alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+        rule_origin:
+          $ref: '#/components/schemas/AnalysisRuleOrigin'
+        rule_state:
+          $ref: '#/components/schemas/AnalysisRuleActiveState'
+        last_updated:
+          type: string
+          format: date-time
+          title: Last Updated
+          description: Timestamp of the last update.
+        last_updated_by:
+          type: string
+          title: Last Updated By
+          description: User who last updated the rule.
+        rule_is_archived:
+          type: boolean
+          title: Rule Is Archived
+          description: Whether the rule is archived.
+        rule_type:
+          $ref: '#/components/schemas/AnalysisRuleType'
+        account_scoping_type:
+          $ref: '#/components/schemas/AccountScopingType'
+        account_scoping_list:
+          type: array
+          items:
+            type: string
+          title: Account Scoping List
+          description: Service instance IDs the rule applies to (when scoping type is INCLUDED or EXCLUDED).
+      required:
+      - rule_id
+      - evidence_id
+      - rule_query_type
+      - rule_query_str
+      - rule_name
+      - rule_message
+      - alert_level
+      - rule_origin
+      - rule_state
+      - last_updated
+      - last_updated_by
+      - rule_is_archived
+      - account_scoping_type
+      title: AnalysisRuleModel
+    AnalysisRuleOrigin:
+      type: string
+      enum:
+      - library
+      - custom
+      title: AnalysisRuleOrigin
+      description: Whether the rule originates from the library or is custom.
+    AnalysisRuleResultModel:
+      type: object
+      properties:
+        rule_id:
+          type: string
+          title: Rule Id
+          description: The analysis rule id.
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The evidence id.
+        parent_evidence_id:
+          type: string
+          title: Parent Evidence Id
+          description: The parent evidence id (useful for mapping views to parent evidence).
+        evidence_instance_id:
+          type: string
+          title: Evidence Instance Id
+          description: Evidence instance id.
+        service_instance_id:
+          type: string
+          title: Service Instance Id
+          description: Service instance id.
+        service_name:
+          type: string
+          title: Service Name
+          description: Service name.
+        alert_level:
+          type: string
+          title: Alert Level
+          description: Human-readable or symbolic **outcome** severity for this run (string). May differ from `rule_alert_level` when violations change the effective severity label.
+        date_processed:
+          type: string
+          format: date-time
+          title: Date Processed
+          description: The analysis date processed.
+        violations_count:
+          type: integer
+          title: Violations Count
+          description: Amount of violated rows.
+        violated_rows:
+          type: array
+          items:
+            type: integer
+            description: 0-based row index in the evidence table that violated the rule.
+          title: Violated Rows
+          description: Row indexes that violated the rule.
+        rule_state:
+          type: string
+          title: Rule State
+          description: The analysis rule state.
+        rule_alert_level:
+          allOf:
+          - $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+          title: Rule Alert Level
+          description: 'Configured alert level on the rule (integer enum: 3, 5, 10, 30, 50).'
+        evidence_entity_type:
+          type: string
+          title: Evidence Entity Type
+          description: The evidence entity type (evidence or view).
+      required:
+      - rule_id
+      - evidence_id
+      - evidence_instance_id
+      - service_instance_id
+      - service_name
+      - alert_level
+      - date_processed
+      - violations_count
+      - violated_rows
+      - rule_state
+      - rule_alert_level
+      - evidence_entity_type
+      title: AnalysisRuleResultModel
+      description: Analysis rule execution result for a specific evidence instance.
+    CreateCustomAnalysisRuleModel:
+      type: object
+      properties:
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The evidence ID that the rule is related to.
+        rule_name:
+          type: string
+          title: Rule Name
+          description: The name of the rule.
+        alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+        rule_message:
+          type: string
+          title: Rule Message
+          description: The message displayed when the rule triggers.
+        rule_query_type:
+          allOf:
+          - $ref: '#/components/schemas/AnalysisRuleQueryType'
+          default: aql
+          description: The query type. Defaults to aql.
+        rule_query:
+          type: object
+          title: Rule Query
+          description: The rule query object. Structure depends on the rule_query_type (AQL, AQLExt, or Pandas).
+        rule_origin:
+          $ref: '#/components/schemas/AnalysisRuleOrigin'
+        library_rule_id:
+          type: string
+          title: Library Rule Id
+          description: The library rule ID that the rule was cloned from (if applicable).
+        rule_type:
+          $ref: '#/components/schemas/AnalysisRuleType'
+        account_scoping_type:
+          allOf:
+          - $ref: '#/components/schemas/AccountScopingType'
+          default: all_accounts
+          description: The account scoping type. Defaults to all_accounts.
+        account_scoping_list:
+          type: array
+          items:
+            type: string
+          title: Account Scoping List
+          description: List of service instance IDs the rule relates to (used with included_accounts or excluded_accounts scoping).
+      title: CreateCustomAnalysisRuleModel
+      description: Request body for creating a new custom analysis rule.
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+    AnalysisRuleType:
+      type: string
+      enum:
+      - uam
+      - eid
+      title: AnalysisRuleType
+      description: The type of the analysis rule.
+    AnalysisRuleActiveState:
+      type: string
+      enum:
+      - active
+      - inactive
+      title: AnalysisRuleActiveState
+      description: Whether the analysis rule is active or inactive.
+    AnalysisRuleAlertLevel:
+      type: integer
+      enum:
+      - 3
+      - 5
+      - 10
+      - 30
+      - 50
+      title: AnalysisRuleAlertLevel
+      description: 'The alert level of the analysis rule. Values: 3 (Not Processed), 5 (No Active Rules), 10 (OK), 30 (Warning), 50 (Gap).'
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+x-refined-from:
+- anecdotes-grc-openapi-original.json
+- anecdotes-grc-openapi.yml
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

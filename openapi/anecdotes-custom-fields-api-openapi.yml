@@ -1,0 +1,296 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes Custom Fields API
+  version: 1.0.0
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+  description: 'Operations tagged Custom Fields across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Custom Fields
+  description: '**Custom fields** extend platform resources (including **requirements**) with your own **dropdown**, **multi-select**, or **free-text** values. These endpoints manage the field **definitions** — create one, list them, and read a single definition to discover its **`field_metadata.values`** (the `{option_id: label}` map used when setting dropdown / multi-select values). Field definitions are shared across resource types; scope a field to requirements with **`resource_types: ["REQUIREMENT"]`**.'
+paths:
+  /controls/controls/fields:
+    get:
+      tags:
+      - Custom Fields
+      summary: Get all control custom field values
+      description: Returns all control custom-field values for the tenant as a JSON object.
+      operationId: getControlCustomFieldValues
+      responses:
+        '200':
+          description: Custom field values map.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          description: Unauthorized.
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /controls/controls/{control_id}/fields/{field_id}:
+    patch:
+      tags:
+      - Custom Fields
+      summary: Update control custom field
+      description: Sets **`value`** on the given **`field_id`** for **`control_id`**.
+      operationId: patchControlCustomField
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchControlCustomFieldValuePayload'
+      responses:
+        '204':
+          description: Field updated.
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden — auditors cannot edit custom fields.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /custom-fields/v1/fields:
+    get:
+      tags:
+      - Custom Fields
+      summary: List custom field definitions
+      description: 'Returns all **custom field definitions** for the authenticated tenant. Use this (or **`GET /custom-fields/v1/fields/{field_id}`**) to discover a field''s **`id`** and its **`field_metadata.values`** (the `{option_id: label}` map) before setting a value on a requirement.'
+      operationId: listCustomFields
+      responses:
+        '200':
+          description: Array of **`CustomField`** definitions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomField'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+    post:
+      tags:
+      - Custom Fields
+      summary: Create a custom field definition
+      description: 'Creates a new **custom field definition**. Scope it to requirements with **`resource_types: ["REQUIREMENT"]`**. For **dropdown** / **multi-select** fields, define the selectable options under **`field_metadata.values`** as a `{option_id: label}` map.
+
+
+        Requires an **admin** or **manager** role. The **201** response body is the new **`field_…`** id string.'
+      operationId: createCustomField
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomFieldRequest'
+      responses:
+        '201':
+          description: Created — the new custom field id.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: New custom field id (`field_…`).
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '403':
+          description: Forbidden — only an admin or manager can create a custom field.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /custom-fields/v1/fields/{field_id}:
+    get:
+      tags:
+      - Custom Fields
+      summary: Get a custom field definition
+      description: 'Returns a single **custom field definition**, including **`field_metadata.values`** — the `{option_id: label}` map you use to translate a desired label into the **option id** to send when setting a **dropdown** / **multi-select** value on a requirement.'
+      operationId: getCustomField
+      responses:
+        '200':
+          description: The **`CustomField`** definition.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomField'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '500':
+          description: Internal server error, including when the custom field does not exist.
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+components:
+  schemas:
+    CustomField:
+      type: object
+      description: A custom field definition.
+      properties:
+        id:
+          type: string
+          description: Field id (`field_…`).
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/FieldType'
+        description:
+          type:
+          - string
+          - 'null'
+        field_metadata:
+          type: object
+          description: Type-specific configuration.
+          properties:
+            values:
+              type: object
+              description: 'Selectable options as a **`{ option_id: label }`** map (dropdown / multi-select only). The **option id** is what you send as **`value`** when setting the field on a requirement.'
+              additionalProperties:
+                type: string
+            who_can_edit:
+              type: string
+              description: Who may edit the value, e.g. **`all`**.
+            allow_auditors_to_view:
+              type: boolean
+          additionalProperties: true
+        resource_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceType'
+          description: Resource types this field applies to.
+        metadata:
+          type: object
+          description: Per-resource-type metadata (e.g. **`order`**, **`mandatory`**, **`framework_ids`**).
+          additionalProperties: true
+        registers_metadata:
+          type:
+          - object
+          - 'null'
+          description: Per-register metadata, keyed by register id (the empty-string key **`""`** is the default register). Present for all field types; may be **`null`**.
+          additionalProperties: true
+      additionalProperties: true
+    CreateCustomFieldRequest:
+      type: object
+      description: Body for creating a custom field definition.
+      required:
+      - name
+      - type
+      - resource_types
+      properties:
+        name:
+          type: string
+        description:
+          type:
+          - string
+          - 'null'
+        type:
+          $ref: '#/components/schemas/FieldType'
+        resource_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceType'
+          description: Resource types the field applies to, e.g. **`["REQUIREMENT"]`**.
+        field_metadata:
+          type: object
+          description: 'Type-specific configuration. For **dropdown** / **multi-select**, provide **`values`** as a **`{ option_id: label }`** map.'
+          additionalProperties: true
+        metadata:
+          type: object
+          description: 'Per-resource-type metadata, e.g. **`{ "REQUIREMENT": { "framework_ids": null } }`**.'
+          additionalProperties: true
+    ResourceType:
+      type: string
+      enum:
+      - CONTROL
+      - POLICY
+      - FRAMEWORK
+      - EVIDENCE
+      - REQUIREMENT
+      - RISK
+      - UAR
+      - FINDING
+      - TREATMENT_PLAN
+      description: Platform resource type a custom field can apply to.
+    PatchControlCustomFieldValuePayload:
+      type: object
+      properties:
+        value: {}
+    FieldType:
+      type: string
+      enum:
+      - FreeText
+      - DropDown
+      - MultiSelect
+      description: Custom field type. **`FreeText`** stores a string; **`DropDown`** stores a single option id; **`MultiSelect`** stores an array of option ids.
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+x-refined-from:
+- anecdotes-grc-openapi-original.json
+- anecdotes-grc-openapi.yml
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

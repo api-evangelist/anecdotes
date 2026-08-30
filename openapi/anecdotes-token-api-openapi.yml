@@ -1,0 +1,113 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes Token API
+  version: 1.0.0
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+  description: 'Operations tagged Token across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Token
+  description: 'Exchange your **API key** for a **short-lived JWT** (1 hour). Send the JWT as `Authorization: Bearer <token>` on all subsequent requests.'
+paths:
+  /identity/v1/apikey/exchange:
+    get:
+      tags:
+      - Token
+      summary: Exchange API key
+      description: 'Exchange an API key created in the Anecdotes platform for a short-lived JWT (valid for 1 hour).
+
+
+        1. Create an API key in the Anecdotes platform under your project settings.
+
+        2. Use the exchange endpoint with the key as `x-anecdotes-api-key` header.
+
+        3. Use the result JWT token as `Authorization: Bearer <token>` header.'
+      operationId: exchangeApiKey
+      parameters:
+      - name: x-anecdotes-api-key
+        in: header
+        required: true
+        schema:
+          type: string
+          description: Your Anecdotes API key (created in the platform under project settings).
+        description: Your Anecdotes API key (created in the platform under project settings).
+      responses:
+        '200':
+          description: 'JWT token string (plain text). Valid for 1 hour. Use as `Authorization: Bearer <JWT>` on all other API calls.'
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - API key is missing or invalid.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+components:
+  schemas:
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+x-refined-from:
+- anecdotes-grc-openapi-original.json
+- anecdotes-grc-openapi.yml
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

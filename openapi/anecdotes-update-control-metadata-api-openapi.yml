@@ -1,0 +1,246 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes Update Control Metadata API
+  version: 1.0.0
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+  description: 'Operations tagged Update Control Metadata across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Update Control Metadata
+  description: Update or delete a **custom control**'s name, description, category, and implementation.
+paths:
+  /controls/control/{control_id}:
+    put:
+      tags:
+      - Update Control Metadata
+      summary: Update custom control
+      description: Updates name, description, category, implementation, and related-control links on a **custom control**.
+      operationId: updateCustomControl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutCustomControl'
+      responses:
+        '200':
+          description: Updated control object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Control'
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Control not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    delete:
+      tags:
+      - Update Control Metadata
+      summary: Delete custom control
+      description: Permanently deletes a **custom control**.
+      operationId: deleteCustomControl
+      responses:
+        '200':
+          description: Control deleted.
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Control not found.
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+components:
+  schemas:
+    ControlStatus:
+      type: object
+      description: Current control status and audit metadata.
+      properties:
+        status:
+          $ref: '#/components/schemas/ControlStatusEnum'
+        updated_by:
+          type: string
+        last_edit_time:
+          type: string
+          format: date-time
+        note:
+          type: string
+        manually_set:
+          type: boolean
+        gap_detected:
+          type: boolean
+      required:
+      - status
+    MaturityLevel:
+      type: string
+      enum:
+      - INITIAL
+      - REPEATABLE
+      - DEFINED
+      - MANAGED
+      - OPTIMIZING
+    LinkedRequirement:
+      type: object
+      properties:
+        requirement_id:
+          type: string
+        requirement_name:
+          type: string
+      required:
+      - requirement_id
+    Control:
+      type: object
+      description: Control facade returned by list/read endpoints. Additional tenant-specific fields may appear.
+      properties:
+        control_id:
+          type: string
+        control_name:
+          type: string
+        control_description:
+          type: string
+        control_framework_id:
+          type: string
+        control_category:
+          type: string
+        control_framework_category:
+          type: string
+        control_framework_category_id:
+          type: string
+        control_status:
+          $ref: '#/components/schemas/ControlStatus'
+        control_owners:
+          type: array
+          items:
+            type: string
+        control_tags:
+          type: array
+          items:
+            type: string
+        control_requirement_ids:
+          type: array
+          items:
+            type: string
+        linked_requirements:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedRequirement'
+        control_original_related_controls:
+          type: array
+          items:
+            type: string
+        maturity_level:
+          $ref: '#/components/schemas/MaturityLevel'
+        control_last_edit_time:
+          type: string
+          format: date-time
+        custom_fields:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      required:
+      - control_id
+      - control_name
+      additionalProperties: true
+    ControlStatusEnum:
+      type: string
+      enum:
+      - NOT_STARTED
+      - IN_PROGRESS
+      - READY_FOR_AUDIT
+      - GAP
+      - ISSUE
+      - APPROVED_BY_AUDITOR
+      - MONITORING
+      - NOT_APPLICABLE
+      - NOT_READY_FOR_AUDIT
+      - INSUFFICIENT_DATA
+      - UNDER_REVIEW
+      description: Machine status code. Product UI may display human-readable labels (for example `Gap`, `Ready for audit`).
+    PutCustomControl:
+      type: object
+      required:
+      - control_name
+      - control_framework_category
+      - control_framework_category_id
+      properties:
+        control_name:
+          type: string
+          minLength: 1
+        control_description:
+          type: string
+        control_framework_category:
+          type: string
+        control_framework_category_id:
+          type: string
+        control_original_related_controls:
+          type: array
+          items:
+            type: string
+        control_implementation:
+          type: string
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+x-refined-from:
+- anecdotes-grc-openapi-original.json
+- anecdotes-grc-openapi.yml
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

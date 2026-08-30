@@ -1,0 +1,377 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes Create Evidence API
+  version: 1.0.0
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+  description: 'Operations tagged Create Evidence across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Create Evidence
+  description: Create custom **Evidence Collections**, **attach** JSON/CSV files to a collection, and upload **manual** evidence of any type. Customer-pushed evidence can also carry **IPE** (Information Produced by Entity) — the structured queries that produced the data — supplied inline (`evidence_api_query`) or as a JSON file (`ipe_file`) on create/attach, or added later to an existing collection via the `/ipe` endpoint. IPE can only be written to API (customer-pushed) evidence.
+paths:
+  /evidence/v1/evidence:
+    post:
+      tags:
+      - Create Evidence
+      summary: Create Manual Evidence
+      description: Upload any filetype as evidence without the use of an Evidence Collection. This evidence will display as Manual Evidence from within the Evidence Pool.
+      operationId: uploadManualEvidence
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                evidence_file:
+                  type: string
+                  format: binary
+                  description: The file to upload as manual evidence.
+                evidence_id:
+                  type: string
+                  description: The evidence_id to attach the file to. Used when creating a new version of existing manual evidence.
+      responses:
+        '200':
+          description: File uploaded successfully.
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '422':
+          description: Invalid arguments.
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /evidence/v1/evidence/create:
+    post:
+      tags:
+      - Create Evidence
+      summary: Create an Evidence Collection
+      description: "Create a new API Evidence Collection, used to attach evidence data into using the **Attach Evidence** endpoint. Successful response provides the resulting 'evidence_id'. \n\n**IPE (optional):** you may attach **IPE** (Information Produced by Entity) — the structured queries that produced the data — via `evidence_api_query` (inline JSON-stringified array of query strings) **or** `ipe_file` (a JSON file), but **not both**. IPE is tied to a data collection, so it is stored **only when `evidence_file` is also included** in this request; sending IPE with no `evidence_file` returns `422` (add the data here, or push it later via **Attach Evidence** / **Attach IPE**). IPE is capped at **5000 entries** and **15 MB** — oversized payloads are rejected, never truncated.\n\nFor a step-by-step guide see [How to create & collect API evidence](https://help.anecdotes.ai/integrations-and-data/api-evidence)."
+      operationId: createEvidenceCollection
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - service_id
+              - evidence_name
+              properties:
+                service_id:
+                  type: string
+                  description: Name the service or plugin for this evidence. Naming different evidences with the same service_id will group them within Anecdotes.
+                evidence_name:
+                  type: string
+                  description: The name of this evidence.
+                evidence_help:
+                  type: string
+                  description: The description of the evidence.
+                  default: ''
+                empty_state:
+                  type: string
+                  description: Text to display when the evidence has no data.
+                  default: ''
+                is_uar:
+                  type: boolean
+                  description: Whether this evidence is used for User Access Reviews.
+                  default: false
+                is_sot:
+                  type: boolean
+                  description: Whether this evidence is a Source of Truth.
+                  default: false
+                evidence_file:
+                  type: string
+                  format: binary
+                  description: Optional evidence file to upload on creation.
+                evidence_preview_rules:
+                  type: string
+                  description: Preview rules for the evidence as a JSON-stringified object.
+                evidence_api_query:
+                  type: string
+                  description: 'IPE, inline: a JSON-stringified array of structured query strings (HTTP calls, SQL, etc.) that produced this evidence. Provide either this or `ipe_file`, not both. Only stored when `evidence_file` is also uploaded.'
+                ipe_file:
+                  type: string
+                  format: binary
+                  description: 'IPE, as a file: a JSON file holding an array of query strings, for very large lists. Provide either this or `evidence_api_query`, not both. Only stored when `evidence_file` is also uploaded.'
+      responses:
+        '201':
+          description: Evidence Collection created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_CreateEvidenceResponse'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '422':
+          description: 'Validation Error. Possible causes and body shapes:
+
+            - **Request validation** (e.g. missing `service_id`/`evidence_name`): `ValidationError` (`detail` array).
+
+            - **IPE without data** (IPE supplied but no `evidence_file`): `DetailMessage` (`detail` string).
+
+            - **IPE validation** (both `evidence_api_query` and `ipe_file` supplied; malformed JSON; not an array of strings; more than 5000 entries; payload over 15 MB; non-UTF-8 file): `ErrorResponse` (`error_title`/`error_detail`).'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ValidationError'
+                - $ref: '#/components/schemas/Evidence_DetailMessage'
+                - $ref: '#/components/schemas/Evidence_ErrorResponse'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /evidence/v1/evidence/{evidence_id}/attach:
+    post:
+      tags:
+      - Create Evidence
+      summary: Create Evidence within a Collection
+      description: 'Create JSON or CSV formatted evidence for an existing Evidence Collection. The collection is specified with the `evidence_id` path parameter. Send the file as **multipart/form-data** using the `evidence_file` field.
+
+
+        **IPE (optional):** attach **IPE** (Information Produced by Entity) for this collection via `evidence_api_query` (inline JSON-stringified array of query strings) **or** `ipe_file` (a JSON file), but **not both**. Attaching IPE here **replaces** any IPE previously set on this collection. IPE is capped at **5000 entries** and **15 MB** — oversized payloads are rejected, never truncated.
+
+
+        Only API (customer-pushed) evidence can be written to; attaching to Anecdotes/connector-collected evidence returns `400`.'
+      operationId: attachEvidenceToCollection
+      parameters:
+      - name: evidence_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence_id to attach this collection to.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - evidence_file
+              properties:
+                evidence_file:
+                  type: string
+                  format: binary
+                  description: The evidence file content for this collection. Must be JSON or CSV.
+                evidence_api_query:
+                  type: string
+                  description: 'IPE, inline: a JSON-stringified array of structured query strings (HTTP calls, SQL, etc.) that produced this evidence. Provide either this or `ipe_file`, not both. Replaces any IPE previously set on this collection.'
+                ipe_file:
+                  type: string
+                  format: binary
+                  description: 'IPE, as a file: a JSON file holding an array of query strings, for very large lists. Provide either this or `evidence_api_query`, not both. Replaces any IPE previously set on this collection.'
+      responses:
+        '201':
+          description: Evidence uploaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  evidence_id:
+                    type: array
+                    items:
+                      type: string
+                    description: Evidence definition id(s) the data was attached to.
+        '400':
+          description: The target evidence is not API (customer-pushed) evidence and cannot be written to.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_ErrorResponse'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '422':
+          description: 'Validation Error. Possible causes and body shapes:
+
+            - **Request validation** (e.g. missing `evidence_file`): `ValidationError` (`detail` array).
+
+            - **IPE validation** (both `evidence_api_query` and `ipe_file` supplied; malformed JSON; not an array of strings; more than 5000 entries; payload over 15 MB; non-UTF-8 file): `ErrorResponse` (`error_title`/`error_detail`).'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ValidationError'
+                - $ref: '#/components/schemas/Evidence_ErrorResponse'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /evidence/v1/evidence/{evidence_instance_id}/ipe:
+    post:
+      tags:
+      - Create Evidence
+      summary: Add IPE to a Collection
+      description: 'Add or **replace** IPE (Information Produced by Entity — the structured queries that produced the data) on an evidence collection that was **already pushed**, identified by its `evidence_instance_id`. Use this to add IPE to data sent before IPE was supported, or to update it later.
+
+
+        Get the `evidence_instance_id` from `GET /evidence/v1/evidence/{evidence_id}/run_history`.
+
+
+        Supply IPE via `evidence_api_query` (inline JSON-stringified array of query strings) **or** `ipe_file` (a JSON file), but **not both**, capped at **5000 entries** and **15 MB** (oversized is rejected, never truncated). Only API (customer-pushed) evidence can be written to — setting IPE on Anecdotes/connector-collected evidence is rejected.'
+      operationId: attachEvidenceIpe
+      parameters:
+      - name: evidence_instance_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence_instance_id of the collection to attach IPE to (from GET /evidence/v1/evidence/{evidence_id}/run_history).
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                evidence_api_query:
+                  type: string
+                  description: 'IPE, inline: a JSON-stringified array of structured query strings (HTTP calls, SQL, etc.) that produced this evidence. Provide either this or `ipe_file`, not both.'
+                ipe_file:
+                  type: string
+                  format: binary
+                  description: 'IPE, as a file: a JSON file holding an array of query strings, for very large lists. Provide either this or `evidence_api_query`, not both.'
+      responses:
+        '200':
+          description: IPE was attached successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_AttachIpeResponse'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '404':
+          description: No evidence instance found for the given evidence_instance_id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evidence_ErrorResponse'
+        '422':
+          description: 'Validation Error. Possible causes and body shapes:
+
+            - **No IPE supplied** (neither `evidence_api_query` nor `ipe_file`): `DetailMessage` (`detail` string).
+
+            - **IPE validation** (both sources supplied; malformed JSON; not an array of strings; more than 5000 entries; payload over 15 MB; non-UTF-8 file) **or the API-evidence-only guard** (target is not customer-pushed evidence): `ErrorResponse` (`error_title`/`error_detail`).'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Evidence_DetailMessage'
+                - $ref: '#/components/schemas/Evidence_ErrorResponse'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+components:
+  schemas:
+    Evidence_ErrorResponse:
+      type: object
+      description: Error body returned for Anecdotes business-logic errors (e.g. IPE validation failures and the API-evidence-only guard). `error_detail` repeats the HTTP status code.
+      properties:
+        error_title:
+          type: string
+          title: Error Title
+          description: Human-readable error message.
+        error_detail:
+          type: integer
+          title: Error Detail
+          description: The HTTP status code, repeated in the body.
+      required:
+      - error_title
+      - error_detail
+      title: ErrorResponse
+    Evidence_CreateEvidenceResponse:
+      type: object
+      properties:
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The id of the newly created evidence.
+      required:
+      - evidence_id
+      title: CreateEvidenceResponse
+    Evidence_DetailMessage:
+      type: object
+      description: Error body for input-combination errors raised directly by the endpoint (FastAPI `HTTPException` with a string detail).
+      properties:
+        detail:
+          type: string
+          title: Detail
+          description: Human-readable error message.
+      required:
+      - detail
+      title: DetailMessage
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+    Evidence_AttachIpeResponse:
+      type: object
+      description: Response returned after attaching or replacing IPE on an evidence collection.
+      properties:
+        evidence_instance_id:
+          type: string
+          title: Evidence Instance Id
+          description: The collection (evidence instance) the IPE was attached to.
+        ipe_count:
+          type: integer
+          title: Ipe Count
+          description: Number of IPE entries stored.
+      required:
+      - evidence_instance_id
+      - ipe_count
+      title: AttachIpeResponse
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+x-refined-from:
+- anecdotes-grc-openapi-original.json
+- anecdotes-grc-openapi.yml
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

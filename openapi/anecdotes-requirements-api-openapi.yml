@@ -1,0 +1,492 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes Requirements API
+  version: 1.0.0
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+  description: 'Operations tagged Requirements across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Requirements
+  description: '**Requirements** tie **controls** to expected **evidence** and framework scoping. These endpoints cover listing customer requirements, simple **create / read / update / delete** for a single requirement id (`requirement_…`), and reading / updating **custom field** values on requirements.'
+paths:
+  /api/v1/requirement:
+    get:
+      tags:
+      - Requirements
+      summary: Get all requirements
+      description: 'Returns requirement objects for the authenticated tenant. Use optional **`limit`** and **`offset`** to page through the catalog (typical page sizes are in the hundreds).
+
+
+        The response is a **JSON array** of requirement objects, or in some gateways a wrapper object; clients should accept either an **array** or an object containing a **`requirements`** array.
+
+
+        For one id and the fullest payload (for example **`requirement_scoping_overrides`**), use **`GET /api/v1/requirement/{requirement_id}`**.'
+      operationId: listRequirements
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          description: Maximum number of requirements to return in this response.
+        description: Maximum number of requirements to return in this response.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          description: Number of requirements to skip before returning results (pagination).
+        description: Number of requirements to skip before returning results (pagination).
+      responses:
+        '200':
+          description: Array of **`Requirement`** objects, or a wrapper with a **`requirements`** array.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/Requirement'
+                - type: object
+                  properties:
+                    requirements:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Requirement'
+                  additionalProperties: true
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '422':
+          description: Validation error — the request failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /api/v1/requirement/:
+    post:
+      tags:
+      - Requirements
+      summary: Create a custom requirement
+      description: 'Creates a new **custom** requirement. Link it to **controls** and **frameworks** with optional arrays of prefixed ids (`control_…`, `framework_…`).
+
+
+        **201** response body is often the new **`requirement_id`** string; some responses return a full **`Requirement`** object instead — clients should accept either.'
+      operationId: createRequirement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequirementCreateRequest'
+      responses:
+        '201':
+          description: Created — body may be the new **`requirement_*`** id string or a **`Requirement`** object.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: string
+                  description: New requirement id
+                - $ref: '#/components/schemas/Requirement'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /api/v1/requirement/{requirement_id}:
+    get:
+      tags:
+      - Requirements
+      summary: Get requirement by id
+      description: Returns one requirement. The body may be a single **`Requirement`** object or a **one-element array** — clients should accept both shapes.
+      operationId: getRequirementById
+      responses:
+        '200':
+          description: Requirement record.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Requirement'
+                - type: array
+                  minItems: 1
+                  maxItems: 1
+                  items:
+                    $ref: '#/components/schemas/Requirement'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '404':
+          description: Requirement not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /api/v1/requirement/{requirement_id}/:
+    delete:
+      tags:
+      - Requirements
+      summary: Delete a requirement
+      description: Deletes the requirement identified by **`requirement_id`**.
+      operationId: deleteRequirement
+      responses:
+        '200':
+          description: Requirement deleted.
+        '204':
+          description: Requirement deleted (no body).
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '404':
+          description: Requirement not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    patch:
+      tags:
+      - Requirements
+      summary: Update a requirement
+      description: 'Partial update for a single requirement. Wrap mutable fields under **`requirement`**. Optional **`context`** (e.g. **`control_id`**) may be required for certain scoping updates.
+
+
+        Successful responses typically return **200** with the updated resource or an empty body depending on gateway version — re-**GET** the requirement if you need a guaranteed full payload.'
+      operationId: updateRequirement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequirementUpdateRequestEnvelope'
+      responses:
+        '200':
+          description: Requirement updated.
+        '201':
+          description: Requirement updated (some gateways return **201**).
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '404':
+          description: Requirement not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /api/v1/requirement/{requirement_id}/fields/{field_id}:
+    patch:
+      tags:
+      - Requirements
+      summary: Set a custom field value on a requirement
+      description: 'Sets (or clears) the value of one **custom field** on one requirement.
+
+
+        The **`value`** shape depends on the field type:
+
+        - **Free text** — a plain string, e.g. **`"True"`**.
+
+        - **Dropdown** — a single **option id** (a key of the field''s **`field_metadata.values`** map), e.g. **`"option_…"`** — not the label.
+
+        - **Multi-select** — an **array** of option ids.
+
+        - Send **`null`** to clear the value.
+
+
+        To turn a desired label (e.g. `Sync-To-Archer` = `True`) into the option id to send, read the field definition via **`GET /custom-fields/v1/fields/{field_id}`** and look up the matching entry in **`field_metadata.values`**.
+
+
+        Returns **204 No Content** on success.'
+      operationId: setRequirementCustomFieldValue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequirementCustomFieldValueUpdate'
+      responses:
+        '204':
+          description: Value set (no body).
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '500':
+          description: Internal server error, including when the **`field_id`** does not exist or **`value`** does not match the field type (for example a list sent to a **dropdown** or **free-text** field). Verify the field id via **`GET /custom-fields/v1/fields/{field_id}`** and send a value matching the field type.
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /api/v1/requirements/fields:
+    get:
+      tags:
+      - Requirements
+      summary: Get all requirement custom field values
+      description: 'Returns every **custom field value** set on requirements for the authenticated tenant, as a nested map: **`{ requirement_id: { field_id: { "value": … } } }`**.
+
+
+        Values are stored as raw **option ids** for **dropdown** / **multi-select** fields — resolve the human-readable label with **`GET /custom-fields/v1/fields/{field_id}`** (see **`field_metadata.values`**) — and as plain strings for **free-text** fields. Requirements with no value set are omitted; when nothing is set at all the body is an empty object **`{}`**.
+
+
+        There is **no server-side filter by value**. To find requirements where a field equals a specific value, read this map and filter client-side. Note the path is **plural** (`requirements`), unlike the single-requirement endpoints above.'
+      operationId: listRequirementCustomFieldValues
+      responses:
+        '200':
+          description: 'Nested map of requirement id → field id → **`{ "value": … }`**. Empty object when no values are set.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequirementCustomFieldValues'
+        '401':
+          description: Unauthorized — JWT is missing, invalid, or expired.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+components:
+  schemas:
+    RequirementUpdateRequestEnvelope:
+      type: object
+      properties:
+        requirement:
+          $ref: '#/components/schemas/RequirementUpdateBody'
+        context:
+          type: object
+          properties:
+            control_id:
+              type: string
+              description: Control context for scoped updates.
+          additionalProperties: true
+      additionalProperties: true
+    RequirementCustomFieldValueUpdate:
+      type: object
+      description: Body for setting a custom field value on a requirement. The **`value`** shape depends on the field type.
+      required:
+      - value
+      properties:
+        value:
+          description: String for **free-text**, a single **option id** for **dropdown**, an array of option ids for **multi-select**, or **`null`** to clear.
+          oneOf:
+          - type:
+            - string
+            - 'null'
+          - type: array
+            items:
+              type: string
+    Requirement:
+      type: object
+      description: A customer requirement instance. Field names mirror the live API; additional fields may appear (`additionalProperties`).
+      properties:
+        requirement_id:
+          type: string
+          description: Stable requirement instance id (`requirement_…`).
+        requirement_name:
+          type: string
+          description: Display name / title.
+        requirement_description:
+          type: string
+          description: Full text or title text depending on context.
+        requirement_help:
+          type: string
+          description: Guidance text; may contain HTML.
+        requirement_category:
+          type: string
+        requirement_status:
+          type: string
+          description: Internal status id (`requirement_status_…`).
+        requirement_status_name:
+          type: string
+          description: Human-readable status label.
+        requirement_edited_by:
+          type: string
+        requirement_last_edit_time:
+          type: string
+          description: Last edit timestamp (ISO-8601 string as returned by the API).
+        requirement_is_custom:
+          type: boolean
+        requirement_applicability:
+          type: boolean
+        requirement_note_exists:
+          type: boolean
+        requirement_related_controls:
+          type: array
+          items:
+            type: string
+          description: Linked control ids (`control_…`).
+        requirement_related_frameworks:
+          type: array
+          items:
+            type: string
+          description: Linked framework ids (`framework_…`).
+        requirement_related_evidences:
+          type: array
+          items:
+            type: string
+        requirement_related_policies:
+          type: array
+          items:
+            type: string
+        requirement_scoping_overrides:
+          type: object
+          description: Per-framework scoping overrides (shape is product-defined). Often maps **`framework_*`** keys to objects with **`evidences`** maps and optional **`resource_type`**.
+          additionalProperties: true
+        services_that_automates:
+          type: array
+          items:
+            type: string
+          description: Integrations or services that collect evidence for this requirement.
+      additionalProperties: true
+    RequirementCreateRequest:
+      type: object
+      required:
+      - requirement_description
+      - requirement_category
+      - requirement_related_frameworks
+      properties:
+        requirement_description:
+          type: string
+          description: Title / name of the new custom requirement.
+        requirement_help:
+          type: string
+          description: HTML or plain text describing the requirement.
+        requirement_category:
+          type: string
+        requirement_related_controls:
+          type: array
+          items:
+            type: string
+        requirement_related_frameworks:
+          type: array
+          items:
+            type: string
+          description: Framework ids to link; send **`[]`** when none.
+    RequirementCustomFieldValues:
+      type: object
+      description: 'Custom field values across requirements: a map of **requirement id → field id → `{ "value": … }`**. Empty object when nothing is set.'
+      additionalProperties:
+        type: object
+        description: 'For one requirement: a map of **field id → `{ "value": … }`**.'
+        additionalProperties:
+          type: object
+          properties:
+            value:
+              description: 'Stored value: an **option id** (dropdown) or array of option ids (multi-select), or a plain string (free-text).'
+              oneOf:
+              - type:
+                - string
+                - 'null'
+              - type: array
+                items:
+                  type: string
+          additionalProperties: true
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+    RequirementUpdateBody:
+      type: object
+      properties:
+        requirement_description:
+          type: string
+        requirement_help:
+          type: string
+          description: HTML or plain text.
+        requirement_category:
+          type: string
+        requirement_related_evidences:
+          type: array
+          items:
+            type: string
+        requirement_related_policies:
+          type: array
+          items:
+            type: string
+        requirement_scoping_overrides:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              evidences:
+                type: object
+                additionalProperties:
+                  type: boolean
+              resource_type:
+                type: string
+            additionalProperties: true
+      additionalProperties: true
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+x-refined-from:
+- anecdotes-grc-openapi-original.json
+- anecdotes-grc-openapi.yml
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

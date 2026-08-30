@@ -1,0 +1,228 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes Download Evidence API
+  version: 1.0.0
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+  description: 'Operations tagged Download Evidence across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Download Evidence
+  description: Download **raw** evidence payloads, processed **evidence tables**, combined full-or-raw streams, and latest binary payloads.
+paths:
+  /evidence/v1/evidence/{evidence_id}/latest_raw:
+    get:
+      tags:
+      - Download Evidence
+      summary: Get Latest Raw Data
+      description: Returns the raw data of the latest evidence instance.
+      operationId: getLatestRawData
+      parameters:
+      - name: evidence_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence ID.
+      responses:
+        '200':
+          description: Raw data of the latest evidence instance (binary stream).
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '404':
+          description: Evidence instance not found.
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /evidence/v1/evidence/{evidence_instance_id}/download_raw:
+    get:
+      tags:
+      - Download Evidence
+      summary: Download Raw Data
+      description: Download the **raw** evidence payload for an instance. The response is a **binary stream** (`application/octet-stream`).
+      operationId: downloadRawData
+      parameters:
+      - name: evidence_instance_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence instance identifier.
+      responses:
+        '200':
+          description: Raw data file download.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '404':
+          description: Evidence instance not found.
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /evidence/v1/evidence/{evidence_instance_id}/full_data:
+    get:
+      tags:
+      - Download Evidence
+      summary: Get Evidence Full Data (preview table)
+      description: 'Path segment `full_data` returns the **processed evidence table** (the same logical preview grid as in the platform UI), streamed with `Content-Type: application/octet-stream` (often JSON bytes for the table).'
+      operationId: getEvidenceFullData
+      parameters:
+      - name: evidence_instance_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The evidence instance identifier.
+      responses:
+        '200':
+          description: Processed evidence preview table as a streamed binary payload. This is the JSON representation of the table seen in the Anecdotes platform.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired.
+        '404':
+          description: Evidence instance not found.
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /evidence/v1/evidence/{evidence_instance_id}/fulldata_or_raw:
+    get:
+      tags:
+      - Download Evidence
+      summary: Get Full Data Or Raw
+      description: Returns the full data for evidence if exists, else the raw file data.
+      operationId: getEvidenceFullDataOrRaw
+      parameters:
+      - name: evidence_instance_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: The evidence instance identifier (from GET /evidence/v1/evidence).
+        description: The evidence instance identifier (from GET /evidence/v1/evidence).
+      responses:
+        '200':
+          description: Full processed evidence data if available, otherwise the raw file data. The response is a streamed binary payload.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /evidence/v1/evidence/{evidence_instance_id}/raw:
+    get:
+      tags:
+      - Download Evidence
+      summary: Get Raw Data
+      description: Returns the raw data file of the requested evidence_instance_id.
+      operationId: getEvidenceRaw
+      parameters:
+      - name: evidence_instance_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: The evidence instance identifier (from GET /evidence/v1/evidence).
+        description: The evidence instance identifier (from GET /evidence/v1/evidence).
+      responses:
+        '200':
+          description: Raw evidence file data (binary stream).
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+components:
+  schemas:
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+x-refined-from:
+- anecdotes-grc-openapi-original.json
+- anecdotes-grc-openapi.yml
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

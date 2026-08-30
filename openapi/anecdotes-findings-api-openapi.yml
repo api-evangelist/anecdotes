@@ -1,0 +1,388 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes Findings API
+  version: 1.0.0
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+  description: 'Operations tagged Findings across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Findings
+  description: '**Findings** record compliance gaps and issues, including links to controls, evidence, and policies.'
+paths:
+  /compliance/v1/findings:
+    get:
+      tags:
+      - Findings
+      summary: Get all findings
+      description: Returns **`findings`** and **`pagination`**. Use **`limit`** and **`offset`** to page results.
+      operationId: listFindings
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          description: Maximum number of findings to return in this response.
+        description: Maximum number of findings to return in this response.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          description: Number of findings to skip before returning results (pagination).
+        description: Number of findings to skip before returning results (pagination).
+      responses:
+        '200':
+          description: Findings and pagination.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindingsListResponse'
+        '401':
+          description: Unauthorized.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    post:
+      tags:
+      - Findings
+      summary: Create finding
+      description: Creates a finding. Send **`multipart/form-data`** with **`finding_data`** as a JSON string of finding fields.
+      operationId: createFinding
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - finding_data
+              properties:
+                finding_data:
+                  type: string
+                  description: JSON string of finding fields (e.g. `title`, `description`, `severity`, `status`, `linked_entities`).
+      responses:
+        '201':
+          description: Created finding.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Finding'
+        '401':
+          description: Unauthorized.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    delete:
+      tags:
+      - Findings
+      summary: Delete findings
+      description: 'Deletes findings by internal **`id`**. Request body: **`ids`** array. Response: **`deleted_count`**.'
+      operationId: deleteFindings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                  description: Internal finding ids to delete.
+      responses:
+        '200':
+          description: Delete result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindingsDeleteResponse'
+        '401':
+          description: Unauthorized.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /compliance/v1/findings/{finding_id}:
+    get:
+      tags:
+      - Findings
+      summary: Get finding by id
+      description: Returns one finding by **`finding_id`**.
+      operationId: getFindingById
+      responses:
+        '200':
+          description: Finding record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Finding'
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Finding not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    patch:
+      tags:
+      - Findings
+      summary: Update finding status
+      description: 'Updates a finding. Send fields to change (e.g. **`status`**: `Open`, `In progress`, `Resolved`).'
+      operationId: patchFinding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: Workflow status.
+                  enum:
+                  - Open
+                  - In progress
+                  - Resolved
+              additionalProperties: true
+      responses:
+        '200':
+          description: Updated finding.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Finding'
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Finding not found.
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+components:
+  schemas:
+    FindingsDeleteResponse:
+      type: object
+      required:
+      - deleted_count
+      description: Bulk delete result.
+      properties:
+        deleted_count:
+          type: integer
+          minimum: 0
+          description: Number of findings deleted for this request.
+      additionalProperties: true
+    FindingLinkedEntity:
+      type: object
+      description: Link from a finding to another object.
+      properties:
+        entity_type:
+          type: string
+          description: Linked resource type, e.g. `Control`, `Evidence`, `Policy`.
+        entity_id:
+          type: string
+          description: Target object id.
+        linked_type:
+          type: string
+          description: e.g. `Origin`
+        linked_at:
+          type: string
+          format: date-time
+          description: When the link was created.
+        linked_by:
+          type: string
+          description: User who created the link.
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type:
+          - string
+          - 'null'
+          description: User who last updated the link, if any.
+      additionalProperties: true
+    FindingsListResponse:
+      type: object
+      required:
+      - findings
+      properties:
+        findings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Finding'
+        pagination:
+          $ref: '#/components/schemas/FindingsPagination'
+    FindingsPagination:
+      type: object
+      description: Pagination metadata for get-all responses.
+      properties:
+        limit:
+          type: integer
+          description: Page size used for this response.
+        offset:
+          type: integer
+          description: Starting index of this slice.
+        total_count:
+          type: integer
+        has_next:
+          type: boolean
+        has_previous:
+          type: boolean
+      additionalProperties: true
+    Finding:
+      type: object
+      description: A compliance finding.
+      properties:
+        id:
+          type: string
+          description: Internal finding id (UUID).
+        customer_finding_id:
+          type: string
+          description: Human-facing id (e.g. `F-0001`), assigned by the service.
+        title:
+          type: string
+        description:
+          type: string
+          description: Plain text or HTML.
+        severity:
+          type: string
+          description: Severity label as returned by the API (e.g. `Low`, `Medium`, `High`).
+        status:
+          type: string
+          description: Workflow status (e.g. `Open`, `In progress`, `Resolved`).
+          enum:
+          - Open
+          - In progress
+          - Resolved
+        owners:
+          type: array
+          description: Assignee identifiers.
+          items:
+            type: string
+        due_date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        reported_by:
+          type: string
+          description: Reporter user id (often email).
+        created_by:
+          type: string
+          description: Creator.
+        updated_by:
+          type:
+          - string
+          - 'null'
+          description: Last editor.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        source_finding_type:
+          type:
+          - string
+          - 'null'
+        resolution_plan_id:
+          type:
+          - string
+          - 'null'
+          description: Linked resolution plan id, if any.
+        linked_entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindingLinkedEntity'
+        supporting_documents:
+          type: array
+          description: Supporting documents metadata.
+          items:
+            type: object
+            additionalProperties: true
+      additionalProperties: true
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+x-refined-from:
+- anecdotes-grc-openapi-original.json
+- anecdotes-grc-openapi.yml
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

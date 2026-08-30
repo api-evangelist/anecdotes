@@ -1,0 +1,132 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes FedRAMP 20x Trust Center Authorization API
+  version: 1.0.0
+  description: 'The FedRAMP 20x API exposes the contents of the Anecdotes Trust Center (https://trust.anecdotes.ai/)
+
+    programmatically. It is divided into three tiers: public endpoints that require no authentication,
+
+    an authorization tier that exchanges a static API key for a short-lived JWT, and gated endpoints that
+
+    return the authorization package, Key Security Indicators (KSIs) and the evidence behind them.
+
+
+    Derived by API Evangelist from the provider''s own published Postman collection
+
+    (FEDRAMP-20X-API.postman_collection.json, retrieved from the public /fedramp20x/v1/public/info
+
+    endpoint) and the documented endpoint tables at
+
+    https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api.
+
+    Paths, methods, parameters, headers and content types are transcribed from those sources only;
+
+    no response schemas were invented where the provider did not publish one.'
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+    email: security@anecdotes.ai
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Authorization
+  description: API key to JWT exchange and token management.
+paths:
+  /identity/v1/apikey/exchange:
+    get:
+      tags:
+      - Authorization
+      operationId: exchangeApiKeyFedramp
+      summary: Exchange API key
+      description: 'Exchange a static API key for a short-lived JWT, valid for 1 hour. Use the returned JWT as `Authorization: Bearer <token>` on the gated endpoints.'
+      security:
+      - ApiKey: []
+      parameters:
+      - name: x-anecdotes-api-key
+        in: header
+        required: true
+        description: Anecdotes API key created in the platform or the Trust Center API Token tab.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: JWT token string, valid for 1 hour.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - API key is missing or invalid.
+  /fedramp20x/v1/access/token:
+    get:
+      tags:
+      - Authorization
+      operationId: listFedrampTokens
+      summary: List tokens
+      description: Retrieve metadata for all active tokens. Response includes id, nickname, key, created_at, expiration_date, is_revoked and last_used_date.
+      responses:
+        '200':
+          description: Token metadata.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TokenMetadata'
+            text/csv:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized - JWT missing, invalid or expired.
+components:
+  schemas:
+    TokenMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        nickname:
+          type: string
+        key:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        expiration_date:
+          type: string
+          format: date-time
+        is_revoked:
+          type: boolean
+        last_used_date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: Static API key. Used only for the exchange endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Short-lived JWT (1 hour) obtained from /identity/v1/apikey/exchange.
+externalDocs:
+  description: FedRAMP 20x - Trust Center and API
+  url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

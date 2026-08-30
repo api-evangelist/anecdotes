@@ -1,0 +1,172 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes Framework API
+  version: 1.0.0
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+  description: 'Operations tagged Framework across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Framework
+  description: A **framework** in anecdotes is a compliance program built from a formally written standard or regulation (e.g. ISO/IEC 27001, SOC 2, HIPAA, CSA STAR). It is organized into **control categories** and **control titles** with control statements. **API:** list frameworks and export framework data. [Terminology](https://help.anecdotes.ai/product-tour/frameworks/anecdotes-terminology-and-framework-hierarchy)
+paths:
+  /api/v1/framework:
+    get:
+      tags:
+      - Framework
+      summary: Get frameworks
+      description: 'Returns a JSON **array** of frameworks in the customer environment. Optional query parameters `limit` and `offset` slice the result; the response body does **not** include a separate total-count or pagination envelope—only the array of framework objects.
+
+
+        Each item includes its ID, name, folder, and metadata. See [Anecdotes terminology and framework hierarchy](https://help.anecdotes.ai/product-tour/frameworks/anecdotes-terminology-and-framework-hierarchy).'
+      operationId: getFrameworks
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          description: Maximum number of frameworks to return per page.
+        description: Maximum number of frameworks to return per page.
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          description: Number of frameworks to skip (for pagination).
+        description: Number of frameworks to skip (for pagination).
+      responses:
+        '200':
+          description: Paginated list of framework objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Framework unique identifier
+                    name:
+                      type: string
+                      description: Framework name
+                    folder_id:
+                      type: string
+                      description: Parent folder ID
+                    description:
+                      type: string
+                      description: Framework description
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /api/v1/framework/{framework_id}/download:
+    get:
+      tags:
+      - Framework
+      summary: Export a framework
+      description: Exports a framework and its controls. Actual **Content-Type** depends on tenant/export configuration—typically structured **JSON** or **CSV** text, or a downloadable file stream.
+      operationId: exportFramework
+      parameters:
+      - name: framework_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: The unique identifier of the framework to export.
+        description: The unique identifier of the framework to export.
+      responses:
+        '200':
+          description: Export payload. Set the `Accept` header according to your integration. The response may be JSON, CSV, or a binary export.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Framework export when returned as JSON.
+            text/csv:
+              schema:
+                type: string
+                description: CSV export when returned as comma-separated text.
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                description: Binary file export when the platform returns a non-text artifact.
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+components:
+  schemas:
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+x-refined-from:
+- anecdotes-grc-openapi-original.json
+- anecdotes-grc-openapi.yml
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

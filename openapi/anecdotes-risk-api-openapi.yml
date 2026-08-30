@@ -1,0 +1,595 @@
+openapi: 3.2.0
+info:
+  title: Anecdotes Risk API
+  version: 1.0.0
+  contact:
+    name: Anecdotes
+    url: https://help.anecdotes.ai/api/overview
+    email: hello@anecdotes.ai
+  description: 'Operations tagged Risk across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.anecdotes.ai
+  description: Production
+security:
+- Bearer: []
+tags:
+- name: Risk
+  description: '**Risks** live in **risk registers** in Risk Manager: inherent/residual dimensions, treatment, custom fields, and links to evidence. **API:** create, list (full), get, update. [Risk Manager](https://help.anecdotes.ai/product-tour/risk-manager) · [Getting started](https://help.anecdotes.ai/product-tour/risk-manager/getting-started-risk-management)'
+paths:
+  /risk/v1/risk:
+    post:
+      tags:
+      - Risk
+      summary: Create Risk
+      description: Create a new risk.
+      operationId: createRisk
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Risk_NewRisk'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Risk_CustomerRiskModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /risk/v1/risk/full:
+    get:
+      tags:
+      - Risk
+      summary: Get Risks
+      description: List of risks and its associated data.
+      operationId: getRisks
+      parameters:
+      - name: risk_ids
+        in: query
+        required: false
+        schema:
+          type: string
+          title: Risk Ids
+          description: Optional comma-separated list of risk IDs to filter by.
+        description: Optional comma-separated list of risk IDs to filter by.
+      - name: exclude_review
+        in: query
+        required: false
+        schema:
+          type: boolean
+          title: Exclude Review
+          description: When false, includes risks that have reviewer access from users with specific roles. Defaults to false.
+          default: false
+        description: When false, includes risks that have reviewer access from users with specific roles. Defaults to false.
+      - name: limit
+        in: query
+        schema:
+          type: integer
+        description: Maximum number of risks to return.
+      - name: offset
+        in: query
+        schema:
+          type: integer
+        description: Number of risks to skip (for pagination).
+      responses:
+        '200':
+          description: Array of risk objects with treatment plan data.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Risk_CustomerFullRiskModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+  /risk/v1/risk/{risk_id}:
+    get:
+      tags:
+      - Risk
+      summary: Get Risk
+      description: Get a Risk by its ID.
+      operationId: getRisk
+      parameters:
+      - name: risk_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: The unique identifier of the risk.
+        description: The unique identifier of the risk.
+      responses:
+        '200':
+          description: Risk object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Risk_CustomerRiskModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    patch:
+      tags:
+      - Risk
+      summary: Update Risk
+      description: Update a specific risk.
+      operationId: updateRisk
+      parameters:
+      - name: risk_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: The unique identifier of the risk to update.
+        description: The unique identifier of the risk to update.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Risk_CustomerUpdatedRiskModel'
+      responses:
+        '200':
+          description: Updated risk object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Risk_CustomerRiskModel'
+        '401':
+          description: Unauthorized - JWT is missing, invalid, or expired. Exchange a new API key for a fresh JWT.
+        '422':
+          description: Validation Error - The request body or parameters failed validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    servers:
+    - url: https://api.anecdotes.ai
+      description: Production
+components:
+  schemas:
+    Risk_NewRisk:
+      properties:
+        name:
+          type: string
+          title: Name
+        evidence_ids:
+          items:
+            type: string
+          type: array
+          title: Evidence Ids
+        customer_risk_id:
+          type: string
+          title: Customer Risk Id
+        register_id:
+          type: string
+          title: Register Id
+          description: The risk register to create the risk in.
+        fields:
+          type: object
+          title: Fields
+          description: Custom field values as a mapping of field ID to value (string or array of strings).
+          additionalProperties:
+            oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+      type: object
+      required:
+      - name
+      title: NewRisk
+      description: Request body for creating a new risk via **POST /risk/v1/risk**. Only `name` is required; all other fields are optional.
+    Risk_CycleStatus:
+      enum:
+      - Setup Incomplete
+      - Not Started
+      - Missing File
+      - On Hold
+      - In Progress
+      - Changes Required
+      - Approved
+      - Scheduled
+      - Sent For Approval
+      - Approval Required
+      - Implemented
+      - Action Required
+      title: CycleStatus
+      description: An enumeration.
+    Risk_RiskAutoCalc:
+      properties:
+        enabled:
+          type: boolean
+          title: Enabled
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Risk_ActionStatus'
+          default: PENDING
+        residual_risk_level:
+          type: number
+          title: Residual Risk Level
+        residual_impact:
+          type: number
+          title: Residual Impact
+        residual_likelihood:
+          type: number
+          title: Residual Likelihood
+      type: object
+      required:
+      - enabled
+      title: RiskAutoCalc
+    Risk_CustomerUpdatedRiskModel:
+      type: object
+      properties:
+        name:
+          type: string
+          title: Name
+        inherent_risk_level:
+          type: integer
+          title: Inherent Risk Level
+        inherent_risk_level_impact:
+          type: integer
+          title: Inherent Risk Level Impact
+        inherent_risk_level_like_hood:
+          type: integer
+          title: Inherent Risk Level Like Hood
+          description: Inherent **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
+        inherent_risk_level_financial_impact:
+          type: string
+          title: Inherent Risk Level Financial Impact
+        residual_risk_level:
+          type: number
+          title: Residual Risk Level
+        residual_risk_level_impact:
+          type: integer
+          title: Residual Risk Level Impact
+        residual_risk_level_like_hood:
+          type: integer
+          title: Residual Risk Level Like Hood
+          description: Residual **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
+        residual_risk_level_financial_impact:
+          type: string
+          title: Residual Risk Level Financial Impact
+        strategy_status:
+          $ref: '#/components/schemas/Risk_CycleStatus'
+        calculated_risk_level:
+          type: integer
+          title: Calculated Risk Level
+        calculated_risk_level_score:
+          type: number
+          title: Calculated Risk Level Score
+        level_target:
+          type: string
+          title: Level Target
+        mitigation_control_ids:
+          items:
+            type: string
+          type: array
+          title: Mitigation Control Ids
+          default: []
+        evidence_ids:
+          items:
+            type: string
+          type: array
+          title: Evidence Ids
+          default: []
+        customer_risk_id:
+          type: string
+          title: Customer Risk Id
+        managers:
+          items:
+            type: string
+          type: array
+          title: Managers
+          default: []
+        owners:
+          items:
+            type: string
+          type: array
+          title: Owners
+          default: []
+        auto_calc:
+          $ref: '#/components/schemas/Risk_RiskAutoCalc'
+        global_id:
+          type: string
+          title: Global Id
+        inherent_risk_level_name:
+          type: string
+          title: Inherent Risk Level Name
+        inherent_risk_level_impact_name:
+          type: string
+          title: Inherent Risk Level Impact Name
+        inherent_risk_level_likelihood_name:
+          type: string
+          title: Inherent Risk Level Likelihood Name
+        residual_risk_level_name:
+          type: string
+          title: Residual Risk Level Name
+        residual_risk_level_impact_name:
+          type: string
+          title: Residual Risk Level Impact Name
+        residual_risk_level_likelihood_name:
+          type: string
+          title: Residual Risk Level Likelihood Name
+        register_id:
+          type: string
+          title: Register Id
+        appetite_status:
+          $ref: '#/components/schemas/Risk_RiskAppetiteStatus'
+        fields:
+          type: object
+          title: Fields
+          description: Custom field values as a mapping of field ID to value (string or array of strings).
+          additionalProperties:
+            oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+      title: CustomerUpdatedRiskModel
+      description: All updatable fields for a risk. All fields are optional in a PATCH request.
+    Risk_RiskAppetiteStatus:
+      type: string
+      enum:
+      - above
+      - within
+      title: RiskAppetiteStatus
+      description: Whether the risk level is above or within appetite.
+    Risk_ActionStatus:
+      type: string
+      enum:
+      - PENDING
+      - WAITING_FOR_REVIEW
+      - APPLIED
+      title: ActionStatus
+      description: An enumeration.
+    Risk_CustomerFullRiskModel:
+      allOf:
+      - $ref: '#/components/schemas/Risk_CustomerRiskModel'
+      - type: object
+        properties:
+          treatment_method:
+            type: string
+            title: Treatment Method
+            description: The treatment method applied to this risk.
+          treatment_expiration_time:
+            type: string
+            format: date-time
+            title: Treatment Expiration Time
+            description: When the current treatment plan expires.
+          treatment_creation_time:
+            type: string
+            format: date-time
+            title: Treatment Creation Time
+            description: When the treatment plan was created.
+          treatment_created_by:
+            type: string
+            title: Treatment Created By
+            description: User who created the treatment plan.
+          treatment_last_updated_time:
+            type: string
+            format: date-time
+            title: Treatment Last Updated Time
+            description: When the treatment plan was last updated.
+          treatment_last_updated_by:
+            type: string
+            title: Treatment Last Updated By
+            description: User who last updated the treatment plan.
+      title: CustomerFullRiskModel
+      description: Risk with last treatment plan data
+    Risk_CustomerRiskModel:
+      properties:
+        name:
+          type: string
+          title: Name
+        inherent_risk_level:
+          type: integer
+          title: Inherent Risk Level
+        inherent_risk_level_impact:
+          type: integer
+          title: Inherent Risk Level Impact
+        inherent_risk_level_like_hood:
+          type: integer
+          title: Inherent Risk Level Like Hood
+          description: Inherent **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
+        inherent_risk_level_financial_impact:
+          type: string
+          title: Inherent Risk Level Financial Impact
+        residual_risk_level:
+          type: number
+          title: Residual Risk Level
+        residual_risk_level_impact:
+          type: integer
+          title: Residual Risk Level Impact
+        residual_risk_level_like_hood:
+          type: integer
+          title: Residual Risk Level Like Hood
+          description: Residual **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
+        residual_risk_level_financial_impact:
+          type: string
+          title: Residual Risk Level Financial Impact
+        strategy_status:
+          $ref: '#/components/schemas/Risk_CycleStatus'
+        calculated_risk_level:
+          type: integer
+          title: Calculated Risk Level
+        level_target:
+          type: string
+          title: Level Target
+        mitigation_control_ids:
+          items:
+            type: string
+          type: array
+          title: Mitigation Control Ids
+          default: []
+        evidence_ids:
+          items:
+            type: string
+          type: array
+          title: Evidence Ids
+          default: []
+        creation_time:
+          type: string
+          format: date-time
+          title: Creation Time
+        customer_risk_id:
+          type: string
+          title: Customer Risk Id
+        managers:
+          items:
+            type: string
+          type: array
+          title: Managers
+          default: []
+        owners:
+          items:
+            type: string
+          type: array
+          title: Owners
+          default: []
+        auto_calc:
+          $ref: '#/components/schemas/Risk_RiskAutoCalc'
+        id:
+          type: string
+          title: Id
+        last_updated:
+          type: string
+          format: date-time
+          title: Last Updated
+        register_id:
+          type: string
+          title: Register Id
+          description: The risk register this risk belongs to.
+        fields:
+          type: object
+          title: Fields
+          description: Custom field values as a mapping of field ID to value (string or array of strings).
+          additionalProperties:
+            oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        source_id:
+          type: string
+          title: Source Id
+        creator_name:
+          type: string
+          title: Creator Name
+        original_creation_time:
+          type: string
+          format: date-time
+          title: Original Creation Time
+        last_updated_by:
+          type: string
+          title: Last Updated By
+        sequence_index:
+          type: integer
+          title: Sequence Index
+        global_id:
+          type: string
+          title: Global Id
+        calculated_risk_level_score:
+          type: number
+          title: Calculated Risk Level Score
+        inherent_risk_level_name:
+          type: string
+          title: Inherent Risk Level Name
+        inherent_risk_level_impact_name:
+          type: string
+          title: Inherent Risk Level Impact Name
+        inherent_risk_level_likelihood_name:
+          type: string
+          title: Inherent Risk Level Likelihood Name
+        residual_risk_level_name:
+          type: string
+          title: Residual Risk Level Name
+        residual_risk_level_impact_name:
+          type: string
+          title: Residual Risk Level Impact Name
+        residual_risk_level_likelihood_name:
+          type: string
+          title: Residual Risk Level Likelihood Name
+        appetite_status:
+          $ref: '#/components/schemas/Risk_RiskAppetiteStatus'
+      type: object
+      required:
+      - name
+      title: CustomerRiskModel
+      description: Customer risk base model
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-anecdotes-api-key
+      description: API key created in the Anecdotes platform. Used only for the Exchange API key endpoint.
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT obtained from the Exchange API key endpoint. Valid for 1 hour.
+externalDocs:
+  description: Anecdotes API reference
+  url: https://help.anecdotes.ai/api/overview
+x-refined-from:
+- anecdotes-grc-openapi-original.json
+- anecdotes-grc-openapi.yml
+x-evidence:
+  method: derived
+  generated: '2026-07-31'
+  sources:
+  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
+  - postman/anecdotes-fedramp-20x.postman_collection.json
+  verified_live:
+  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
+    http_status: 200
+    content_type: application/json
+    fetched: '2026-07-31'

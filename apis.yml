@@ -443,6 +443,8 @@ apis:
   humanURL: https://help.anecdotes.ai/api/overview
   baseURL: https://api.anecdotes.ai
   tags:
+  - Tokens
+  tags_raw:
   - Token
   properties:
   - type: OpenAPI

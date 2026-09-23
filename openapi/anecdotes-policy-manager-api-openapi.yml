@@ -2,11 +2,14 @@ openapi: 3.2.0
 info:
   title: Anecdotes Policy Manager API
   version: 1.0.0
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks, requirements, risks, controls, policies, evidence, findings, and more.
+
+
+    Authentication is two-step: create an API key in the Anecdotes platform, exchange it at GET /identity/v1/apikey/exchange for a short-lived JWT (1 hour), then send that JWT as `Authorization: Bearer ` on all other calls. A descriptive User-Agent header is required.'
   contact:
     name: Anecdotes
     url: https://help.anecdotes.ai/api/overview
     email: hello@anecdotes.ai
-  description: 'Operations tagged Policy Manager across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.anecdotes.ai
   description: Production
@@ -34,9 +37,6 @@ paths:
                   $ref: '#/components/schemas/Policy_CustomerPolicy'
         '401':
           description: Unauthorized — JWT is missing, invalid, or expired.
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /policy/v1/library-policies:
     get:
       tags:
@@ -55,15 +55,12 @@ paths:
                   $ref: '#/components/schemas/Policy_LibraryPolicy'
         '401':
           description: Unauthorized — JWT is missing, invalid, or expired.
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /policy/v1/policies/delete-policies:
     put:
       tags:
       - Policy Manager
       summary: Delete policies
-      description: Deletes one or more customer policies by id. Send a JSON array of `policy_id` strings (e.g. `policy_<numeric>`).
+      description: Deletes one or more customer policies by id. Send a JSON array of `policy_id` strings (e.g. `policy_`).
       operationId: deletePolicies
       requestBody:
         required: true
@@ -82,9 +79,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /policy/v1/policies/update-settings:
     put:
       tags:
@@ -115,15 +109,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /policy/v1/policies/{policy_id}:
     patch:
       tags:
       - Policy Manager
       summary: Replace policy file (evidence link)
-      description: Points the policy at a different **evidence** definition—typically after uploading a replacement document to manual (or other) evidence. Send `policy_related_evidence` with the target evidence id (e.g. `manual_<id>`).
+      description: Points the policy at a different **evidence** definition—typically after uploading a replacement document to manual (or other) evidence. Send `policy_related_evidence` with the target evidence id (e.g. `manual_`).
       operationId: patchPolicyRelatedEvidence
       parameters:
       - name: policy_id
@@ -155,9 +146,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /policy/v2/policies:
     post:
       tags:
@@ -188,9 +176,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /policy/v2/policies/{policy_id}/versions:
     get:
       tags:
@@ -216,11 +201,44 @@ paths:
                   $ref: '#/components/schemas/Policy_PolicyVersion'
         '401':
           description: Unauthorized — JWT is missing, invalid, or expired.
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
 components:
   schemas:
+    Policy_PolicyVersion:
+      type: object
+      title: PolicyVersion
+      description: A single version of a policy from `GET /policy/v2/policies/{policy_id}/versions`.
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        policy_id:
+          type: string
+        version_name:
+          type: string
+        version_changes:
+          type:
+          - string
+          - 'null'
+        submitted_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        approved_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        evidence_instance_id:
+          type: string
+        status:
+          type: string
+        version_number:
+          type: integer
+        stakeholders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy_VersionStakeholder'
     Policy_PolicyAi:
       type: object
       title: PolicyAi
@@ -249,6 +267,101 @@ components:
         created_at:
           type: string
           format: date-time
+    Policy_ApprovalSettingsInput:
+      type: object
+      title: ApprovalSettingsInput
+      description: Nested `settings` object for `PUT /policy/v1/policies/update-settings`.
+      additionalProperties: true
+      required:
+      - stakeholders
+      - scheduling
+      properties:
+        stakeholders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy_ApprovalStakeholderInput'
+          description: Ordered reviewers and approvers for the policy approval cycle.
+        scheduling:
+          $ref: '#/components/schemas/Policy_ApprovalSchedulingInput'
+    Policy_ApprovalSchedulingInput:
+      type: object
+      title: ApprovalSchedulingInput
+      description: Scheduling block for `settings.scheduling` on update-settings.
+      additionalProperties: true
+      properties:
+        approval_frequency:
+          type: string
+          description: Cadence label (e.g. `yearly`, `half_yearly`).
+        approval_time:
+          type: string
+          format: date-time
+          description: Next or recurring approval instant (ISO 8601).
+        start_from:
+          type: string
+          format: date-time
+          description: When the current cycle window starts (ISO 8601).
+    Policy_PolicyScheduling:
+      type: object
+      title: PolicyScheduling
+      description: Approval cycle scheduling under `policy_settings.scheduling`. Fields are often `null` on newly created policies until scheduling is configured.
+      additionalProperties: true
+      properties:
+        approval_frequency:
+          type:
+          - string
+          - 'null'
+        start_from:
+          type:
+          - string
+          - 'null'
+          description: Scheduled start (ISO 8601 with offset when set).
+        approval_time:
+          type:
+          - string
+          - 'null'
+          description: Next or recurring approval time (ISO 8601 with offset when set).
+        notify_approvers_scheduledtask_id:
+          type:
+          - string
+          - 'null'
+        end_cycle_scheduledtask_id:
+          type:
+          - string
+          - 'null'
+        overdue_reminder_task_id:
+          type:
+          - string
+          - 'null'
+    Policy_UpdatePolicySettingsRequest:
+      type: object
+      title: UpdatePolicySettingsRequest
+      description: 'Request body for `PUT /policy/v1/policies/update-settings`: apply approval settings to the given `resource_ids`.'
+      additionalProperties: true
+      required:
+      - settings
+      - resource_ids
+      - is_new_cycle
+      properties:
+        settings:
+          $ref: '#/components/schemas/Policy_ApprovalSettingsInput'
+        resource_ids:
+          type: array
+          items:
+            type: string
+            description: Policy id to update (e.g. `policy_<numeric>`).
+          description: One or more policies that receive these settings.
+          minItems: 1
+        is_new_cycle:
+          type: boolean
+          description: Whether this operation starts a new approval cycle vs updating the existing configuration (semantics depend on product workflow).
+    Policy_DeletePoliciesRequest:
+      type: array
+      title: DeletePoliciesRequest
+      description: 'Request body for `PUT /policy/v1/policies/delete-policies`: policy ids to remove.'
+      minItems: 1
+      items:
+        type: string
+        description: Customer policy id (e.g. `policy_<numeric>`).
     Policy_CreatePolicyItem:
       type: object
       title: CreatePolicyItem
@@ -270,14 +383,65 @@ components:
             type: string
             description: Framework requirement identifier as string.
           description: Optional. Requirement ids to associate with the policy; omit or use `[]` when none.
-    Policy_DeletePoliciesRequest:
+    Policy_PolicySettings:
+      type: object
+      title: PolicySettings
+      description: Workflow and scheduling configuration for a customer policy.
+      additionalProperties: true
+      properties:
+        stakeholders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy_PolicySettingsStakeholder'
+        scheduling:
+          $ref: '#/components/schemas/Policy_PolicyScheduling'
+    Policy_VersionStakeholder:
+      type: object
+      title: PolicyVersionStakeholder
+      description: Stakeholder on a specific policy version.
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        approve_type:
+          type: string
+        approved:
+          type: boolean
+        comments:
+          type:
+          - string
+          - 'null'
+        note:
+          type:
+          - string
+          - 'null'
+        approved_time:
+          type:
+          - string
+          - 'null'
+        last_notified:
+          type:
+          - string
+          - 'null'
+        approval_status:
+          type: string
+        last_approval_status_changed:
+          type:
+          - string
+          - 'null'
+    Policy_CreatePoliciesRequest:
       type: array
-      title: DeletePoliciesRequest
-      description: 'Request body for `PUT /policy/v1/policies/delete-policies`: policy ids to remove.'
+      title: CreatePoliciesRequest
+      description: 'Request body for `POST /policy/v2/policies`: one or more create instructions.'
       minItems: 1
       items:
-        type: string
-        description: Customer policy id (e.g. `policy_<numeric>`).
+        $ref: '#/components/schemas/Policy_CreatePolicyItem'
     Policy_CustomerPolicy:
       type: object
       title: CustomerPolicy
@@ -388,184 +552,6 @@ components:
           description: AI-assisted policy analysis metadata when enabled (may be `null`).
           allOf:
           - $ref: '#/components/schemas/Policy_PolicyAi'
-    Policy_PolicySettings:
-      type: object
-      title: PolicySettings
-      description: Workflow and scheduling configuration for a customer policy.
-      additionalProperties: true
-      properties:
-        stakeholders:
-          type: array
-          items:
-            $ref: '#/components/schemas/Policy_PolicySettingsStakeholder'
-        scheduling:
-          $ref: '#/components/schemas/Policy_PolicyScheduling'
-    Policy_PolicyVersion:
-      type: object
-      title: PolicyVersion
-      description: A single version of a policy from `GET /policy/v2/policies/{policy_id}/versions`.
-      additionalProperties: true
-      properties:
-        id:
-          type: integer
-        policy_id:
-          type: string
-        version_name:
-          type: string
-        version_changes:
-          type:
-          - string
-          - 'null'
-        submitted_on:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        approved_on:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        evidence_instance_id:
-          type: string
-        status:
-          type: string
-        version_number:
-          type: integer
-        stakeholders:
-          type: array
-          items:
-            $ref: '#/components/schemas/Policy_VersionStakeholder'
-    Policy_ApprovalSchedulingInput:
-      type: object
-      title: ApprovalSchedulingInput
-      description: Scheduling block for `settings.scheduling` on update-settings.
-      additionalProperties: true
-      properties:
-        approval_frequency:
-          type: string
-          description: Cadence label (e.g. `yearly`, `half_yearly`).
-        approval_time:
-          type: string
-          format: date-time
-          description: Next or recurring approval instant (ISO 8601).
-        start_from:
-          type: string
-          format: date-time
-          description: When the current cycle window starts (ISO 8601).
-    Policy_ApprovalSettingsInput:
-      type: object
-      title: ApprovalSettingsInput
-      description: Nested `settings` object for `PUT /policy/v1/policies/update-settings`.
-      additionalProperties: true
-      required:
-      - stakeholders
-      - scheduling
-      properties:
-        stakeholders:
-          type: array
-          items:
-            $ref: '#/components/schemas/Policy_ApprovalStakeholderInput'
-          description: Ordered reviewers and approvers for the policy approval cycle.
-        scheduling:
-          $ref: '#/components/schemas/Policy_ApprovalSchedulingInput'
-    Policy_CreatePoliciesRequest:
-      type: array
-      title: CreatePoliciesRequest
-      description: 'Request body for `POST /policy/v2/policies`: one or more create instructions.'
-      minItems: 1
-      items:
-        $ref: '#/components/schemas/Policy_CreatePolicyItem'
-    Policy_UpdatePolicySettingsRequest:
-      type: object
-      title: UpdatePolicySettingsRequest
-      description: 'Request body for `PUT /policy/v1/policies/update-settings`: apply approval settings to the given `resource_ids`.'
-      additionalProperties: true
-      required:
-      - settings
-      - resource_ids
-      - is_new_cycle
-      properties:
-        settings:
-          $ref: '#/components/schemas/Policy_ApprovalSettingsInput'
-        resource_ids:
-          type: array
-          items:
-            type: string
-            description: Policy id to update (e.g. `policy_<numeric>`).
-          description: One or more policies that receive these settings.
-          minItems: 1
-        is_new_cycle:
-          type: boolean
-          description: Whether this operation starts a new approval cycle vs updating the existing configuration (semantics depend on product workflow).
-    Policy_PatchPolicyRequest:
-      type: object
-      title: PatchPolicyRequest
-      description: 'Request body for `PATCH /policy/v1/policies/{policy_id}`: set the evidence definition that backs the policy file.'
-      additionalProperties: true
-      required:
-      - policy_related_evidence
-      properties:
-        policy_related_evidence:
-          type: string
-          description: Evidence definition id to attach (e.g. `manual_<id>` after uploading a replacement document).
-    Policy_PolicyScheduling:
-      type: object
-      title: PolicyScheduling
-      description: Approval cycle scheduling under `policy_settings.scheduling`. Fields are often `null` on newly created policies until scheduling is configured.
-      additionalProperties: true
-      properties:
-        approval_frequency:
-          type:
-          - string
-          - 'null'
-        start_from:
-          type:
-          - string
-          - 'null'
-          description: Scheduled start (ISO 8601 with offset when set).
-        approval_time:
-          type:
-          - string
-          - 'null'
-          description: Next or recurring approval time (ISO 8601 with offset when set).
-        notify_approvers_scheduledtask_id:
-          type:
-          - string
-          - 'null'
-        end_cycle_scheduledtask_id:
-          type:
-          - string
-          - 'null'
-        overdue_reminder_task_id:
-          type:
-          - string
-          - 'null'
-    Policy_ApprovalStakeholderInput:
-      type: object
-      title: ApprovalStakeholderInput
-      description: Stakeholder row for `PUT /policy/v1/policies/update-settings` (`settings.stakeholders`).
-      additionalProperties: true
-      properties:
-        approve_type:
-          type: string
-          description: Role in the workflow (e.g. `reviewer`, `approver`).
-        comments:
-          type: string
-          description: Instruction or note shown to this stakeholder.
-        role:
-          type: string
-          description: Display role label.
-        email:
-          type: string
-          format: email
-        name:
-          type: string
-        share_method:
-          type: array
-          items:
-            type: string
-          description: Channels used to notify this stakeholder (e.g. `email`).
     Policy_LibraryPolicy:
       type: object
       title: LibraryPolicy
@@ -602,71 +588,31 @@ components:
           type: array
           items:
             type: string
-    Policy_VersionStakeholder:
+    Policy_ApprovalStakeholderInput:
       type: object
-      title: PolicyVersionStakeholder
-      description: Stakeholder on a specific policy version.
+      title: ApprovalStakeholderInput
+      description: Stakeholder row for `PUT /policy/v1/policies/update-settings` (`settings.stakeholders`).
       additionalProperties: true
       properties:
-        id:
-          type: integer
-        email:
-          type: string
-        name:
-          type: string
-        role:
-          type: string
         approve_type:
           type: string
-        approved:
-          type: boolean
+          description: Role in the workflow (e.g. `reviewer`, `approver`).
         comments:
-          type:
-          - string
-          - 'null'
-        note:
-          type:
-          - string
-          - 'null'
-        approved_time:
-          type:
-          - string
-          - 'null'
-        last_notified:
-          type:
-          - string
-          - 'null'
-        approval_status:
           type: string
-        last_approval_status_changed:
-          type:
-          - string
-          - 'null'
-    ValidationError:
-      type: object
-      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
-      properties:
-        detail:
+          description: Instruction or note shown to this stakeholder.
+        role:
+          type: string
+          description: Display role label.
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        share_method:
           type: array
           items:
-            type: object
-            properties:
-              loc:
-                type: array
-                items:
-                  anyOf:
-                  - type: string
-                  - type: integer
-              msg:
-                type: string
-              type:
-                type: string
-              ctx:
-                type: object
-                description: Optional machine context (e.g. `enum_values` for enum validation errors).
-                additionalProperties: true
-            additionalProperties: true
-      additionalProperties: true
+            type: string
+          description: Channels used to notify this stakeholder (e.g. `email`).
     Policy_PolicySettingsStakeholder:
       type: object
       title: PolicySettingsStakeholder
@@ -786,6 +732,42 @@ components:
           type:
           - string
           - 'null'
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+    Policy_PatchPolicyRequest:
+      type: object
+      title: PatchPolicyRequest
+      description: 'Request body for `PATCH /policy/v1/policies/{policy_id}`: set the evidence definition that backs the policy file.'
+      additionalProperties: true
+      required:
+      - policy_related_evidence
+      properties:
+        policy_related_evidence:
+          type: string
+          description: Evidence definition id to attach (e.g. `manual_<id>` after uploading a replacement document).
   securitySchemes:
     ApiKey:
       type: apiKey
@@ -800,17 +782,3 @@ components:
 externalDocs:
   description: Anecdotes API reference
   url: https://help.anecdotes.ai/api/overview
-x-refined-from:
-- anecdotes-grc-openapi-original.json
-- anecdotes-grc-openapi.yml
-x-evidence:
-  method: derived
-  generated: '2026-07-31'
-  sources:
-  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
-  - postman/anecdotes-fedramp-20x.postman_collection.json
-  verified_live:
-  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
-    http_status: 200
-    content_type: application/json
-    fetched: '2026-07-31'

@@ -2,11 +2,14 @@ openapi: 3.2.0
 info:
   title: Anecdotes Findings API
   version: 1.0.0
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks, requirements, risks, controls, policies, evidence, findings, and more.
+
+
+    Authentication is two-step: create an API key in the Anecdotes platform, exchange it at GET /identity/v1/apikey/exchange for a short-lived JWT (1 hour), then send that JWT as `Authorization: Bearer ` on all other calls. A descriptive User-Agent header is required.'
   contact:
     name: Anecdotes
     url: https://help.anecdotes.ai/api/overview
     email: hello@anecdotes.ai
-  description: 'Operations tagged Findings across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.anecdotes.ai
   description: Production
@@ -123,9 +126,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /compliance/v1/findings/{finding_id}:
     get:
       tags:
@@ -188,21 +188,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
 components:
   schemas:
-    FindingsDeleteResponse:
+    FindingsPagination:
       type: object
-      required:
-      - deleted_count
-      description: Bulk delete result.
+      description: Pagination metadata for get-all responses.
       properties:
-        deleted_count:
+        limit:
           type: integer
-          minimum: 0
-          description: Number of findings deleted for this request.
+          description: Page size used for this response.
+        offset:
+          type: integer
+          description: Starting index of this slice.
+        total_count:
+          type: integer
+        has_next:
+          type: boolean
+        has_previous:
+          type: boolean
       additionalProperties: true
     FindingLinkedEntity:
       type: object
@@ -244,23 +247,6 @@ components:
             $ref: '#/components/schemas/Finding'
         pagination:
           $ref: '#/components/schemas/FindingsPagination'
-    FindingsPagination:
-      type: object
-      description: Pagination metadata for get-all responses.
-      properties:
-        limit:
-          type: integer
-          description: Page size used for this response.
-        offset:
-          type: integer
-          description: Starting index of this slice.
-        total_count:
-          type: integer
-        has_next:
-          type: boolean
-        has_previous:
-          type: boolean
-      additionalProperties: true
     Finding:
       type: object
       description: A compliance finding.
@@ -358,6 +344,17 @@ components:
                 additionalProperties: true
             additionalProperties: true
       additionalProperties: true
+    FindingsDeleteResponse:
+      type: object
+      required:
+      - deleted_count
+      description: Bulk delete result.
+      properties:
+        deleted_count:
+          type: integer
+          minimum: 0
+          description: Number of findings deleted for this request.
+      additionalProperties: true
   securitySchemes:
     ApiKey:
       type: apiKey
@@ -372,17 +369,3 @@ components:
 externalDocs:
   description: Anecdotes API reference
   url: https://help.anecdotes.ai/api/overview
-x-refined-from:
-- anecdotes-grc-openapi-original.json
-- anecdotes-grc-openapi.yml
-x-evidence:
-  method: derived
-  generated: '2026-07-31'
-  sources:
-  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
-  - postman/anecdotes-fedramp-20x.postman_collection.json
-  verified_live:
-  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
-    http_status: 200
-    content_type: application/json
-    fetched: '2026-07-31'

@@ -2,11 +2,14 @@ openapi: 3.2.0
 info:
   title: Anecdotes Framework API
   version: 1.0.0
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks, requirements, risks, controls, policies, evidence, findings, and more.
+
+
+    Authentication is two-step: create an API key in the Anecdotes platform, exchange it at GET /identity/v1/apikey/exchange for a short-lived JWT (1 hour), then send that JWT as `Authorization: Bearer ` on all other calls. A descriptive User-Agent header is required.'
   contact:
     name: Anecdotes
     url: https://help.anecdotes.ai/api/overview
     email: hello@anecdotes.ai
-  description: 'Operations tagged Framework across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.anecdotes.ai
   description: Production
@@ -14,7 +17,7 @@ security:
 - Bearer: []
 tags:
 - name: Framework
-  description: A **framework** in anecdotes is a compliance program built from a formally written standard or regulation (e.g. ISO/IEC 27001, SOC 2, HIPAA, CSA STAR). It is organized into **control categories** and **control titles** with control statements. **API:** list frameworks and export framework data. [Terminology](https://help.anecdotes.ai/product-tour/frameworks/anecdotes-terminology-and-framework-hierarchy)
+  description: A **framework** in anecdotes is a compliance program built from a formally written standard or regulation (e.g. ISO/IEC 27001, SOC 2, HIPAA, CSA STAR). It is organized into **control categories** and **control titles** with control statements. **API:** list frameworks and export framework data. Terminology
 paths:
   /api/v1/framework:
     get:
@@ -24,7 +27,7 @@ paths:
       description: 'Returns a JSON **array** of frameworks in the customer environment. Optional query parameters `limit` and `offset` slice the result; the response body does **not** include a separate total-count or pagination envelope—only the array of framework objects.
 
 
-        Each item includes its ID, name, folder, and metadata. See [Anecdotes terminology and framework hierarchy](https://help.anecdotes.ai/product-tour/frameworks/anecdotes-terminology-and-framework-hierarchy).'
+        Each item includes its ID, name, folder, and metadata. See Anecdotes terminology and framework hierarchy.'
       operationId: getFrameworks
       parameters:
       - name: limit
@@ -69,9 +72,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /api/v1/framework/{framework_id}/download:
     get:
       tags:
@@ -112,9 +112,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
 components:
   schemas:
     ValidationError:
@@ -156,17 +153,3 @@ components:
 externalDocs:
   description: Anecdotes API reference
   url: https://help.anecdotes.ai/api/overview
-x-refined-from:
-- anecdotes-grc-openapi-original.json
-- anecdotes-grc-openapi.yml
-x-evidence:
-  method: derived
-  generated: '2026-07-31'
-  sources:
-  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
-  - postman/anecdotes-fedramp-20x.postman_collection.json
-  verified_live:
-  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
-    http_status: 200
-    content_type: application/json
-    fetched: '2026-07-31'

@@ -2,11 +2,14 @@ openapi: 3.2.0
 info:
   title: Anecdotes Create Evidence API
   version: 1.0.0
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks, requirements, risks, controls, policies, evidence, findings, and more.
+
+
+    Authentication is two-step: create an API key in the Anecdotes platform, exchange it at GET /identity/v1/apikey/exchange for a short-lived JWT (1 hour), then send that JWT as `Authorization: Bearer ` on all other calls. A descriptive User-Agent header is required.'
   contact:
     name: Anecdotes
     url: https://help.anecdotes.ai/api/overview
     email: hello@anecdotes.ai
-  description: 'Operations tagged Create Evidence across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.anecdotes.ai
   description: Production
@@ -44,15 +47,18 @@ paths:
           description: Unauthorized - JWT is missing, invalid, or expired.
         '422':
           description: Invalid arguments.
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /evidence/v1/evidence/create:
     post:
       tags:
       - Create Evidence
       summary: Create an Evidence Collection
-      description: "Create a new API Evidence Collection, used to attach evidence data into using the **Attach Evidence** endpoint. Successful response provides the resulting 'evidence_id'. \n\n**IPE (optional):** you may attach **IPE** (Information Produced by Entity) — the structured queries that produced the data — via `evidence_api_query` (inline JSON-stringified array of query strings) **or** `ipe_file` (a JSON file), but **not both**. IPE is tied to a data collection, so it is stored **only when `evidence_file` is also included** in this request; sending IPE with no `evidence_file` returns `422` (add the data here, or push it later via **Attach Evidence** / **Attach IPE**). IPE is capped at **5000 entries** and **15 MB** — oversized payloads are rejected, never truncated.\n\nFor a step-by-step guide see [How to create & collect API evidence](https://help.anecdotes.ai/integrations-and-data/api-evidence)."
+      description: 'Create a new API Evidence Collection, used to attach evidence data into using the **Attach Evidence** endpoint. Successful response provides the resulting ''evidence_id''.
+
+
+        **IPE (optional):** you may attach **IPE** (Information Produced by Entity) — the structured queries that produced the data — via `evidence_api_query` (inline JSON-stringified array of query strings) **or** `ipe_file` (a JSON file), but **not both**. IPE is tied to a data collection, so it is stored **only when `evidence_file` is also included** in this request; sending IPE with no `evidence_file` returns `422` (add the data here, or push it later via **Attach Evidence** / **Attach IPE**). IPE is capped at **5000 entries** and **15 MB** — oversized payloads are rejected, never truncated.
+
+
+        For a step-by-step guide see How to create & collect API evidence.'
       operationId: createEvidenceCollection
       requestBody:
         required: true
@@ -124,9 +130,6 @@ paths:
                 - $ref: '#/components/schemas/ValidationError'
                 - $ref: '#/components/schemas/Evidence_DetailMessage'
                 - $ref: '#/components/schemas/Evidence_ErrorResponse'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /evidence/v1/evidence/{evidence_id}/attach:
     post:
       tags:
@@ -200,9 +203,6 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/ValidationError'
                 - $ref: '#/components/schemas/Evidence_ErrorResponse'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /evidence/v1/evidence/{evidence_instance_id}/ipe:
     post:
       tags:
@@ -264,9 +264,6 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/Evidence_DetailMessage'
                 - $ref: '#/components/schemas/Evidence_ErrorResponse'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
 components:
   schemas:
     Evidence_ErrorResponse:
@@ -285,16 +282,22 @@ components:
       - error_title
       - error_detail
       title: ErrorResponse
-    Evidence_CreateEvidenceResponse:
+    Evidence_AttachIpeResponse:
       type: object
+      description: Response returned after attaching or replacing IPE on an evidence collection.
       properties:
-        evidence_id:
+        evidence_instance_id:
           type: string
-          title: Evidence Id
-          description: The id of the newly created evidence.
+          title: Evidence Instance Id
+          description: The collection (evidence instance) the IPE was attached to.
+        ipe_count:
+          type: integer
+          title: Ipe Count
+          description: Number of IPE entries stored.
       required:
-      - evidence_id
-      title: CreateEvidenceResponse
+      - evidence_instance_id
+      - ipe_count
+      title: AttachIpeResponse
     Evidence_DetailMessage:
       type: object
       description: Error body for input-combination errors raised directly by the endpoint (FastAPI `HTTPException` with a string detail).
@@ -331,22 +334,16 @@ components:
                 additionalProperties: true
             additionalProperties: true
       additionalProperties: true
-    Evidence_AttachIpeResponse:
+    Evidence_CreateEvidenceResponse:
       type: object
-      description: Response returned after attaching or replacing IPE on an evidence collection.
       properties:
-        evidence_instance_id:
+        evidence_id:
           type: string
-          title: Evidence Instance Id
-          description: The collection (evidence instance) the IPE was attached to.
-        ipe_count:
-          type: integer
-          title: Ipe Count
-          description: Number of IPE entries stored.
+          title: Evidence Id
+          description: The id of the newly created evidence.
       required:
-      - evidence_instance_id
-      - ipe_count
-      title: AttachIpeResponse
+      - evidence_id
+      title: CreateEvidenceResponse
   securitySchemes:
     ApiKey:
       type: apiKey
@@ -361,17 +358,3 @@ components:
 externalDocs:
   description: Anecdotes API reference
   url: https://help.anecdotes.ai/api/overview
-x-refined-from:
-- anecdotes-grc-openapi-original.json
-- anecdotes-grc-openapi.yml
-x-evidence:
-  method: derived
-  generated: '2026-07-31'
-  sources:
-  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
-  - postman/anecdotes-fedramp-20x.postman_collection.json
-  verified_live:
-  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
-    http_status: 200
-    content_type: application/json
-    fetched: '2026-07-31'

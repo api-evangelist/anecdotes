@@ -2,11 +2,14 @@ openapi: 3.2.0
 info:
   title: Anecdotes Token API
   version: 1.0.0
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks, requirements, risks, controls, policies, evidence, findings, and more.
+
+
+    Authentication is two-step: create an API key in the Anecdotes platform, exchange it at GET /identity/v1/apikey/exchange for a short-lived JWT (1 hour), then send that JWT as `Authorization: Bearer ` on all other calls. A descriptive User-Agent header is required.'
   contact:
     name: Anecdotes
     url: https://help.anecdotes.ai/api/overview
     email: hello@anecdotes.ai
-  description: 'Operations tagged Token across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.anecdotes.ai
   description: Production
@@ -14,7 +17,7 @@ security:
 - Bearer: []
 tags:
 - name: Token
-  description: 'Exchange your **API key** for a **short-lived JWT** (1 hour). Send the JWT as `Authorization: Bearer <token>` on all subsequent requests.'
+  description: 'Exchange your **API key** for a **short-lived JWT** (1 hour). Send the JWT as `Authorization: Bearer ` on all subsequent requests.'
 paths:
   /identity/v1/apikey/exchange:
     get:
@@ -28,7 +31,7 @@ paths:
 
         2. Use the exchange endpoint with the key as `x-anecdotes-api-key` header.
 
-        3. Use the result JWT token as `Authorization: Bearer <token>` header.'
+        3. Use the result JWT token as `Authorization: Bearer ` header.'
       operationId: exchangeApiKey
       parameters:
       - name: x-anecdotes-api-key
@@ -53,9 +56,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
 components:
   schemas:
     ValidationError:
@@ -97,17 +97,3 @@ components:
 externalDocs:
   description: Anecdotes API reference
   url: https://help.anecdotes.ai/api/overview
-x-refined-from:
-- anecdotes-grc-openapi-original.json
-- anecdotes-grc-openapi.yml
-x-evidence:
-  method: derived
-  generated: '2026-07-31'
-  sources:
-  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
-  - postman/anecdotes-fedramp-20x.postman_collection.json
-  verified_live:
-  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
-    http_status: 200
-    content_type: application/json
-    fetched: '2026-07-31'

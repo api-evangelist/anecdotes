@@ -1,0 +1,56 @@
+{
+  "provider": "anecdotes",
+  "sources": [
+    "_original/anecdotes-fedramp-20x-openapi.yml",
+    "_original/anecdotes-grc-openapi-original.json"
+  ],
+  "outputs": [
+    "anecdotes-authorization-api-openapi.yml",
+    "anecdotes-gated-api-openapi.yml",
+    "anecdotes-public-api-openapi.yml",
+    "anecdotes-analysis-rules-api-openapi.yml",
+    "anecdotes-create-controls-api-openapi.yml",
+    "anecdotes-create-evidence-api-openapi.yml",
+    "anecdotes-custom-fields-api-openapi.yml",
+    "anecdotes-download-evidence-api-openapi.yml",
+    "anecdotes-findings-api-openapi.yml",
+    "anecdotes-framework-api-openapi.yml",
+    "anecdotes-policy-manager-api-openapi.yml",
+    "anecdotes-read-controls-api-openapi.yml",
+    "anecdotes-read-evidence-metadata-api-openapi.yml",
+    "anecdotes-requirements-api-openapi.yml",
+    "anecdotes-risk-api-openapi.yml",
+    "anecdotes-token-api-openapi.yml",
+    "anecdotes-update-control-metadata-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "1 archived document(s) dropped as subsets of other archived documents",
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "anecdotes-fedramp-20x-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "anecdotes-grc-openapi-original.json: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "_original/anecdotes-grc-openapi.yml: archived document superseded by a larger archived document",
+    "anecdotes-analysis-rules-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-authorization-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-create-controls-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-create-evidence-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-custom-fields-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-download-evidence-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-findings-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-framework-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-gated-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-policy-manager-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-public-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-read-controls-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-read-evidence-metadata-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-requirements-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-risk-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-token-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "anecdotes-update-control-metadata-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

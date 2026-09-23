@@ -4,24 +4,7 @@ info:
   version: 1.0.0
   description: 'The FedRAMP 20x API exposes the contents of the Anecdotes Trust Center (https://trust.anecdotes.ai/)
 
-    programmatically. It is divided into three tiers: public endpoints that require no authentication,
-
-    an authorization tier that exchanges a static API key for a short-lived JWT, and gated endpoints that
-
-    return the authorization package, Key Security Indicators (KSIs) and the evidence behind them.
-
-
-    Derived by API Evangelist from the provider''s own published Postman collection
-
-    (FEDRAMP-20X-API.postman_collection.json, retrieved from the public /fedramp20x/v1/public/info
-
-    endpoint) and the documented endpoint tables at
-
-    https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api.
-
-    Paths, methods, parameters, headers and content types are transcribed from those sources only;
-
-    no response schemas were invented where the provider did not publish one.'
+    programmatically.'
   contact:
     name: Anecdotes
     url: https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
@@ -123,32 +106,16 @@ paths:
                 type: string
                 format: binary
 components:
+  parameters:
+    TrustCenterUrl:
+      name: trustcenterurl
+      in: header
+      required: true
+      description: Host name of the Anecdotes Trust Center being queried.
+      schema:
+        type: string
+      example: trust.anecdotes.ai
   schemas:
-    AccessRequest:
-      type: object
-      required:
-      - first_name
-      - last_name
-      - email
-      - company
-      - job_title
-      properties:
-        first_name:
-          type: string
-          description: Requester's first name.
-        last_name:
-          type: string
-          description: Requester's last name.
-        email:
-          type: string
-          format: email
-          description: Requester's email, for example a .gov or .mil address.
-        company:
-          type: string
-          description: Requester's company. Should be set to "FedRAMP".
-        job_title:
-          type: string
-          description: Requester's job title.
     AccessRequestResult:
       type: object
       properties:
@@ -175,15 +142,31 @@ components:
           - denied
           - requested
           - revoked
-  parameters:
-    TrustCenterUrl:
-      name: trustcenterurl
-      in: header
-      required: true
-      description: Host name of the Anecdotes Trust Center being queried.
-      schema:
-        type: string
-      example: trust.anecdotes.ai
+    AccessRequest:
+      type: object
+      required:
+      - first_name
+      - last_name
+      - email
+      - company
+      - job_title
+      properties:
+        first_name:
+          type: string
+          description: Requester's first name.
+        last_name:
+          type: string
+          description: Requester's last name.
+        email:
+          type: string
+          format: email
+          description: Requester's email, for example a .gov or .mil address.
+        company:
+          type: string
+          description: Requester's company. Should be set to "FedRAMP".
+        job_title:
+          type: string
+          description: Requester's job title.
   securitySchemes:
     ApiKey:
       type: apiKey

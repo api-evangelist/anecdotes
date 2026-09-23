@@ -2,11 +2,14 @@ openapi: 3.2.0
 info:
   title: Anecdotes Create Controls API
   version: 1.0.0
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks, requirements, risks, controls, policies, evidence, findings, and more.
+
+
+    Authentication is two-step: create an API key in the Anecdotes platform, exchange it at GET /identity/v1/apikey/exchange for a short-lived JWT (1 hour), then send that JWT as `Authorization: Bearer ` on all other calls. A descriptive User-Agent header is required.'
   contact:
     name: Anecdotes
     url: https://help.anecdotes.ai/api/overview
     email: hello@anecdotes.ai
-  description: 'Operations tagged Create Controls across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.anecdotes.ai
   description: Production
@@ -70,47 +73,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
 components:
   schemas:
-    ControlStatus:
+    PostCustomControl:
       type: object
-      description: Current control status and audit metadata.
-      properties:
-        status:
-          $ref: '#/components/schemas/ControlStatusEnum'
-        updated_by:
-          type: string
-        last_edit_time:
-          type: string
-          format: date-time
-        note:
-          type: string
-        manually_set:
-          type: boolean
-        gap_detected:
-          type: boolean
       required:
-      - status
-    MaturityLevel:
-      type: string
-      enum:
-      - INITIAL
-      - REPEATABLE
-      - DEFINED
-      - MANAGED
-      - OPTIMIZING
-    LinkedRequirement:
-      type: object
+      - control_name
+      - control_framework_category
+      - control_framework_category_id
       properties:
-        requirement_id:
+        control_name:
           type: string
-        requirement_name:
+          minLength: 1
+        control_description:
           type: string
-      required:
-      - requirement_id
+        control_framework_category:
+          type: string
+          minLength: 1
+        control_framework_category_id:
+          type: string
+          minLength: 1
+        control_original_related_controls:
+          type: array
+          items:
+            type: string
+          default: []
+        control_requirements:
+          type: array
+          items:
+            type: string
+        control_owner:
+          type: array
+          items:
+            type: string
+            format: email
+        control_implementation:
+          type: string
+        maturity_level:
+          $ref: '#/components/schemas/MaturityLevel'
     Control:
       type: object
       description: Control facade returned by list/read endpoints. Additional tenant-specific fields may appear.
@@ -165,42 +165,23 @@ components:
       - control_id
       - control_name
       additionalProperties: true
-    PostCustomControl:
+    LinkedRequirement:
       type: object
-      required:
-      - control_name
-      - control_framework_category
-      - control_framework_category_id
       properties:
-        control_name:
+        requirement_id:
           type: string
-          minLength: 1
-        control_description:
+        requirement_name:
           type: string
-        control_framework_category:
-          type: string
-          minLength: 1
-        control_framework_category_id:
-          type: string
-          minLength: 1
-        control_original_related_controls:
-          type: array
-          items:
-            type: string
-          default: []
-        control_requirements:
-          type: array
-          items:
-            type: string
-        control_owner:
-          type: array
-          items:
-            type: string
-            format: email
-        control_implementation:
-          type: string
-        maturity_level:
-          $ref: '#/components/schemas/MaturityLevel'
+      required:
+      - requirement_id
+    MaturityLevel:
+      type: string
+      enum:
+      - INITIAL
+      - REPEATABLE
+      - DEFINED
+      - MANAGED
+      - OPTIMIZING
     ControlStatusEnum:
       type: string
       enum:
@@ -216,6 +197,25 @@ components:
       - INSUFFICIENT_DATA
       - UNDER_REVIEW
       description: Machine status code. Product UI may display human-readable labels (for example `Gap`, `Ready for audit`).
+    ControlStatus:
+      type: object
+      description: Current control status and audit metadata.
+      properties:
+        status:
+          $ref: '#/components/schemas/ControlStatusEnum'
+        updated_by:
+          type: string
+        last_edit_time:
+          type: string
+          format: date-time
+        note:
+          type: string
+        manually_set:
+          type: boolean
+        gap_detected:
+          type: boolean
+      required:
+      - status
     ValidationError:
       type: object
       description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
@@ -255,17 +255,3 @@ components:
 externalDocs:
   description: Anecdotes API reference
   url: https://help.anecdotes.ai/api/overview
-x-refined-from:
-- anecdotes-grc-openapi-original.json
-- anecdotes-grc-openapi.yml
-x-evidence:
-  method: derived
-  generated: '2026-07-31'
-  sources:
-  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
-  - postman/anecdotes-fedramp-20x.postman_collection.json
-  verified_live:
-  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
-    http_status: 200
-    content_type: application/json
-    fetched: '2026-07-31'

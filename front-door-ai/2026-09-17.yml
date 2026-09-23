@@ -1,0 +1,32 @@
+# Front Door AI Index — anecdotes — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: anecdotes
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: www.anecdotes.ai
+  final_host: www.anecdotes.ai
+  ownership: own
+  owner: anecdotes
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 34
+  host_score: 34
+  density: 21.05
+  words: 1615
+  tiers:
+    agentic: 20
+    core: 14
+    model: 0
+  ambiguous: 30
+  top_terms:
+    agent: 27
+    AI: 14
+    agentic: 13
+    AI agent: 4
+    AI assistant: 3
+    automation: 1
+    intelligence: 1
+    smart: 1

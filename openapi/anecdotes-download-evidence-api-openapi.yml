@@ -2,11 +2,14 @@ openapi: 3.2.0
 info:
   title: Anecdotes Download Evidence API
   version: 1.0.0
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks, requirements, risks, controls, policies, evidence, findings, and more.
+
+
+    Authentication is two-step: create an API key in the Anecdotes platform, exchange it at GET /identity/v1/apikey/exchange for a short-lived JWT (1 hour), then send that JWT as `Authorization: Bearer ` on all other calls. A descriptive User-Agent header is required.'
   contact:
     name: Anecdotes
     url: https://help.anecdotes.ai/api/overview
     email: hello@anecdotes.ai
-  description: 'Operations tagged Download Evidence across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.anecdotes.ai
   description: Production
@@ -42,9 +45,6 @@ paths:
           description: Unauthorized - JWT is missing, invalid, or expired.
         '404':
           description: Evidence instance not found.
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /evidence/v1/evidence/{evidence_instance_id}/download_raw:
     get:
       tags:
@@ -71,9 +71,6 @@ paths:
           description: Unauthorized - JWT is missing, invalid, or expired.
         '404':
           description: Evidence instance not found.
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /evidence/v1/evidence/{evidence_instance_id}/full_data:
     get:
       tags:
@@ -100,9 +97,6 @@ paths:
           description: Unauthorized - JWT is missing, invalid, or expired.
         '404':
           description: Evidence instance not found.
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /evidence/v1/evidence/{evidence_instance_id}/fulldata_or_raw:
     get:
       tags:
@@ -134,9 +128,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /evidence/v1/evidence/{evidence_instance_id}/raw:
     get:
       tags:
@@ -168,9 +159,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
 components:
   schemas:
     ValidationError:
@@ -212,17 +200,3 @@ components:
 externalDocs:
   description: Anecdotes API reference
   url: https://help.anecdotes.ai/api/overview
-x-refined-from:
-- anecdotes-grc-openapi-original.json
-- anecdotes-grc-openapi.yml
-x-evidence:
-  method: derived
-  generated: '2026-07-31'
-  sources:
-  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
-  - postman/anecdotes-fedramp-20x.postman_collection.json
-  verified_live:
-  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
-    http_status: 200
-    content_type: application/json
-    fetched: '2026-07-31'

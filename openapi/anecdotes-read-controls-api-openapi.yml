@@ -2,11 +2,14 @@ openapi: 3.2.0
 info:
   title: Anecdotes Read Controls API
   version: 1.0.0
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks, requirements, risks, controls, policies, evidence, findings, and more.
+
+
+    Authentication is two-step: create an API key in the Anecdotes platform, exchange it at GET /identity/v1/apikey/exchange for a short-lived JWT (1 hour), then send that JWT as `Authorization: Bearer ` on all other calls. A descriptive User-Agent header is required.'
   contact:
     name: Anecdotes
     url: https://help.anecdotes.ai/api/overview
     email: hello@anecdotes.ai
-  description: 'Operations tagged Read Controls across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.anecdotes.ai
   description: Production
@@ -40,9 +43,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /controls/control/framework/{framework_id}:
     get:
       tags:
@@ -63,9 +63,6 @@ paths:
           description: Unauthorized.
         '403':
           description: Forbidden — caller cannot access this framework.
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /controls/control/read:
     post:
       tags:
@@ -98,9 +95,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /controls/control/{control_id}:
     get:
       tags:
@@ -121,47 +115,8 @@ paths:
           description: Forbidden — caller cannot access this control.
         '404':
           description: Control not found.
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
 components:
   schemas:
-    ControlStatus:
-      type: object
-      description: Current control status and audit metadata.
-      properties:
-        status:
-          $ref: '#/components/schemas/ControlStatusEnum'
-        updated_by:
-          type: string
-        last_edit_time:
-          type: string
-          format: date-time
-        note:
-          type: string
-        manually_set:
-          type: boolean
-        gap_detected:
-          type: boolean
-      required:
-      - status
-    MaturityLevel:
-      type: string
-      enum:
-      - INITIAL
-      - REPEATABLE
-      - DEFINED
-      - MANAGED
-      - OPTIMIZING
-    LinkedRequirement:
-      type: object
-      properties:
-        requirement_id:
-          type: string
-        requirement_name:
-          type: string
-      required:
-      - requirement_id
     Control:
       type: object
       description: Control facade returned by list/read endpoints. Additional tenant-specific fields may appear.
@@ -216,31 +171,6 @@ components:
       - control_id
       - control_name
       additionalProperties: true
-    GetControlsBody:
-      type: object
-      required:
-      - controls_ids
-      properties:
-        controls_ids:
-          type: array
-          minItems: 1
-          items:
-            type: string
-    ControlStatusEnum:
-      type: string
-      enum:
-      - NOT_STARTED
-      - IN_PROGRESS
-      - READY_FOR_AUDIT
-      - GAP
-      - ISSUE
-      - APPROVED_BY_AUDITOR
-      - MONITORING
-      - NOT_APPLICABLE
-      - NOT_READY_FOR_AUDIT
-      - INSUFFICIENT_DATA
-      - UNDER_REVIEW
-      description: Machine status code. Product UI may display human-readable labels (for example `Gap`, `Ready for audit`).
     ValidationError:
       type: object
       description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
@@ -266,6 +196,67 @@ components:
                 additionalProperties: true
             additionalProperties: true
       additionalProperties: true
+    GetControlsBody:
+      type: object
+      required:
+      - controls_ids
+      properties:
+        controls_ids:
+          type: array
+          minItems: 1
+          items:
+            type: string
+    MaturityLevel:
+      type: string
+      enum:
+      - INITIAL
+      - REPEATABLE
+      - DEFINED
+      - MANAGED
+      - OPTIMIZING
+    ControlStatusEnum:
+      type: string
+      enum:
+      - NOT_STARTED
+      - IN_PROGRESS
+      - READY_FOR_AUDIT
+      - GAP
+      - ISSUE
+      - APPROVED_BY_AUDITOR
+      - MONITORING
+      - NOT_APPLICABLE
+      - NOT_READY_FOR_AUDIT
+      - INSUFFICIENT_DATA
+      - UNDER_REVIEW
+      description: Machine status code. Product UI may display human-readable labels (for example `Gap`, `Ready for audit`).
+    ControlStatus:
+      type: object
+      description: Current control status and audit metadata.
+      properties:
+        status:
+          $ref: '#/components/schemas/ControlStatusEnum'
+        updated_by:
+          type: string
+        last_edit_time:
+          type: string
+          format: date-time
+        note:
+          type: string
+        manually_set:
+          type: boolean
+        gap_detected:
+          type: boolean
+      required:
+      - status
+    LinkedRequirement:
+      type: object
+      properties:
+        requirement_id:
+          type: string
+        requirement_name:
+          type: string
+      required:
+      - requirement_id
   securitySchemes:
     ApiKey:
       type: apiKey
@@ -280,17 +271,3 @@ components:
 externalDocs:
   description: Anecdotes API reference
   url: https://help.anecdotes.ai/api/overview
-x-refined-from:
-- anecdotes-grc-openapi-original.json
-- anecdotes-grc-openapi.yml
-x-evidence:
-  method: derived
-  generated: '2026-07-31'
-  sources:
-  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
-  - postman/anecdotes-fedramp-20x.postman_collection.json
-  verified_live:
-  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
-    http_status: 200
-    content_type: application/json
-    fetched: '2026-07-31'

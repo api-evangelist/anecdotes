@@ -2,11 +2,14 @@ openapi: 3.2.0
 info:
   title: Anecdotes Analysis Rules API
   version: 1.0.0
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks, requirements, risks, controls, policies, evidence, findings, and more.
+
+
+    Authentication is two-step: create an API key in the Anecdotes platform, exchange it at GET /identity/v1/apikey/exchange for a short-lived JWT (1 hour), then send that JWT as `Authorization: Bearer ` on all other calls. A descriptive User-Agent header is required.'
   contact:
     name: Anecdotes
     url: https://help.anecdotes.ai/api/overview
     email: hello@anecdotes.ai
-  description: 'Operations tagged Analysis Rules across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.anecdotes.ai
   description: Production
@@ -14,7 +17,7 @@ security:
 - Bearer: []
 tags:
 - name: Analysis Rules
-  description: '**Analysis rules** evaluate evidence table rows for **gaps or warnings**; configure query, scoping, and alert levels, and read **execution results** per instance. [Analysis rules (product)](https://help.anecdotes.ai/product-tour/frameworks/evidence/evidence-monitoring/analysis-rules)'
+  description: '**Analysis rules** evaluate evidence table rows for **gaps or warnings**; configure query, scoping, and alert levels, and read **execution results** per instance. Analysis rules (product)'
 paths:
   /analysis-rules/v1/analysis-rules:
     get:
@@ -73,9 +76,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /analysis-rules/v1/analysis-rules/rule_results_by_filter:
     get:
       tags:
@@ -113,9 +113,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
 components:
   schemas:
     AccountScopingType:
@@ -126,14 +123,137 @@ components:
       - excluded_accounts
       title: AccountScopingType
       description: Determines which accounts the rule applies to.
-    AnalysisRuleQueryType:
+    AnalysisRuleActiveState:
       type: string
       enum:
-      - aql
-      - aqlext
-      - pandas
-      title: AnalysisRuleQueryType
-      description: The type of query engine used by the analysis rule.
+      - active
+      - inactive
+      title: AnalysisRuleActiveState
+      description: Whether the analysis rule is active or inactive.
+    AnalysisRuleResultModel:
+      type: object
+      properties:
+        rule_id:
+          type: string
+          title: Rule Id
+          description: The analysis rule id.
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The evidence id.
+        parent_evidence_id:
+          type: string
+          title: Parent Evidence Id
+          description: The parent evidence id (useful for mapping views to parent evidence).
+        evidence_instance_id:
+          type: string
+          title: Evidence Instance Id
+          description: Evidence instance id.
+        service_instance_id:
+          type: string
+          title: Service Instance Id
+          description: Service instance id.
+        service_name:
+          type: string
+          title: Service Name
+          description: Service name.
+        alert_level:
+          type: string
+          title: Alert Level
+          description: Human-readable or symbolic **outcome** severity for this run (string). May differ from `rule_alert_level` when violations change the effective severity label.
+        date_processed:
+          type: string
+          format: date-time
+          title: Date Processed
+          description: The analysis date processed.
+        violations_count:
+          type: integer
+          title: Violations Count
+          description: Amount of violated rows.
+        violated_rows:
+          type: array
+          items:
+            type: integer
+            description: 0-based row index in the evidence table that violated the rule.
+          title: Violated Rows
+          description: Row indexes that violated the rule.
+        rule_state:
+          type: string
+          title: Rule State
+          description: The analysis rule state.
+        rule_alert_level:
+          allOf:
+          - $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+          title: Rule Alert Level
+          description: 'Configured alert level on the rule (integer enum: 3, 5, 10, 30, 50).'
+        evidence_entity_type:
+          type: string
+          title: Evidence Entity Type
+          description: The evidence entity type (evidence or view).
+      required:
+      - rule_id
+      - evidence_id
+      - evidence_instance_id
+      - service_instance_id
+      - service_name
+      - alert_level
+      - date_processed
+      - violations_count
+      - violated_rows
+      - rule_state
+      - rule_alert_level
+      - evidence_entity_type
+      title: AnalysisRuleResultModel
+      description: Analysis rule execution result for a specific evidence instance.
+    AnalysisRuleOrigin:
+      type: string
+      enum:
+      - library
+      - custom
+      title: AnalysisRuleOrigin
+      description: Whether the rule originates from the library or is custom.
+    AnalysisRuleType:
+      type: string
+      enum:
+      - uam
+      - eid
+      title: AnalysisRuleType
+      description: The type of the analysis rule.
+    AnalysisRuleAlertLevel:
+      type: integer
+      enum:
+      - 3
+      - 5
+      - 10
+      - 30
+      - 50
+      title: AnalysisRuleAlertLevel
+      description: 'The alert level of the analysis rule. Values: 3 (Not Processed), 5 (No Active Rules), 10 (OK), 30 (Warning), 50 (Gap).'
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
     AnalysisRuleModel:
       type: object
       properties:
@@ -211,88 +331,14 @@ components:
       - rule_is_archived
       - account_scoping_type
       title: AnalysisRuleModel
-    AnalysisRuleOrigin:
+    AnalysisRuleQueryType:
       type: string
       enum:
-      - library
-      - custom
-      title: AnalysisRuleOrigin
-      description: Whether the rule originates from the library or is custom.
-    AnalysisRuleResultModel:
-      type: object
-      properties:
-        rule_id:
-          type: string
-          title: Rule Id
-          description: The analysis rule id.
-        evidence_id:
-          type: string
-          title: Evidence Id
-          description: The evidence id.
-        parent_evidence_id:
-          type: string
-          title: Parent Evidence Id
-          description: The parent evidence id (useful for mapping views to parent evidence).
-        evidence_instance_id:
-          type: string
-          title: Evidence Instance Id
-          description: Evidence instance id.
-        service_instance_id:
-          type: string
-          title: Service Instance Id
-          description: Service instance id.
-        service_name:
-          type: string
-          title: Service Name
-          description: Service name.
-        alert_level:
-          type: string
-          title: Alert Level
-          description: Human-readable or symbolic **outcome** severity for this run (string). May differ from `rule_alert_level` when violations change the effective severity label.
-        date_processed:
-          type: string
-          format: date-time
-          title: Date Processed
-          description: The analysis date processed.
-        violations_count:
-          type: integer
-          title: Violations Count
-          description: Amount of violated rows.
-        violated_rows:
-          type: array
-          items:
-            type: integer
-            description: 0-based row index in the evidence table that violated the rule.
-          title: Violated Rows
-          description: Row indexes that violated the rule.
-        rule_state:
-          type: string
-          title: Rule State
-          description: The analysis rule state.
-        rule_alert_level:
-          allOf:
-          - $ref: '#/components/schemas/AnalysisRuleAlertLevel'
-          title: Rule Alert Level
-          description: 'Configured alert level on the rule (integer enum: 3, 5, 10, 30, 50).'
-        evidence_entity_type:
-          type: string
-          title: Evidence Entity Type
-          description: The evidence entity type (evidence or view).
-      required:
-      - rule_id
-      - evidence_id
-      - evidence_instance_id
-      - service_instance_id
-      - service_name
-      - alert_level
-      - date_processed
-      - violations_count
-      - violated_rows
-      - rule_state
-      - rule_alert_level
-      - evidence_entity_type
-      title: AnalysisRuleResultModel
-      description: Analysis rule execution result for a specific evidence instance.
+      - aql
+      - aqlext
+      - pandas
+      title: AnalysisRuleQueryType
+      description: The type of query engine used by the analysis rule.
     CreateCustomAnalysisRuleModel:
       type: object
       properties:
@@ -340,55 +386,6 @@ components:
           description: List of service instance IDs the rule relates to (used with included_accounts or excluded_accounts scoping).
       title: CreateCustomAnalysisRuleModel
       description: Request body for creating a new custom analysis rule.
-    ValidationError:
-      type: object
-      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
-      properties:
-        detail:
-          type: array
-          items:
-            type: object
-            properties:
-              loc:
-                type: array
-                items:
-                  anyOf:
-                  - type: string
-                  - type: integer
-              msg:
-                type: string
-              type:
-                type: string
-              ctx:
-                type: object
-                description: Optional machine context (e.g. `enum_values` for enum validation errors).
-                additionalProperties: true
-            additionalProperties: true
-      additionalProperties: true
-    AnalysisRuleType:
-      type: string
-      enum:
-      - uam
-      - eid
-      title: AnalysisRuleType
-      description: The type of the analysis rule.
-    AnalysisRuleActiveState:
-      type: string
-      enum:
-      - active
-      - inactive
-      title: AnalysisRuleActiveState
-      description: Whether the analysis rule is active or inactive.
-    AnalysisRuleAlertLevel:
-      type: integer
-      enum:
-      - 3
-      - 5
-      - 10
-      - 30
-      - 50
-      title: AnalysisRuleAlertLevel
-      description: 'The alert level of the analysis rule. Values: 3 (Not Processed), 5 (No Active Rules), 10 (OK), 30 (Warning), 50 (Gap).'
   securitySchemes:
     ApiKey:
       type: apiKey
@@ -403,17 +400,3 @@ components:
 externalDocs:
   description: Anecdotes API reference
   url: https://help.anecdotes.ai/api/overview
-x-refined-from:
-- anecdotes-grc-openapi-original.json
-- anecdotes-grc-openapi.yml
-x-evidence:
-  method: derived
-  generated: '2026-07-31'
-  sources:
-  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
-  - postman/anecdotes-fedramp-20x.postman_collection.json
-  verified_live:
-  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
-    http_status: 200
-    content_type: application/json
-    fetched: '2026-07-31'

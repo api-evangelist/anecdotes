@@ -2,11 +2,14 @@ openapi: 3.2.0
 info:
   title: Anecdotes Custom Fields API
   version: 1.0.0
+  description: 'The Anecdotes API provides programmatic access to the Anecdotes GRC platform. Use it to manage frameworks, requirements, risks, controls, policies, evidence, findings, and more.
+
+
+    Authentication is two-step: create an API key in the Anecdotes platform, exchange it at GET /identity/v1/apikey/exchange for a short-lived JWT (1 hour), then send that JWT as `Authorization: Bearer ` on all other calls. A descriptive User-Agent header is required.'
   contact:
     name: Anecdotes
     url: https://help.anecdotes.ai/api/overview
     email: hello@anecdotes.ai
-  description: 'Operations tagged Custom Fields across 2 of this provider''s published API definitions: anecdotes-grc-openapi-original.json, anecdotes-grc-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.anecdotes.ai
   description: Production
@@ -33,9 +36,6 @@ paths:
                 additionalProperties: true
         '401':
           description: Unauthorized.
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /controls/controls/{control_id}/fields/{field_id}:
     patch:
       tags:
@@ -62,9 +62,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /custom-fields/v1/fields:
     get:
       tags:
@@ -116,9 +113,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
   /custom-fields/v1/fields/{field_id}:
     get:
       tags:
@@ -137,57 +131,8 @@ paths:
           description: Unauthorized — JWT is missing, invalid, or expired.
         '500':
           description: Internal server error, including when the custom field does not exist.
-    servers:
-    - url: https://api.anecdotes.ai
-      description: Production
 components:
   schemas:
-    CustomField:
-      type: object
-      description: A custom field definition.
-      properties:
-        id:
-          type: string
-          description: Field id (`field_…`).
-        name:
-          type: string
-        type:
-          $ref: '#/components/schemas/FieldType'
-        description:
-          type:
-          - string
-          - 'null'
-        field_metadata:
-          type: object
-          description: Type-specific configuration.
-          properties:
-            values:
-              type: object
-              description: 'Selectable options as a **`{ option_id: label }`** map (dropdown / multi-select only). The **option id** is what you send as **`value`** when setting the field on a requirement.'
-              additionalProperties:
-                type: string
-            who_can_edit:
-              type: string
-              description: Who may edit the value, e.g. **`all`**.
-            allow_auditors_to_view:
-              type: boolean
-          additionalProperties: true
-        resource_types:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceType'
-          description: Resource types this field applies to.
-        metadata:
-          type: object
-          description: Per-resource-type metadata (e.g. **`order`**, **`mandatory`**, **`framework_ids`**).
-          additionalProperties: true
-        registers_metadata:
-          type:
-          - object
-          - 'null'
-          description: Per-register metadata, keyed by register id (the empty-string key **`""`** is the default register). Present for all field types; may be **`null`**.
-          additionalProperties: true
-      additionalProperties: true
     CreateCustomFieldRequest:
       type: object
       description: Body for creating a custom field definition.
@@ -266,6 +211,52 @@ components:
                 additionalProperties: true
             additionalProperties: true
       additionalProperties: true
+    CustomField:
+      type: object
+      description: A custom field definition.
+      properties:
+        id:
+          type: string
+          description: Field id (`field_…`).
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/FieldType'
+        description:
+          type:
+          - string
+          - 'null'
+        field_metadata:
+          type: object
+          description: Type-specific configuration.
+          properties:
+            values:
+              type: object
+              description: 'Selectable options as a **`{ option_id: label }`** map (dropdown / multi-select only). The **option id** is what you send as **`value`** when setting the field on a requirement.'
+              additionalProperties:
+                type: string
+            who_can_edit:
+              type: string
+              description: Who may edit the value, e.g. **`all`**.
+            allow_auditors_to_view:
+              type: boolean
+          additionalProperties: true
+        resource_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceType'
+          description: Resource types this field applies to.
+        metadata:
+          type: object
+          description: Per-resource-type metadata (e.g. **`order`**, **`mandatory`**, **`framework_ids`**).
+          additionalProperties: true
+        registers_metadata:
+          type:
+          - object
+          - 'null'
+          description: Per-register metadata, keyed by register id (the empty-string key **`""`** is the default register). Present for all field types; may be **`null`**.
+          additionalProperties: true
+      additionalProperties: true
   securitySchemes:
     ApiKey:
       type: apiKey
@@ -280,17 +271,3 @@ components:
 externalDocs:
   description: Anecdotes API reference
   url: https://help.anecdotes.ai/api/overview
-x-refined-from:
-- anecdotes-grc-openapi-original.json
-- anecdotes-grc-openapi.yml
-x-evidence:
-  method: derived
-  generated: '2026-07-31'
-  sources:
-  - https://help.anecdotes.ai/technical-setup/fedramp-20x-trust-center-and-api
-  - postman/anecdotes-fedramp-20x.postman_collection.json
-  verified_live:
-  - url: https://api.anecdotes.ai/fedramp20x/v1/public/info?evidence_id=builder_2795822335733
-    http_status: 200
-    content_type: application/json
-    fetched: '2026-07-31'

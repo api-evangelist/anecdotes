@@ -236,17 +236,17 @@ components:
           - 'null'
           description: User who last updated the link, if any.
       additionalProperties: true
-    FindingsListResponse:
+    FindingsDeleteResponse:
       type: object
       required:
-      - findings
+      - deleted_count
+      description: Bulk delete result.
       properties:
-        findings:
-          type: array
-          items:
-            $ref: '#/components/schemas/Finding'
-        pagination:
-          $ref: '#/components/schemas/FindingsPagination'
+        deleted_count:
+          type: integer
+          minimum: 0
+          description: Number of findings deleted for this request.
+      additionalProperties: true
     Finding:
       type: object
       description: A compliance finding.
@@ -344,17 +344,17 @@ components:
                 additionalProperties: true
             additionalProperties: true
       additionalProperties: true
-    FindingsDeleteResponse:
+    FindingsListResponse:
       type: object
       required:
-      - deleted_count
-      description: Bulk delete result.
+      - findings
       properties:
-        deleted_count:
-          type: integer
-          minimum: 0
-          description: Number of findings deleted for this request.
-      additionalProperties: true
+        findings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Finding'
+        pagination:
+          $ref: '#/components/schemas/FindingsPagination'
   securitySchemes:
     ApiKey:
       type: apiKey

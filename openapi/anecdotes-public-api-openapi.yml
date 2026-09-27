@@ -106,15 +106,6 @@ paths:
                 type: string
                 format: binary
 components:
-  parameters:
-    TrustCenterUrl:
-      name: trustcenterurl
-      in: header
-      required: true
-      description: Host name of the Anecdotes Trust Center being queried.
-      schema:
-        type: string
-      example: trust.anecdotes.ai
   schemas:
     AccessRequestResult:
       type: object
@@ -167,6 +158,15 @@ components:
         job_title:
           type: string
           description: Requester's job title.
+  parameters:
+    TrustCenterUrl:
+      name: trustcenterurl
+      in: header
+      required: true
+      description: Host name of the Anecdotes Trust Center being queried.
+      schema:
+        type: string
+      example: trust.anecdotes.ai
   securitySchemes:
     ApiKey:
       type: apiKey

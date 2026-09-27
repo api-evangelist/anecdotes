@@ -50,6 +50,19 @@ tags:
 - Company
 - Compliance
 - Governance
+- Risk Management
+- Security
+- GRC
+- Audit
+- Evidence
+- Continuous Compliance
+- FedRAMP
+- Artificial Intelligence
+- Agents
+tags_raw:
+- Company
+- Compliance
+- Governance
 - Risk
 - Security
 - GRC
@@ -422,6 +435,8 @@ apis:
   humanURL: https://help.anecdotes.ai/api/overview
   baseURL: https://api.anecdotes.ai
   tags:
+  - Risk Management
+  tags_raw:
   - Risk
   properties:
   - type: OpenAPI

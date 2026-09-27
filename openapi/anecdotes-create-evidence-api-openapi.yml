@@ -266,22 +266,6 @@ paths:
                 - $ref: '#/components/schemas/Evidence_ErrorResponse'
 components:
   schemas:
-    Evidence_ErrorResponse:
-      type: object
-      description: Error body returned for Anecdotes business-logic errors (e.g. IPE validation failures and the API-evidence-only guard). `error_detail` repeats the HTTP status code.
-      properties:
-        error_title:
-          type: string
-          title: Error Title
-          description: Human-readable error message.
-        error_detail:
-          type: integer
-          title: Error Detail
-          description: The HTTP status code, repeated in the body.
-      required:
-      - error_title
-      - error_detail
-      title: ErrorResponse
     Evidence_AttachIpeResponse:
       type: object
       description: Response returned after attaching or replacing IPE on an evidence collection.
@@ -298,6 +282,32 @@ components:
       - evidence_instance_id
       - ipe_count
       title: AttachIpeResponse
+    Evidence_CreateEvidenceResponse:
+      type: object
+      properties:
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The id of the newly created evidence.
+      required:
+      - evidence_id
+      title: CreateEvidenceResponse
+    Evidence_ErrorResponse:
+      type: object
+      description: Error body returned for Anecdotes business-logic errors (e.g. IPE validation failures and the API-evidence-only guard). `error_detail` repeats the HTTP status code.
+      properties:
+        error_title:
+          type: string
+          title: Error Title
+          description: Human-readable error message.
+        error_detail:
+          type: integer
+          title: Error Detail
+          description: The HTTP status code, repeated in the body.
+      required:
+      - error_title
+      - error_detail
+      title: ErrorResponse
     Evidence_DetailMessage:
       type: object
       description: Error body for input-combination errors raised directly by the endpoint (FastAPI `HTTPException` with a string detail).
@@ -334,16 +344,6 @@ components:
                 additionalProperties: true
             additionalProperties: true
       additionalProperties: true
-    Evidence_CreateEvidenceResponse:
-      type: object
-      properties:
-        evidence_id:
-          type: string
-          title: Evidence Id
-          description: The id of the newly created evidence.
-      required:
-      - evidence_id
-      title: CreateEvidenceResponse
   securitySchemes:
     ApiKey:
       type: apiKey

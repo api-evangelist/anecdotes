@@ -266,32 +266,6 @@ paths:
                 - $ref: '#/components/schemas/Evidence_ErrorResponse'
 components:
   schemas:
-    Evidence_AttachIpeResponse:
-      type: object
-      description: Response returned after attaching or replacing IPE on an evidence collection.
-      properties:
-        evidence_instance_id:
-          type: string
-          title: Evidence Instance Id
-          description: The collection (evidence instance) the IPE was attached to.
-        ipe_count:
-          type: integer
-          title: Ipe Count
-          description: Number of IPE entries stored.
-      required:
-      - evidence_instance_id
-      - ipe_count
-      title: AttachIpeResponse
-    Evidence_CreateEvidenceResponse:
-      type: object
-      properties:
-        evidence_id:
-          type: string
-          title: Evidence Id
-          description: The id of the newly created evidence.
-      required:
-      - evidence_id
-      title: CreateEvidenceResponse
     Evidence_ErrorResponse:
       type: object
       description: Error body returned for Anecdotes business-logic errors (e.g. IPE validation failures and the API-evidence-only guard). `error_detail` repeats the HTTP status code.
@@ -308,17 +282,16 @@ components:
       - error_title
       - error_detail
       title: ErrorResponse
-    Evidence_DetailMessage:
+    Evidence_CreateEvidenceResponse:
       type: object
-      description: Error body for input-combination errors raised directly by the endpoint (FastAPI `HTTPException` with a string detail).
       properties:
-        detail:
+        evidence_id:
           type: string
-          title: Detail
-          description: Human-readable error message.
+          title: Evidence Id
+          description: The id of the newly created evidence.
       required:
-      - detail
-      title: DetailMessage
+      - evidence_id
+      title: CreateEvidenceResponse
     ValidationError:
       type: object
       description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
@@ -344,6 +317,33 @@ components:
                 additionalProperties: true
             additionalProperties: true
       additionalProperties: true
+    Evidence_AttachIpeResponse:
+      type: object
+      description: Response returned after attaching or replacing IPE on an evidence collection.
+      properties:
+        evidence_instance_id:
+          type: string
+          title: Evidence Instance Id
+          description: The collection (evidence instance) the IPE was attached to.
+        ipe_count:
+          type: integer
+          title: Ipe Count
+          description: Number of IPE entries stored.
+      required:
+      - evidence_instance_id
+      - ipe_count
+      title: AttachIpeResponse
+    Evidence_DetailMessage:
+      type: object
+      description: Error body for input-combination errors raised directly by the endpoint (FastAPI `HTTPException` with a string detail).
+      properties:
+        detail:
+          type: string
+          title: Detail
+          description: Human-readable error message.
+      required:
+      - detail
+      title: DetailMessage
   securitySchemes:
     ApiKey:
       type: apiKey

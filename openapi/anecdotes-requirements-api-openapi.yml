@@ -257,6 +257,19 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
 components:
   schemas:
+    RequirementUpdateRequestEnvelope:
+      type: object
+      properties:
+        requirement:
+          $ref: '#/components/schemas/RequirementUpdateBody'
+        context:
+          type: object
+          properties:
+            control_id:
+              type: string
+              description: Control context for scoped updates.
+          additionalProperties: true
+      additionalProperties: true
     RequirementUpdateBody:
       type: object
       properties:
@@ -288,21 +301,6 @@ components:
                 type: string
             additionalProperties: true
       additionalProperties: true
-    RequirementCustomFieldValueUpdate:
-      type: object
-      description: Body for setting a custom field value on a requirement. The **`value`** shape depends on the field type.
-      required:
-      - value
-      properties:
-        value:
-          description: String for **free-text**, a single **option id** for **dropdown**, an array of option ids for **multi-select**, or **`null`** to clear.
-          oneOf:
-          - type:
-            - string
-            - 'null'
-          - type: array
-            items:
-              type: string
     RequirementCreateRequest:
       type: object
       required:
@@ -327,6 +325,50 @@ components:
           items:
             type: string
           description: Framework ids to link; send **`[]`** when none.
+    RequirementCustomFieldValues:
+      type: object
+      description: 'Custom field values across requirements: a map of **requirement id → field id → `{ "value": … }`**. Empty object when nothing is set.'
+      additionalProperties:
+        type: object
+        description: 'For one requirement: a map of **field id → `{ "value": … }`**.'
+        additionalProperties:
+          type: object
+          properties:
+            value:
+              description: 'Stored value: an **option id** (dropdown) or array of option ids (multi-select), or a plain string (free-text).'
+              oneOf:
+              - type:
+                - string
+                - 'null'
+              - type: array
+                items:
+                  type: string
+          additionalProperties: true
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
     Requirement:
       type: object
       description: A customer requirement instance. Field names mirror the live API; additional fields may appear (`additionalProperties`).
@@ -390,63 +432,21 @@ components:
             type: string
           description: Integrations or services that collect evidence for this requirement.
       additionalProperties: true
-    ValidationError:
+    RequirementCustomFieldValueUpdate:
       type: object
-      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      description: Body for setting a custom field value on a requirement. The **`value`** shape depends on the field type.
+      required:
+      - value
       properties:
-        detail:
-          type: array
-          items:
-            type: object
-            properties:
-              loc:
-                type: array
-                items:
-                  anyOf:
-                  - type: string
-                  - type: integer
-              msg:
-                type: string
-              type:
-                type: string
-              ctx:
-                type: object
-                description: Optional machine context (e.g. `enum_values` for enum validation errors).
-                additionalProperties: true
-            additionalProperties: true
-      additionalProperties: true
-    RequirementCustomFieldValues:
-      type: object
-      description: 'Custom field values across requirements: a map of **requirement id → field id → `{ "value": … }`**. Empty object when nothing is set.'
-      additionalProperties:
-        type: object
-        description: 'For one requirement: a map of **field id → `{ "value": … }`**.'
-        additionalProperties:
-          type: object
-          properties:
-            value:
-              description: 'Stored value: an **option id** (dropdown) or array of option ids (multi-select), or a plain string (free-text).'
-              oneOf:
-              - type:
-                - string
-                - 'null'
-              - type: array
-                items:
-                  type: string
-          additionalProperties: true
-    RequirementUpdateRequestEnvelope:
-      type: object
-      properties:
-        requirement:
-          $ref: '#/components/schemas/RequirementUpdateBody'
-        context:
-          type: object
-          properties:
-            control_id:
+        value:
+          description: String for **free-text**, a single **option id** for **dropdown**, an array of option ids for **multi-select**, or **`null`** to clear.
+          oneOf:
+          - type:
+            - string
+            - 'null'
+          - type: array
+            items:
               type: string
-              description: Control context for scoped updates.
-          additionalProperties: true
-      additionalProperties: true
   securitySchemes:
     ApiKey:
       type: apiKey

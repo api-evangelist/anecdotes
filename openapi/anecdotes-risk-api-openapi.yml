@@ -165,14 +165,123 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
 components:
   schemas:
-    Risk_ActionStatus:
+    Risk_RiskAppetiteStatus:
       type: string
       enum:
-      - PENDING
-      - WAITING_FOR_REVIEW
-      - APPLIED
-      title: ActionStatus
-      description: An enumeration.
+      - above
+      - within
+      title: RiskAppetiteStatus
+      description: Whether the risk level is above or within appetite.
+    Risk_CustomerUpdatedRiskModel:
+      type: object
+      properties:
+        name:
+          type: string
+          title: Name
+        inherent_risk_level:
+          type: integer
+          title: Inherent Risk Level
+        inherent_risk_level_impact:
+          type: integer
+          title: Inherent Risk Level Impact
+        inherent_risk_level_like_hood:
+          type: integer
+          title: Inherent Risk Level Like Hood
+          description: Inherent **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
+        inherent_risk_level_financial_impact:
+          type: string
+          title: Inherent Risk Level Financial Impact
+        residual_risk_level:
+          type: number
+          title: Residual Risk Level
+        residual_risk_level_impact:
+          type: integer
+          title: Residual Risk Level Impact
+        residual_risk_level_like_hood:
+          type: integer
+          title: Residual Risk Level Like Hood
+          description: Residual **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
+        residual_risk_level_financial_impact:
+          type: string
+          title: Residual Risk Level Financial Impact
+        strategy_status:
+          $ref: '#/components/schemas/Risk_CycleStatus'
+        calculated_risk_level:
+          type: integer
+          title: Calculated Risk Level
+        calculated_risk_level_score:
+          type: number
+          title: Calculated Risk Level Score
+        level_target:
+          type: string
+          title: Level Target
+        mitigation_control_ids:
+          items:
+            type: string
+          type: array
+          title: Mitigation Control Ids
+          default: []
+        evidence_ids:
+          items:
+            type: string
+          type: array
+          title: Evidence Ids
+          default: []
+        customer_risk_id:
+          type: string
+          title: Customer Risk Id
+        managers:
+          items:
+            type: string
+          type: array
+          title: Managers
+          default: []
+        owners:
+          items:
+            type: string
+          type: array
+          title: Owners
+          default: []
+        auto_calc:
+          $ref: '#/components/schemas/Risk_RiskAutoCalc'
+        global_id:
+          type: string
+          title: Global Id
+        inherent_risk_level_name:
+          type: string
+          title: Inherent Risk Level Name
+        inherent_risk_level_impact_name:
+          type: string
+          title: Inherent Risk Level Impact Name
+        inherent_risk_level_likelihood_name:
+          type: string
+          title: Inherent Risk Level Likelihood Name
+        residual_risk_level_name:
+          type: string
+          title: Residual Risk Level Name
+        residual_risk_level_impact_name:
+          type: string
+          title: Residual Risk Level Impact Name
+        residual_risk_level_likelihood_name:
+          type: string
+          title: Residual Risk Level Likelihood Name
+        register_id:
+          type: string
+          title: Register Id
+        appetite_status:
+          $ref: '#/components/schemas/Risk_RiskAppetiteStatus'
+        fields:
+          type: object
+          title: Fields
+          description: Custom field values as a mapping of field ID to value (string or array of strings).
+          additionalProperties:
+            oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+      title: CustomerUpdatedRiskModel
+      description: All updatable fields for a risk. All fields are optional in a PATCH request.
     Risk_CustomerRiskModel:
       properties:
         name:
@@ -313,28 +422,22 @@ components:
       - name
       title: CustomerRiskModel
       description: Customer risk base model
-    Risk_RiskAutoCalc:
-      properties:
-        enabled:
-          type: boolean
-          title: Enabled
-        status:
-          allOf:
-          - $ref: '#/components/schemas/Risk_ActionStatus'
-          default: PENDING
-        residual_risk_level:
-          type: number
-          title: Residual Risk Level
-        residual_impact:
-          type: number
-          title: Residual Impact
-        residual_likelihood:
-          type: number
-          title: Residual Likelihood
-      type: object
-      required:
-      - enabled
-      title: RiskAutoCalc
+    Risk_CycleStatus:
+      enum:
+      - Setup Incomplete
+      - Not Started
+      - Missing File
+      - On Hold
+      - In Progress
+      - Changes Required
+      - Approved
+      - Scheduled
+      - Sent For Approval
+      - Approval Required
+      - Implemented
+      - Action Required
+      title: CycleStatus
+      description: An enumeration.
     Risk_NewRisk:
       properties:
         name:
@@ -367,21 +470,13 @@ components:
       - name
       title: NewRisk
       description: Request body for creating a new risk via **POST /risk/v1/risk**. Only `name` is required; all other fields are optional.
-    Risk_CycleStatus:
+    Risk_ActionStatus:
+      type: string
       enum:
-      - Setup Incomplete
-      - Not Started
-      - Missing File
-      - On Hold
-      - In Progress
-      - Changes Required
-      - Approved
-      - Scheduled
-      - Sent For Approval
-      - Approval Required
-      - Implemented
-      - Action Required
-      title: CycleStatus
+      - PENDING
+      - WAITING_FOR_REVIEW
+      - APPLIED
+      title: ActionStatus
       description: An enumeration.
     ValidationError:
       type: object
@@ -408,13 +503,28 @@ components:
                 additionalProperties: true
             additionalProperties: true
       additionalProperties: true
-    Risk_RiskAppetiteStatus:
-      type: string
-      enum:
-      - above
-      - within
-      title: RiskAppetiteStatus
-      description: Whether the risk level is above or within appetite.
+    Risk_RiskAutoCalc:
+      properties:
+        enabled:
+          type: boolean
+          title: Enabled
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Risk_ActionStatus'
+          default: PENDING
+        residual_risk_level:
+          type: number
+          title: Residual Risk Level
+        residual_impact:
+          type: number
+          title: Residual Impact
+        residual_likelihood:
+          type: number
+          title: Residual Likelihood
+      type: object
+      required:
+      - enabled
+      title: RiskAutoCalc
     Risk_CustomerFullRiskModel:
       allOf:
       - $ref: '#/components/schemas/Risk_CustomerRiskModel'
@@ -449,116 +559,6 @@ components:
             description: User who last updated the treatment plan.
       title: CustomerFullRiskModel
       description: Risk with last treatment plan data
-    Risk_CustomerUpdatedRiskModel:
-      type: object
-      properties:
-        name:
-          type: string
-          title: Name
-        inherent_risk_level:
-          type: integer
-          title: Inherent Risk Level
-        inherent_risk_level_impact:
-          type: integer
-          title: Inherent Risk Level Impact
-        inherent_risk_level_like_hood:
-          type: integer
-          title: Inherent Risk Level Like Hood
-          description: Inherent **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
-        inherent_risk_level_financial_impact:
-          type: string
-          title: Inherent Risk Level Financial Impact
-        residual_risk_level:
-          type: number
-          title: Residual Risk Level
-        residual_risk_level_impact:
-          type: integer
-          title: Residual Risk Level Impact
-        residual_risk_level_like_hood:
-          type: integer
-          title: Residual Risk Level Like Hood
-          description: Residual **likelihood** dimension. The JSON field name uses legacy spelling `like_hood` in the API.
-        residual_risk_level_financial_impact:
-          type: string
-          title: Residual Risk Level Financial Impact
-        strategy_status:
-          $ref: '#/components/schemas/Risk_CycleStatus'
-        calculated_risk_level:
-          type: integer
-          title: Calculated Risk Level
-        calculated_risk_level_score:
-          type: number
-          title: Calculated Risk Level Score
-        level_target:
-          type: string
-          title: Level Target
-        mitigation_control_ids:
-          items:
-            type: string
-          type: array
-          title: Mitigation Control Ids
-          default: []
-        evidence_ids:
-          items:
-            type: string
-          type: array
-          title: Evidence Ids
-          default: []
-        customer_risk_id:
-          type: string
-          title: Customer Risk Id
-        managers:
-          items:
-            type: string
-          type: array
-          title: Managers
-          default: []
-        owners:
-          items:
-            type: string
-          type: array
-          title: Owners
-          default: []
-        auto_calc:
-          $ref: '#/components/schemas/Risk_RiskAutoCalc'
-        global_id:
-          type: string
-          title: Global Id
-        inherent_risk_level_name:
-          type: string
-          title: Inherent Risk Level Name
-        inherent_risk_level_impact_name:
-          type: string
-          title: Inherent Risk Level Impact Name
-        inherent_risk_level_likelihood_name:
-          type: string
-          title: Inherent Risk Level Likelihood Name
-        residual_risk_level_name:
-          type: string
-          title: Residual Risk Level Name
-        residual_risk_level_impact_name:
-          type: string
-          title: Residual Risk Level Impact Name
-        residual_risk_level_likelihood_name:
-          type: string
-          title: Residual Risk Level Likelihood Name
-        register_id:
-          type: string
-          title: Register Id
-        appetite_status:
-          $ref: '#/components/schemas/Risk_RiskAppetiteStatus'
-        fields:
-          type: object
-          title: Fields
-          description: Custom field values as a mapping of field ID to value (string or array of strings).
-          additionalProperties:
-            oneOf:
-            - type: string
-            - type: array
-              items:
-                type: string
-      title: CustomerUpdatedRiskModel
-      description: All updatable fields for a risk. All fields are optional in a PATCH request.
   securitySchemes:
     ApiKey:
       type: apiKey

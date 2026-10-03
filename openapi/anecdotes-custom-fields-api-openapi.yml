@@ -133,13 +133,6 @@ paths:
           description: Internal server error, including when the custom field does not exist.
 components:
   schemas:
-    FieldType:
-      type: string
-      enum:
-      - FreeText
-      - DropDown
-      - MultiSelect
-      description: Custom field type. **`FreeText`** stores a string; **`DropDown`** stores a single option id; **`MultiSelect`** stores an array of option ids.
     ResourceType:
       type: string
       enum:
@@ -153,10 +146,6 @@ components:
       - FINDING
       - TREATMENT_PLAN
       description: Platform resource type a custom field can apply to.
-    PatchControlCustomFieldValuePayload:
-      type: object
-      properties:
-        value: {}
     CreateCustomFieldRequest:
       type: object
       description: Body for creating a custom field definition.
@@ -186,6 +175,10 @@ components:
           type: object
           description: 'Per-resource-type metadata, e.g. **`{ "REQUIREMENT": { "framework_ids": null } }`**.'
           additionalProperties: true
+    PatchControlCustomFieldValuePayload:
+      type: object
+      properties:
+        value: {}
     ValidationError:
       type: object
       description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
@@ -257,6 +250,13 @@ components:
           description: Per-register metadata, keyed by register id (the empty-string key **`""`** is the default register). Present for all field types; may be **`null`**.
           additionalProperties: true
       additionalProperties: true
+    FieldType:
+      type: string
+      enum:
+      - FreeText
+      - DropDown
+      - MultiSelect
+      description: Custom field type. **`FreeText`** stores a string; **`DropDown`** stores a single option id; **`MultiSelect`** stores an array of option ids.
   securitySchemes:
     ApiKey:
       type: apiKey

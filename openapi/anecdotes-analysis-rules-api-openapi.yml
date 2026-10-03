@@ -115,6 +115,13 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
 components:
   schemas:
+    AnalysisRuleOrigin:
+      type: string
+      enum:
+      - library
+      - custom
+      title: AnalysisRuleOrigin
+      description: Whether the rule originates from the library or is custom.
     CreateCustomAnalysisRuleModel:
       type: object
       properties:
@@ -162,6 +169,30 @@ components:
           description: List of service instance IDs the rule relates to (used with included_accounts or excluded_accounts scoping).
       title: CreateCustomAnalysisRuleModel
       description: Request body for creating a new custom analysis rule.
+    AnalysisRuleActiveState:
+      type: string
+      enum:
+      - active
+      - inactive
+      title: AnalysisRuleActiveState
+      description: Whether the analysis rule is active or inactive.
+    AnalysisRuleType:
+      type: string
+      enum:
+      - uam
+      - eid
+      title: AnalysisRuleType
+      description: The type of the analysis rule.
+    AnalysisRuleAlertLevel:
+      type: integer
+      enum:
+      - 3
+      - 5
+      - 10
+      - 30
+      - 50
+      title: AnalysisRuleAlertLevel
+      description: 'The alert level of the analysis rule. Values: 3 (Not Processed), 5 (No Active Rules), 10 (OK), 30 (Warning), 50 (Gap).'
     AnalysisRuleModel:
       type: object
       properties:
@@ -239,13 +270,6 @@ components:
       - rule_is_archived
       - account_scoping_type
       title: AnalysisRuleModel
-    AnalysisRuleOrigin:
-      type: string
-      enum:
-      - library
-      - custom
-      title: AnalysisRuleOrigin
-      description: Whether the rule originates from the library or is custom.
     ValidationError:
       type: object
       description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
@@ -271,14 +295,6 @@ components:
                 additionalProperties: true
             additionalProperties: true
       additionalProperties: true
-    AnalysisRuleQueryType:
-      type: string
-      enum:
-      - aql
-      - aqlext
-      - pandas
-      title: AnalysisRuleQueryType
-      description: The type of query engine used by the analysis rule.
     AccountScopingType:
       type: string
       enum:
@@ -287,6 +303,14 @@ components:
       - excluded_accounts
       title: AccountScopingType
       description: Determines which accounts the rule applies to.
+    AnalysisRuleQueryType:
+      type: string
+      enum:
+      - aql
+      - aqlext
+      - pandas
+      title: AnalysisRuleQueryType
+      description: The type of query engine used by the analysis rule.
     AnalysisRuleResultModel:
       type: object
       properties:
@@ -362,30 +386,6 @@ components:
       - evidence_entity_type
       title: AnalysisRuleResultModel
       description: Analysis rule execution result for a specific evidence instance.
-    AnalysisRuleActiveState:
-      type: string
-      enum:
-      - active
-      - inactive
-      title: AnalysisRuleActiveState
-      description: Whether the analysis rule is active or inactive.
-    AnalysisRuleType:
-      type: string
-      enum:
-      - uam
-      - eid
-      title: AnalysisRuleType
-      description: The type of the analysis rule.
-    AnalysisRuleAlertLevel:
-      type: integer
-      enum:
-      - 3
-      - 5
-      - 10
-      - 30
-      - 50
-      title: AnalysisRuleAlertLevel
-      description: 'The alert level of the analysis rule. Values: 3 (Not Processed), 5 (No Active Rules), 10 (OK), 30 (Warning), 50 (Gap).'
   securitySchemes:
     ApiKey:
       type: apiKey

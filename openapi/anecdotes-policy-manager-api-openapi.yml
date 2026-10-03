@@ -203,6 +203,422 @@ paths:
           description: Unauthorized — JWT is missing, invalid, or expired.
 components:
   schemas:
+    Policy_PolicySettings:
+      type: object
+      title: PolicySettings
+      description: Workflow and scheduling configuration for a customer policy.
+      additionalProperties: true
+      properties:
+        stakeholders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy_PolicySettingsStakeholder'
+        scheduling:
+          $ref: '#/components/schemas/Policy_PolicyScheduling'
+    Policy_PolicyScheduling:
+      type: object
+      title: PolicyScheduling
+      description: Approval cycle scheduling under `policy_settings.scheduling`. Fields are often `null` on newly created policies until scheduling is configured.
+      additionalProperties: true
+      properties:
+        approval_frequency:
+          type:
+          - string
+          - 'null'
+        start_from:
+          type:
+          - string
+          - 'null'
+          description: Scheduled start (ISO 8601 with offset when set).
+        approval_time:
+          type:
+          - string
+          - 'null'
+          description: Next or recurring approval time (ISO 8601 with offset when set).
+        notify_approvers_scheduledtask_id:
+          type:
+          - string
+          - 'null'
+        end_cycle_scheduledtask_id:
+          type:
+          - string
+          - 'null'
+        overdue_reminder_task_id:
+          type:
+          - string
+          - 'null'
+    Policy_ApprovalSettingsInput:
+      type: object
+      title: ApprovalSettingsInput
+      description: Nested `settings` object for `PUT /policy/v1/policies/update-settings`.
+      additionalProperties: true
+      required:
+      - stakeholders
+      - scheduling
+      properties:
+        stakeholders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy_ApprovalStakeholderInput'
+          description: Ordered reviewers and approvers for the policy approval cycle.
+        scheduling:
+          $ref: '#/components/schemas/Policy_ApprovalSchedulingInput'
+    Policy_CreatePoliciesRequest:
+      type: array
+      title: CreatePoliciesRequest
+      description: 'Request body for `POST /policy/v2/policies`: one or more create instructions.'
+      minItems: 1
+      items:
+        $ref: '#/components/schemas/Policy_CreatePolicyItem'
+    Policy_CreatePolicyItem:
+      type: object
+      title: CreatePolicyItem
+      description: One policy to create in `POST /policy/v2/policies` (body is an array of these objects).
+      additionalProperties: true
+      required:
+      - evidence_id
+      - policy_name
+      properties:
+        evidence_id:
+          type: string
+          description: Evidence definition id to attach (e.g. a manual evidence id `manual_<id>`).
+        policy_name:
+          type: string
+          description: Display name for the new policy.
+        requirements_ids:
+          type: array
+          items:
+            type: string
+            description: Framework requirement identifier as string.
+          description: Optional. Requirement ids to associate with the policy; omit or use `[]` when none.
+    Policy_ApprovalStakeholderInput:
+      type: object
+      title: ApprovalStakeholderInput
+      description: Stakeholder row for `PUT /policy/v1/policies/update-settings` (`settings.stakeholders`).
+      additionalProperties: true
+      properties:
+        approve_type:
+          type: string
+          description: Role in the workflow (e.g. `reviewer`, `approver`).
+        comments:
+          type: string
+          description: Instruction or note shown to this stakeholder.
+        role:
+          type: string
+          description: Display role label.
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        share_method:
+          type: array
+          items:
+            type: string
+          description: Channels used to notify this stakeholder (e.g. `email`).
+    Policy_PolicyAi:
+      type: object
+      title: PolicyAi
+      description: AI feature flags and metrics for a policy document.
+      additionalProperties: true
+      properties:
+        enabled:
+          type: boolean
+        evidence_count:
+          type: integer
+        control_count:
+          type: integer
+        rule_count:
+          type: integer
+        statement_count:
+          type: integer
+        flow_id:
+          type: string
+          format: uuid
+        flow_name:
+          type:
+          - string
+          - 'null'
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    Policy_ApprovalSchedulingInput:
+      type: object
+      title: ApprovalSchedulingInput
+      description: Scheduling block for `settings.scheduling` on update-settings.
+      additionalProperties: true
+      properties:
+        approval_frequency:
+          type: string
+          description: Cadence label (e.g. `yearly`, `half_yearly`).
+        approval_time:
+          type: string
+          format: date-time
+          description: Next or recurring approval instant (ISO 8601).
+        start_from:
+          type: string
+          format: date-time
+          description: When the current cycle window starts (ISO 8601).
+    Policy_LibraryPolicy:
+      type: object
+      title: LibraryPolicy
+      description: A template policy from the library from `GET /policy/v1/library-policies`.
+      additionalProperties: true
+      properties:
+        policy_id:
+          type: string
+          description: Library template policy id (may be numeric string).
+        policy_type:
+          type: string
+        policy_name:
+          type: string
+        policy_group:
+          type: string
+        policy_edited_by:
+          type:
+          - string
+          - 'null'
+        policy_description:
+          type:
+          - string
+          - 'null'
+        policy_has_template:
+          type: boolean
+        policy_related_evidence:
+          type:
+          - string
+          - 'null'
+        policy_related_frameworks_names:
+          type: object
+          additionalProperties: true
+        policy_recommended_frameworks:
+          type: array
+          items:
+            type: string
+    Policy_VersionStakeholder:
+      type: object
+      title: PolicyVersionStakeholder
+      description: Stakeholder on a specific policy version.
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        approve_type:
+          type: string
+        approved:
+          type: boolean
+        comments:
+          type:
+          - string
+          - 'null'
+        note:
+          type:
+          - string
+          - 'null'
+        approved_time:
+          type:
+          - string
+          - 'null'
+        last_notified:
+          type:
+          - string
+          - 'null'
+        approval_status:
+          type: string
+        last_approval_status_changed:
+          type:
+          - string
+          - 'null'
+    Policy_PolicyVersion:
+      type: object
+      title: PolicyVersion
+      description: A single version of a policy from `GET /policy/v2/policies/{policy_id}/versions`.
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        policy_id:
+          type: string
+        version_name:
+          type: string
+        version_changes:
+          type:
+          - string
+          - 'null'
+        submitted_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        approved_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        evidence_instance_id:
+          type: string
+        status:
+          type: string
+        version_number:
+          type: integer
+        stakeholders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy_VersionStakeholder'
+    Policy_PatchPolicyRequest:
+      type: object
+      title: PatchPolicyRequest
+      description: 'Request body for `PATCH /policy/v1/policies/{policy_id}`: set the evidence definition that backs the policy file.'
+      additionalProperties: true
+      required:
+      - policy_related_evidence
+      properties:
+        policy_related_evidence:
+          type: string
+          description: Evidence definition id to attach (e.g. `manual_<id>` after uploading a replacement document).
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+    Policy_CustomerPolicy:
+      type: object
+      title: CustomerPolicy
+      description: A customer policy record from `GET /policy/v1/customer-policies`, `POST /policy/v2/policies` (create), `PATCH /policy/v1/policies/{policy_id}` (replace evidence link), or `PUT /policy/v1/policies/update-settings`. Newly created policies often have `null` or placeholder values until configuration is finished.
+      additionalProperties: true
+      properties:
+        policy_id:
+          type: string
+          description: Unique policy id (e.g. `policy_<numeric>`).
+        policy_type:
+          type:
+          - string
+          - 'null'
+        policy_name:
+          type: string
+        policy_status:
+          type:
+          - string
+          - 'null'
+          description: Lifecycle status (e.g. Approved, Setup Incomplete).
+        policy_is_custom:
+          type: boolean
+        policy_group:
+          type:
+          - string
+          - 'null'
+        global_policy_id:
+          type:
+          - string
+          - 'null'
+        policy_edited_by:
+          type:
+          - string
+          - 'null'
+        policy_description:
+          type:
+          - string
+          - 'null'
+        policy_has_template:
+          type:
+          - boolean
+          - 'null'
+          description: Whether a document template exists; may be unset right after create.
+        policy_related_evidence:
+          type:
+          - string
+          - 'null'
+          description: Related evidence definition or instance id (e.g. `manual_<id>`).
+        policy_related_frameworks_names:
+          type: object
+          additionalProperties: true
+          description: Map or object of related framework display names (shape may vary).
+        policy_settings:
+          $ref: '#/components/schemas/Policy_PolicySettings'
+        policy_upcoming_cycle:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+          description: Next approval cycle metadata when scheduled (may be null).
+        policy_last_edit_time:
+          type:
+          - string
+          - 'null'
+          description: Last modification time (microsecond precision timestamp string from API).
+        policy_recommended_frameworks:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Suggested frameworks; may be `null` before recommendations are populated.
+        evidence:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+          description: Linked evidence payload when present (may be null).
+        policy_owner:
+          description: Primary owner—often an email string; may also be a structured object in some responses.
+          oneOf:
+          - type: string
+            format: email
+          - type: object
+            additionalProperties: true
+        owners:
+          type:
+          - array
+          - 'null'
+          description: Policy owners—list of emails and/or objects depending on API version.
+          items:
+            oneOf:
+            - type: string
+              format: email
+            - type: object
+              additionalProperties: true
+        policy_approved_instance:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        is_just_approved:
+          type: boolean
+        approval_status:
+          type: string
+          description: Approval workflow aggregate status.
+        policy_ai:
+          description: AI-assisted policy analysis metadata when enabled (may be `null`).
+          allOf:
+          - $ref: '#/components/schemas/Policy_PolicyAi'
     Policy_PolicySettingsStakeholder:
       type: object
       title: PolicySettingsStakeholder
@@ -322,50 +738,6 @@ components:
           type:
           - string
           - 'null'
-    Policy_ApprovalSettingsInput:
-      type: object
-      title: ApprovalSettingsInput
-      description: Nested `settings` object for `PUT /policy/v1/policies/update-settings`.
-      additionalProperties: true
-      required:
-      - stakeholders
-      - scheduling
-      properties:
-        stakeholders:
-          type: array
-          items:
-            $ref: '#/components/schemas/Policy_ApprovalStakeholderInput'
-          description: Ordered reviewers and approvers for the policy approval cycle.
-        scheduling:
-          $ref: '#/components/schemas/Policy_ApprovalSchedulingInput'
-    Policy_PolicyAi:
-      type: object
-      title: PolicyAi
-      description: AI feature flags and metrics for a policy document.
-      additionalProperties: true
-      properties:
-        enabled:
-          type: boolean
-        evidence_count:
-          type: integer
-        control_count:
-          type: integer
-        rule_count:
-          type: integer
-        statement_count:
-          type: integer
-        flow_id:
-          type: string
-          format: uuid
-        flow_name:
-          type:
-          - string
-          - 'null'
-        status:
-          type: string
-        created_at:
-          type: string
-          format: date-time
     Policy_UpdatePolicySettingsRequest:
       type: object
       title: UpdatePolicySettingsRequest
@@ -388,331 +760,6 @@ components:
         is_new_cycle:
           type: boolean
           description: Whether this operation starts a new approval cycle vs updating the existing configuration (semantics depend on product workflow).
-    Policy_ApprovalStakeholderInput:
-      type: object
-      title: ApprovalStakeholderInput
-      description: Stakeholder row for `PUT /policy/v1/policies/update-settings` (`settings.stakeholders`).
-      additionalProperties: true
-      properties:
-        approve_type:
-          type: string
-          description: Role in the workflow (e.g. `reviewer`, `approver`).
-        comments:
-          type: string
-          description: Instruction or note shown to this stakeholder.
-        role:
-          type: string
-          description: Display role label.
-        email:
-          type: string
-          format: email
-        name:
-          type: string
-        share_method:
-          type: array
-          items:
-            type: string
-          description: Channels used to notify this stakeholder (e.g. `email`).
-    Policy_PolicyScheduling:
-      type: object
-      title: PolicyScheduling
-      description: Approval cycle scheduling under `policy_settings.scheduling`. Fields are often `null` on newly created policies until scheduling is configured.
-      additionalProperties: true
-      properties:
-        approval_frequency:
-          type:
-          - string
-          - 'null'
-        start_from:
-          type:
-          - string
-          - 'null'
-          description: Scheduled start (ISO 8601 with offset when set).
-        approval_time:
-          type:
-          - string
-          - 'null'
-          description: Next or recurring approval time (ISO 8601 with offset when set).
-        notify_approvers_scheduledtask_id:
-          type:
-          - string
-          - 'null'
-        end_cycle_scheduledtask_id:
-          type:
-          - string
-          - 'null'
-        overdue_reminder_task_id:
-          type:
-          - string
-          - 'null'
-    Policy_CreatePoliciesRequest:
-      type: array
-      title: CreatePoliciesRequest
-      description: 'Request body for `POST /policy/v2/policies`: one or more create instructions.'
-      minItems: 1
-      items:
-        $ref: '#/components/schemas/Policy_CreatePolicyItem'
-    Policy_CreatePolicyItem:
-      type: object
-      title: CreatePolicyItem
-      description: One policy to create in `POST /policy/v2/policies` (body is an array of these objects).
-      additionalProperties: true
-      required:
-      - evidence_id
-      - policy_name
-      properties:
-        evidence_id:
-          type: string
-          description: Evidence definition id to attach (e.g. a manual evidence id `manual_<id>`).
-        policy_name:
-          type: string
-          description: Display name for the new policy.
-        requirements_ids:
-          type: array
-          items:
-            type: string
-            description: Framework requirement identifier as string.
-          description: Optional. Requirement ids to associate with the policy; omit or use `[]` when none.
-    ValidationError:
-      type: object
-      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
-      properties:
-        detail:
-          type: array
-          items:
-            type: object
-            properties:
-              loc:
-                type: array
-                items:
-                  anyOf:
-                  - type: string
-                  - type: integer
-              msg:
-                type: string
-              type:
-                type: string
-              ctx:
-                type: object
-                description: Optional machine context (e.g. `enum_values` for enum validation errors).
-                additionalProperties: true
-            additionalProperties: true
-      additionalProperties: true
-    Policy_LibraryPolicy:
-      type: object
-      title: LibraryPolicy
-      description: A template policy from the library from `GET /policy/v1/library-policies`.
-      additionalProperties: true
-      properties:
-        policy_id:
-          type: string
-          description: Library template policy id (may be numeric string).
-        policy_type:
-          type: string
-        policy_name:
-          type: string
-        policy_group:
-          type: string
-        policy_edited_by:
-          type:
-          - string
-          - 'null'
-        policy_description:
-          type:
-          - string
-          - 'null'
-        policy_has_template:
-          type: boolean
-        policy_related_evidence:
-          type:
-          - string
-          - 'null'
-        policy_related_frameworks_names:
-          type: object
-          additionalProperties: true
-        policy_recommended_frameworks:
-          type: array
-          items:
-            type: string
-    Policy_VersionStakeholder:
-      type: object
-      title: PolicyVersionStakeholder
-      description: Stakeholder on a specific policy version.
-      additionalProperties: true
-      properties:
-        id:
-          type: integer
-        email:
-          type: string
-        name:
-          type: string
-        role:
-          type: string
-        approve_type:
-          type: string
-        approved:
-          type: boolean
-        comments:
-          type:
-          - string
-          - 'null'
-        note:
-          type:
-          - string
-          - 'null'
-        approved_time:
-          type:
-          - string
-          - 'null'
-        last_notified:
-          type:
-          - string
-          - 'null'
-        approval_status:
-          type: string
-        last_approval_status_changed:
-          type:
-          - string
-          - 'null'
-    Policy_PolicySettings:
-      type: object
-      title: PolicySettings
-      description: Workflow and scheduling configuration for a customer policy.
-      additionalProperties: true
-      properties:
-        stakeholders:
-          type: array
-          items:
-            $ref: '#/components/schemas/Policy_PolicySettingsStakeholder'
-        scheduling:
-          $ref: '#/components/schemas/Policy_PolicyScheduling'
-    Policy_ApprovalSchedulingInput:
-      type: object
-      title: ApprovalSchedulingInput
-      description: Scheduling block for `settings.scheduling` on update-settings.
-      additionalProperties: true
-      properties:
-        approval_frequency:
-          type: string
-          description: Cadence label (e.g. `yearly`, `half_yearly`).
-        approval_time:
-          type: string
-          format: date-time
-          description: Next or recurring approval instant (ISO 8601).
-        start_from:
-          type: string
-          format: date-time
-          description: When the current cycle window starts (ISO 8601).
-    Policy_CustomerPolicy:
-      type: object
-      title: CustomerPolicy
-      description: A customer policy record from `GET /policy/v1/customer-policies`, `POST /policy/v2/policies` (create), `PATCH /policy/v1/policies/{policy_id}` (replace evidence link), or `PUT /policy/v1/policies/update-settings`. Newly created policies often have `null` or placeholder values until configuration is finished.
-      additionalProperties: true
-      properties:
-        policy_id:
-          type: string
-          description: Unique policy id (e.g. `policy_<numeric>`).
-        policy_type:
-          type:
-          - string
-          - 'null'
-        policy_name:
-          type: string
-        policy_status:
-          type:
-          - string
-          - 'null'
-          description: Lifecycle status (e.g. Approved, Setup Incomplete).
-        policy_is_custom:
-          type: boolean
-        policy_group:
-          type:
-          - string
-          - 'null'
-        global_policy_id:
-          type:
-          - string
-          - 'null'
-        policy_edited_by:
-          type:
-          - string
-          - 'null'
-        policy_description:
-          type:
-          - string
-          - 'null'
-        policy_has_template:
-          type:
-          - boolean
-          - 'null'
-          description: Whether a document template exists; may be unset right after create.
-        policy_related_evidence:
-          type:
-          - string
-          - 'null'
-          description: Related evidence definition or instance id (e.g. `manual_<id>`).
-        policy_related_frameworks_names:
-          type: object
-          additionalProperties: true
-          description: Map or object of related framework display names (shape may vary).
-        policy_settings:
-          $ref: '#/components/schemas/Policy_PolicySettings'
-        policy_upcoming_cycle:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-          description: Next approval cycle metadata when scheduled (may be null).
-        policy_last_edit_time:
-          type:
-          - string
-          - 'null'
-          description: Last modification time (microsecond precision timestamp string from API).
-        policy_recommended_frameworks:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Suggested frameworks; may be `null` before recommendations are populated.
-        evidence:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-          description: Linked evidence payload when present (may be null).
-        policy_owner:
-          description: Primary owner—often an email string; may also be a structured object in some responses.
-          oneOf:
-          - type: string
-            format: email
-          - type: object
-            additionalProperties: true
-        owners:
-          type:
-          - array
-          - 'null'
-          description: Policy owners—list of emails and/or objects depending on API version.
-          items:
-            oneOf:
-            - type: string
-              format: email
-            - type: object
-              additionalProperties: true
-        policy_approved_instance:
-          type:
-          - string
-          - 'null'
-          format: uuid
-        is_just_approved:
-          type: boolean
-        approval_status:
-          type: string
-          description: Approval workflow aggregate status.
-        policy_ai:
-          description: AI-assisted policy analysis metadata when enabled (may be `null`).
-          allOf:
-          - $ref: '#/components/schemas/Policy_PolicyAi'
     Policy_DeletePoliciesRequest:
       type: array
       title: DeletePoliciesRequest
@@ -721,53 +768,6 @@ components:
       items:
         type: string
         description: Customer policy id (e.g. `policy_<numeric>`).
-    Policy_PatchPolicyRequest:
-      type: object
-      title: PatchPolicyRequest
-      description: 'Request body for `PATCH /policy/v1/policies/{policy_id}`: set the evidence definition that backs the policy file.'
-      additionalProperties: true
-      required:
-      - policy_related_evidence
-      properties:
-        policy_related_evidence:
-          type: string
-          description: Evidence definition id to attach (e.g. `manual_<id>` after uploading a replacement document).
-    Policy_PolicyVersion:
-      type: object
-      title: PolicyVersion
-      description: A single version of a policy from `GET /policy/v2/policies/{policy_id}/versions`.
-      additionalProperties: true
-      properties:
-        id:
-          type: integer
-        policy_id:
-          type: string
-        version_name:
-          type: string
-        version_changes:
-          type:
-          - string
-          - 'null'
-        submitted_on:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        approved_on:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        evidence_instance_id:
-          type: string
-        status:
-          type: string
-        version_number:
-          type: integer
-        stakeholders:
-          type: array
-          items:
-            $ref: '#/components/schemas/Policy_VersionStakeholder'
   securitySchemes:
     ApiKey:
       type: apiKey

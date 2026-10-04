@@ -257,19 +257,21 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
 components:
   schemas:
-    RequirementUpdateRequestEnvelope:
+    RequirementCustomFieldValueUpdate:
       type: object
+      description: Body for setting a custom field value on a requirement. The **`value`** shape depends on the field type.
+      required:
+      - value
       properties:
-        requirement:
-          $ref: '#/components/schemas/RequirementUpdateBody'
-        context:
-          type: object
-          properties:
-            control_id:
+        value:
+          description: String for **free-text**, a single **option id** for **dropdown**, an array of option ids for **multi-select**, or **`null`** to clear.
+          oneOf:
+          - type:
+            - string
+            - 'null'
+          - type: array
+            items:
               type: string
-              description: Control context for scoped updates.
-          additionalProperties: true
-      additionalProperties: true
     RequirementUpdateBody:
       type: object
       properties:
@@ -299,74 +301,6 @@ components:
                   type: boolean
               resource_type:
                 type: string
-            additionalProperties: true
-      additionalProperties: true
-    RequirementCreateRequest:
-      type: object
-      required:
-      - requirement_description
-      - requirement_category
-      - requirement_related_frameworks
-      properties:
-        requirement_description:
-          type: string
-          description: Title / name of the new custom requirement.
-        requirement_help:
-          type: string
-          description: HTML or plain text describing the requirement.
-        requirement_category:
-          type: string
-        requirement_related_controls:
-          type: array
-          items:
-            type: string
-        requirement_related_frameworks:
-          type: array
-          items:
-            type: string
-          description: Framework ids to link; send **`[]`** when none.
-    RequirementCustomFieldValues:
-      type: object
-      description: 'Custom field values across requirements: a map of **requirement id → field id → `{ "value": … }`**. Empty object when nothing is set.'
-      additionalProperties:
-        type: object
-        description: 'For one requirement: a map of **field id → `{ "value": … }`**.'
-        additionalProperties:
-          type: object
-          properties:
-            value:
-              description: 'Stored value: an **option id** (dropdown) or array of option ids (multi-select), or a plain string (free-text).'
-              oneOf:
-              - type:
-                - string
-                - 'null'
-              - type: array
-                items:
-                  type: string
-          additionalProperties: true
-    ValidationError:
-      type: object
-      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
-      properties:
-        detail:
-          type: array
-          items:
-            type: object
-            properties:
-              loc:
-                type: array
-                items:
-                  anyOf:
-                  - type: string
-                  - type: integer
-              msg:
-                type: string
-              type:
-                type: string
-              ctx:
-                type: object
-                description: Optional machine context (e.g. `enum_values` for enum validation errors).
-                additionalProperties: true
             additionalProperties: true
       additionalProperties: true
     Requirement:
@@ -432,21 +366,87 @@ components:
             type: string
           description: Integrations or services that collect evidence for this requirement.
       additionalProperties: true
-    RequirementCustomFieldValueUpdate:
+    ValidationError:
       type: object
-      description: Body for setting a custom field value on a requirement. The **`value`** shape depends on the field type.
-      required:
-      - value
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
       properties:
-        value:
-          description: String for **free-text**, a single **option id** for **dropdown**, an array of option ids for **multi-select**, or **`null`** to clear.
-          oneOf:
-          - type:
-            - string
-            - 'null'
-          - type: array
-            items:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+    RequirementCustomFieldValues:
+      type: object
+      description: 'Custom field values across requirements: a map of **requirement id → field id → `{ "value": … }`**. Empty object when nothing is set.'
+      additionalProperties:
+        type: object
+        description: 'For one requirement: a map of **field id → `{ "value": … }`**.'
+        additionalProperties:
+          type: object
+          properties:
+            value:
+              description: 'Stored value: an **option id** (dropdown) or array of option ids (multi-select), or a plain string (free-text).'
+              oneOf:
+              - type:
+                - string
+                - 'null'
+              - type: array
+                items:
+                  type: string
+          additionalProperties: true
+    RequirementUpdateRequestEnvelope:
+      type: object
+      properties:
+        requirement:
+          $ref: '#/components/schemas/RequirementUpdateBody'
+        context:
+          type: object
+          properties:
+            control_id:
               type: string
+              description: Control context for scoped updates.
+          additionalProperties: true
+      additionalProperties: true
+    RequirementCreateRequest:
+      type: object
+      required:
+      - requirement_description
+      - requirement_category
+      - requirement_related_frameworks
+      properties:
+        requirement_description:
+          type: string
+          description: Title / name of the new custom requirement.
+        requirement_help:
+          type: string
+          description: HTML or plain text describing the requirement.
+        requirement_category:
+          type: string
+        requirement_related_controls:
+          type: array
+          items:
+            type: string
+        requirement_related_frameworks:
+          type: array
+          items:
+            type: string
+          description: Framework ids to link; send **`[]`** when none.
   securitySchemes:
     ApiKey:
       type: apiKey

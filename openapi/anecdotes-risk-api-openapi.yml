@@ -165,6 +165,44 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
 components:
   schemas:
+    Risk_RiskAutoCalc:
+      properties:
+        enabled:
+          type: boolean
+          title: Enabled
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Risk_ActionStatus'
+          default: PENDING
+        residual_risk_level:
+          type: number
+          title: Residual Risk Level
+        residual_impact:
+          type: number
+          title: Residual Impact
+        residual_likelihood:
+          type: number
+          title: Residual Likelihood
+      type: object
+      required:
+      - enabled
+      title: RiskAutoCalc
+    Risk_CycleStatus:
+      enum:
+      - Setup Incomplete
+      - Not Started
+      - Missing File
+      - On Hold
+      - In Progress
+      - Changes Required
+      - Approved
+      - Scheduled
+      - Sent For Approval
+      - Approval Required
+      - Implemented
+      - Action Required
+      title: CycleStatus
+      description: An enumeration.
     Risk_RiskAppetiteStatus:
       type: string
       enum:
@@ -172,6 +210,31 @@ components:
       - within
       title: RiskAppetiteStatus
       description: Whether the risk level is above or within appetite.
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
     Risk_CustomerUpdatedRiskModel:
       type: object
       properties:
@@ -282,6 +345,46 @@ components:
                 type: string
       title: CustomerUpdatedRiskModel
       description: All updatable fields for a risk. All fields are optional in a PATCH request.
+    Risk_NewRisk:
+      properties:
+        name:
+          type: string
+          title: Name
+        evidence_ids:
+          items:
+            type: string
+          type: array
+          title: Evidence Ids
+        customer_risk_id:
+          type: string
+          title: Customer Risk Id
+        register_id:
+          type: string
+          title: Register Id
+          description: The risk register to create the risk in.
+        fields:
+          type: object
+          title: Fields
+          description: Custom field values as a mapping of field ID to value (string or array of strings).
+          additionalProperties:
+            oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+      type: object
+      required:
+      - name
+      title: NewRisk
+      description: Request body for creating a new risk via **POST /risk/v1/risk**. Only `name` is required; all other fields are optional.
+    Risk_ActionStatus:
+      type: string
+      enum:
+      - PENDING
+      - WAITING_FOR_REVIEW
+      - APPLIED
+      title: ActionStatus
+      description: An enumeration.
     Risk_CustomerRiskModel:
       properties:
         name:
@@ -422,109 +525,6 @@ components:
       - name
       title: CustomerRiskModel
       description: Customer risk base model
-    Risk_CycleStatus:
-      enum:
-      - Setup Incomplete
-      - Not Started
-      - Missing File
-      - On Hold
-      - In Progress
-      - Changes Required
-      - Approved
-      - Scheduled
-      - Sent For Approval
-      - Approval Required
-      - Implemented
-      - Action Required
-      title: CycleStatus
-      description: An enumeration.
-    Risk_NewRisk:
-      properties:
-        name:
-          type: string
-          title: Name
-        evidence_ids:
-          items:
-            type: string
-          type: array
-          title: Evidence Ids
-        customer_risk_id:
-          type: string
-          title: Customer Risk Id
-        register_id:
-          type: string
-          title: Register Id
-          description: The risk register to create the risk in.
-        fields:
-          type: object
-          title: Fields
-          description: Custom field values as a mapping of field ID to value (string or array of strings).
-          additionalProperties:
-            oneOf:
-            - type: string
-            - type: array
-              items:
-                type: string
-      type: object
-      required:
-      - name
-      title: NewRisk
-      description: Request body for creating a new risk via **POST /risk/v1/risk**. Only `name` is required; all other fields are optional.
-    Risk_ActionStatus:
-      type: string
-      enum:
-      - PENDING
-      - WAITING_FOR_REVIEW
-      - APPLIED
-      title: ActionStatus
-      description: An enumeration.
-    ValidationError:
-      type: object
-      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
-      properties:
-        detail:
-          type: array
-          items:
-            type: object
-            properties:
-              loc:
-                type: array
-                items:
-                  anyOf:
-                  - type: string
-                  - type: integer
-              msg:
-                type: string
-              type:
-                type: string
-              ctx:
-                type: object
-                description: Optional machine context (e.g. `enum_values` for enum validation errors).
-                additionalProperties: true
-            additionalProperties: true
-      additionalProperties: true
-    Risk_RiskAutoCalc:
-      properties:
-        enabled:
-          type: boolean
-          title: Enabled
-        status:
-          allOf:
-          - $ref: '#/components/schemas/Risk_ActionStatus'
-          default: PENDING
-        residual_risk_level:
-          type: number
-          title: Residual Risk Level
-        residual_impact:
-          type: number
-          title: Residual Impact
-        residual_likelihood:
-          type: number
-          title: Residual Likelihood
-      type: object
-      required:
-      - enabled
-      title: RiskAutoCalc
     Risk_CustomerFullRiskModel:
       allOf:
       - $ref: '#/components/schemas/Risk_CustomerRiskModel'

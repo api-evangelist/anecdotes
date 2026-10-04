@@ -133,77 +133,6 @@ paths:
           description: Internal server error, including when the custom field does not exist.
 components:
   schemas:
-    ResourceType:
-      type: string
-      enum:
-      - CONTROL
-      - POLICY
-      - FRAMEWORK
-      - EVIDENCE
-      - REQUIREMENT
-      - RISK
-      - UAR
-      - FINDING
-      - TREATMENT_PLAN
-      description: Platform resource type a custom field can apply to.
-    CreateCustomFieldRequest:
-      type: object
-      description: Body for creating a custom field definition.
-      required:
-      - name
-      - type
-      - resource_types
-      properties:
-        name:
-          type: string
-        description:
-          type:
-          - string
-          - 'null'
-        type:
-          $ref: '#/components/schemas/FieldType'
-        resource_types:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceType'
-          description: Resource types the field applies to, e.g. **`["REQUIREMENT"]`**.
-        field_metadata:
-          type: object
-          description: 'Type-specific configuration. For **dropdown** / **multi-select**, provide **`values`** as a **`{ option_id: label }`** map.'
-          additionalProperties: true
-        metadata:
-          type: object
-          description: 'Per-resource-type metadata, e.g. **`{ "REQUIREMENT": { "framework_ids": null } }`**.'
-          additionalProperties: true
-    PatchControlCustomFieldValuePayload:
-      type: object
-      properties:
-        value: {}
-    ValidationError:
-      type: object
-      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
-      properties:
-        detail:
-          type: array
-          items:
-            type: object
-            properties:
-              loc:
-                type: array
-                items:
-                  anyOf:
-                  - type: string
-                  - type: integer
-              msg:
-                type: string
-              type:
-                type: string
-              ctx:
-                type: object
-                description: Optional machine context (e.g. `enum_values` for enum validation errors).
-                additionalProperties: true
-            additionalProperties: true
-      additionalProperties: true
     CustomField:
       type: object
       description: A custom field definition.
@@ -250,6 +179,31 @@ components:
           description: Per-register metadata, keyed by register id (the empty-string key **`""`** is the default register). Present for all field types; may be **`null`**.
           additionalProperties: true
       additionalProperties: true
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
     FieldType:
       type: string
       enum:
@@ -257,6 +211,52 @@ components:
       - DropDown
       - MultiSelect
       description: Custom field type. **`FreeText`** stores a string; **`DropDown`** stores a single option id; **`MultiSelect`** stores an array of option ids.
+    CreateCustomFieldRequest:
+      type: object
+      description: Body for creating a custom field definition.
+      required:
+      - name
+      - type
+      - resource_types
+      properties:
+        name:
+          type: string
+        description:
+          type:
+          - string
+          - 'null'
+        type:
+          $ref: '#/components/schemas/FieldType'
+        resource_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceType'
+          description: Resource types the field applies to, e.g. **`["REQUIREMENT"]`**.
+        field_metadata:
+          type: object
+          description: 'Type-specific configuration. For **dropdown** / **multi-select**, provide **`values`** as a **`{ option_id: label }`** map.'
+          additionalProperties: true
+        metadata:
+          type: object
+          description: 'Per-resource-type metadata, e.g. **`{ "REQUIREMENT": { "framework_ids": null } }`**.'
+          additionalProperties: true
+    ResourceType:
+      type: string
+      enum:
+      - CONTROL
+      - POLICY
+      - FRAMEWORK
+      - EVIDENCE
+      - REQUIREMENT
+      - RISK
+      - UAR
+      - FINDING
+      - TREATMENT_PLAN
+      description: Platform resource type a custom field can apply to.
+    PatchControlCustomFieldValuePayload:
+      type: object
+      properties:
+        value: {}
   securitySchemes:
     ApiKey:
       type: apiKey

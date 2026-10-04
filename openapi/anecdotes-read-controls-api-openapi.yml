@@ -117,33 +117,6 @@ paths:
           description: Control not found.
 components:
   schemas:
-    ControlStatus:
-      type: object
-      description: Current control status and audit metadata.
-      properties:
-        status:
-          $ref: '#/components/schemas/ControlStatusEnum'
-        updated_by:
-          type: string
-        last_edit_time:
-          type: string
-          format: date-time
-        note:
-          type: string
-        manually_set:
-          type: boolean
-        gap_detected:
-          type: boolean
-      required:
-      - status
-    MaturityLevel:
-      type: string
-      enum:
-      - INITIAL
-      - REPEATABLE
-      - DEFINED
-      - MANAGED
-      - OPTIMIZING
     ControlStatusEnum:
       type: string
       enum:
@@ -159,6 +132,14 @@ components:
       - INSUFFICIENT_DATA
       - UNDER_REVIEW
       description: Machine status code. Product UI may display human-readable labels (for example `Gap`, `Ready for audit`).
+    MaturityLevel:
+      type: string
+      enum:
+      - INITIAL
+      - REPEATABLE
+      - DEFINED
+      - MANAGED
+      - OPTIMIZING
     ValidationError:
       type: object
       description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
@@ -184,15 +165,25 @@ components:
                 additionalProperties: true
             additionalProperties: true
       additionalProperties: true
-    LinkedRequirement:
+    ControlStatus:
       type: object
+      description: Current control status and audit metadata.
       properties:
-        requirement_id:
+        status:
+          $ref: '#/components/schemas/ControlStatusEnum'
+        updated_by:
           type: string
-        requirement_name:
+        last_edit_time:
           type: string
+          format: date-time
+        note:
+          type: string
+        manually_set:
+          type: boolean
+        gap_detected:
+          type: boolean
       required:
-      - requirement_id
+      - status
     GetControlsBody:
       type: object
       required:
@@ -257,6 +248,15 @@ components:
       - control_id
       - control_name
       additionalProperties: true
+    LinkedRequirement:
+      type: object
+      properties:
+        requirement_id:
+          type: string
+        requirement_name:
+          type: string
+      required:
+      - requirement_id
   securitySchemes:
     ApiKey:
       type: apiKey

@@ -75,33 +75,6 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
 components:
   schemas:
-    ControlStatus:
-      type: object
-      description: Current control status and audit metadata.
-      properties:
-        status:
-          $ref: '#/components/schemas/ControlStatusEnum'
-        updated_by:
-          type: string
-        last_edit_time:
-          type: string
-          format: date-time
-        note:
-          type: string
-        manually_set:
-          type: boolean
-        gap_detected:
-          type: boolean
-      required:
-      - status
-    MaturityLevel:
-      type: string
-      enum:
-      - INITIAL
-      - REPEATABLE
-      - DEFINED
-      - MANAGED
-      - OPTIMIZING
     ControlStatusEnum:
       type: string
       enum:
@@ -117,40 +90,14 @@ components:
       - INSUFFICIENT_DATA
       - UNDER_REVIEW
       description: Machine status code. Product UI may display human-readable labels (for example `Gap`, `Ready for audit`).
-    ValidationError:
-      type: object
-      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
-      properties:
-        detail:
-          type: array
-          items:
-            type: object
-            properties:
-              loc:
-                type: array
-                items:
-                  anyOf:
-                  - type: string
-                  - type: integer
-              msg:
-                type: string
-              type:
-                type: string
-              ctx:
-                type: object
-                description: Optional machine context (e.g. `enum_values` for enum validation errors).
-                additionalProperties: true
-            additionalProperties: true
-      additionalProperties: true
-    LinkedRequirement:
-      type: object
-      properties:
-        requirement_id:
-          type: string
-        requirement_name:
-          type: string
-      required:
-      - requirement_id
+    MaturityLevel:
+      type: string
+      enum:
+      - INITIAL
+      - REPEATABLE
+      - DEFINED
+      - MANAGED
+      - OPTIMIZING
     PostCustomControl:
       type: object
       required:
@@ -187,6 +134,50 @@ components:
           type: string
         maturity_level:
           $ref: '#/components/schemas/MaturityLevel'
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+    ControlStatus:
+      type: object
+      description: Current control status and audit metadata.
+      properties:
+        status:
+          $ref: '#/components/schemas/ControlStatusEnum'
+        updated_by:
+          type: string
+        last_edit_time:
+          type: string
+          format: date-time
+        note:
+          type: string
+        manually_set:
+          type: boolean
+        gap_detected:
+          type: boolean
+      required:
+      - status
     Control:
       type: object
       description: Control facade returned by list/read endpoints. Additional tenant-specific fields may appear.
@@ -241,6 +232,15 @@ components:
       - control_id
       - control_name
       additionalProperties: true
+    LinkedRequirement:
+      type: object
+      properties:
+        requirement_id:
+          type: string
+        requirement_name:
+          type: string
+      required:
+      - requirement_id
   securitySchemes:
     ApiKey:
       type: apiKey

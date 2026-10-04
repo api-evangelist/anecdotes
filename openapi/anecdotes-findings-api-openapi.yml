@@ -190,88 +190,6 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
 components:
   schemas:
-    FindingLinkedEntity:
-      type: object
-      description: Link from a finding to another object.
-      properties:
-        entity_type:
-          type: string
-          description: Linked resource type, e.g. `Control`, `Evidence`, `Policy`.
-        entity_id:
-          type: string
-          description: Target object id.
-        linked_type:
-          type: string
-          description: e.g. `Origin`
-        linked_at:
-          type: string
-          format: date-time
-          description: When the link was created.
-        linked_by:
-          type: string
-          description: User who created the link.
-        updated_at:
-          type: string
-          format: date-time
-        updated_by:
-          type:
-          - string
-          - 'null'
-          description: User who last updated the link, if any.
-      additionalProperties: true
-    FindingsPagination:
-      type: object
-      description: Pagination metadata for get-all responses.
-      properties:
-        limit:
-          type: integer
-          description: Page size used for this response.
-        offset:
-          type: integer
-          description: Starting index of this slice.
-        total_count:
-          type: integer
-        has_next:
-          type: boolean
-        has_previous:
-          type: boolean
-      additionalProperties: true
-    ValidationError:
-      type: object
-      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
-      properties:
-        detail:
-          type: array
-          items:
-            type: object
-            properties:
-              loc:
-                type: array
-                items:
-                  anyOf:
-                  - type: string
-                  - type: integer
-              msg:
-                type: string
-              type:
-                type: string
-              ctx:
-                type: object
-                description: Optional machine context (e.g. `enum_values` for enum validation errors).
-                additionalProperties: true
-            additionalProperties: true
-      additionalProperties: true
-    FindingsDeleteResponse:
-      type: object
-      required:
-      - deleted_count
-      description: Bulk delete result.
-      properties:
-        deleted_count:
-          type: integer
-          minimum: 0
-          description: Number of findings deleted for this request.
-      additionalProperties: true
     Finding:
       type: object
       description: A compliance finding.
@@ -344,6 +262,34 @@ components:
             type: object
             additionalProperties: true
       additionalProperties: true
+    FindingsPagination:
+      type: object
+      description: Pagination metadata for get-all responses.
+      properties:
+        limit:
+          type: integer
+          description: Page size used for this response.
+        offset:
+          type: integer
+          description: Starting index of this slice.
+        total_count:
+          type: integer
+        has_next:
+          type: boolean
+        has_previous:
+          type: boolean
+      additionalProperties: true
+    FindingsDeleteResponse:
+      type: object
+      required:
+      - deleted_count
+      description: Bulk delete result.
+      properties:
+        deleted_count:
+          type: integer
+          minimum: 0
+          description: Number of findings deleted for this request.
+      additionalProperties: true
     FindingsListResponse:
       type: object
       required:
@@ -355,6 +301,60 @@ components:
             $ref: '#/components/schemas/Finding'
         pagination:
           $ref: '#/components/schemas/FindingsPagination'
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
+    FindingLinkedEntity:
+      type: object
+      description: Link from a finding to another object.
+      properties:
+        entity_type:
+          type: string
+          description: Linked resource type, e.g. `Control`, `Evidence`, `Policy`.
+        entity_id:
+          type: string
+          description: Target object id.
+        linked_type:
+          type: string
+          description: e.g. `Origin`
+        linked_at:
+          type: string
+          format: date-time
+          description: When the link was created.
+        linked_by:
+          type: string
+          description: User who created the link.
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type:
+          - string
+          - 'null'
+          description: User who last updated the link, if any.
+      additionalProperties: true
   securitySchemes:
     ApiKey:
       type: apiKey

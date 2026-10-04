@@ -1,0 +1,95 @@
+slug: anecdotes
+provider: anecdotes
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 8
+edges:
+- tag: Policy Manager
+  spec_file: anecdotes-policy-manager-api-openapi.yml
+  capability_id: BC-130.20
+  capability_id_l1: BC-130
+  capability_name: Policy Management
+  confidence: 0.9
+  evidence: PUT /policy/v1/policies/update-settings Update policy settings (approval cycle); GET /policy/v2/policies/{policy_id}/versions
+    listPolicyVersions
+  reason: Full policy lifecycle — creation, approval stakeholders/cycle, versioning, deletion — matches
+    Policy Management directly.
+- tag: Create Controls
+  spec_file: anecdotes-create-controls-api-openapi.yml
+  capability_id: BC-130
+  capability_id_l1: BC-130
+  capability_name: Compliance Management
+  confidence: 0.75
+  evidence: 'POST /controls/control createCustomControl ''Create custom control''; schemas: ControlStatus,
+    MaturityLevel, LinkedRequirement'
+  reason: Creates compliance controls with status, maturity and links to framework requirements — core
+    compliance control management on a GRC platform. Mapped at L1 because the evidence does not pin it
+    to regulatory, policy or ethics sub-capability specifically.
+- tag: Risk
+  spec_file: anecdotes-risk-api-openapi.yml
+  capability_id: BC-120.20
+  capability_id_l1: BC-120
+  capability_name: Risk Identification & Assessment
+  confidence: 0.75
+  evidence: POST /risk/v1/risk createRisk; schemas Risk_RiskAppetiteStatus, Risk_RiskAutoCalc, Risk_CustomerFullRiskModel
+  reason: CRUD over a risk register with scoring/auto-calculation and appetite status is enterprise risk
+    identification and assessment; some overlap with appetite framework sub-capability.
+- tag: Framework
+  spec_file: anecdotes-framework-api-openapi.yml
+  capability_id: BC-130.10
+  capability_id_l1: BC-130
+  capability_name: Regulatory Compliance Management
+  confidence: 0.72
+  evidence: GET /api/v1/framework getFrameworks; GET /api/v1/framework/{framework_id}/download exportFramework
+  reason: Frameworks here are regulatory/standards compliance frameworks (SOC 2, ISO etc. per vendor description
+    '60+ frameworks'), i.e. regulatory compliance management.
+- tag: Public
+  spec_file: anecdotes-public-api-openapi.yml
+  capability_id: BC-4290.30
+  capability_id_l1: BC-4290
+  capability_name: Trust Portal & Public Disclosure
+  confidence: 0.72
+  evidence: GET /fedramp20x/v1/public/info getPublicInfo Public information (CSO); POST /fedramp20x/v1/access
+    requestFedrampAccess
+  reason: Public endpoints of the Trust Center exposing service compliance disclosures and access requests
+    correspond to trust portal and public disclosure operation.
+- tag: Read Controls
+  spec_file: anecdotes-read-controls-api-openapi.yml
+  capability_id: BC-130
+  capability_id_l1: BC-130
+  capability_name: Compliance Management
+  confidence: 0.7
+  evidence: GET /controls/control/framework/{framework_id} getControlsByFramework; schemas ControlStatus,
+    MaturityLevel
+  reason: Reading compliance controls mapped to frameworks with status/maturity is core compliance control
+    management; ambiguous between regulatory compliance and risk/control sub-capabilities, so L1 only.
+- tag: Requirements
+  spec_file: anecdotes-requirements-api-openapi.yml
+  capability_id: BC-130.10
+  capability_id_l1: BC-130
+  capability_name: Regulatory Compliance Management
+  confidence: 0.7
+  evidence: GET /api/v1/requirement listRequirements; POST /api/v1/requirement/ createRequirement Create
+    a custom requirement
+  reason: Requirements are framework/regulatory requirements managed and mapped to controls, aligning
+    with regulatory compliance management.
+- tag: Update Control Metadata
+  spec_file: anecdotes-update-control-metadata-api-openapi.yml
+  capability_id: BC-130
+  capability_id_l1: BC-130
+  capability_name: Compliance Management
+  confidence: 0.7
+  evidence: PUT /controls/control/{control_id} updateCustomControl 'Update custom control'; schemas Control,
+    MaturityLevel, LinkedRequirement
+  reason: GRC platform surface for managing compliance controls linked to requirements/frameworks; best
+    fits Compliance Management at L1, no single L2 clearly named (control management spans regulatory
+    compliance and policy).

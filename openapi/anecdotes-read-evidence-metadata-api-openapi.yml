@@ -93,6 +93,45 @@ paths:
           description: Unauthorized - JWT is missing, invalid, or expired.
 components:
   schemas:
+    AnalysisRuleAlertLevel:
+      type: integer
+      enum:
+      - 3
+      - 5
+      - 10
+      - 30
+      - 50
+      title: AnalysisRuleAlertLevel
+      description: 'The alert level of the analysis rule. Values: 3 (Not Processed), 5 (No Active Rules), 10 (OK), 30 (Warning), 50 (Gap).'
+    Evidence_EvidenceStatusDetails:
+      type: object
+      properties:
+        status:
+          type: string
+          title: Status
+          description: The evidence status value.
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+          description: When this status was set.
+        updated_by:
+          type: string
+          title: Updated By
+          description: Who set this status.
+        update_mode:
+          type: string
+          title: Update Mode
+          description: The way the status was set (manual or auto).
+          enum:
+          - manual
+          - auto
+        evidence_alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+      required:
+      - status
+      - timestamp
+      title: EvidenceStatusDetails
     Evidence_EvidenceView:
       type: object
       properties:
@@ -128,46 +167,6 @@ components:
       - name
       - created_by
       title: EvidenceView
-    Evidence_ColumnHelp:
-      type: object
-      properties:
-        column_name:
-          type: string
-          title: Column Name
-          description: The display name of the column.
-        help_note:
-          type: string
-          title: Help Note
-          description: The help note for the column.
-      required:
-      - column_name
-      - help_note
-      title: ColumnHelp
-    ValidationError:
-      type: object
-      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
-      properties:
-        detail:
-          type: array
-          items:
-            type: object
-            properties:
-              loc:
-                type: array
-                items:
-                  anyOf:
-                  - type: string
-                  - type: integer
-              msg:
-                type: string
-              type:
-                type: string
-              ctx:
-                type: object
-                description: Optional machine context (e.g. `enum_values` for enum validation errors).
-                additionalProperties: true
-            additionalProperties: true
-      additionalProperties: true
     Evidence_EvidenceInstance:
       type: object
       properties:
@@ -281,40 +280,6 @@ components:
       - evidence_service_instance_id
       - evidence_collection_run_id
       title: EvidenceInstance
-    Evidence_EvidenceType:
-      type: string
-      enum:
-      - URL
-      - DOCUMENT
-      - LOG
-      - LIST
-      - CONFIGURATION
-      - APP
-      - UNKNOWN
-      - LINK
-      - MANUAL
-      - TICKET
-      - API
-      title: EvidenceType
-      description: The type of evidence.
-    Evidence_DetailsPerRun:
-      type: object
-      properties:
-        service_display_name:
-          type: string
-          title: Service Display Name
-          description: The display name of the instance.
-        instance_runs:
-          type: array
-          items:
-            type: string
-            format: date-time
-          title: Instance Runs
-          description: List of instance collection timestamps.
-      required:
-      - service_display_name
-      - instance_runs
-      title: DetailsPerRun
     Evidence_EvidenceRunHistory:
       type: object
       properties:
@@ -337,6 +302,24 @@ components:
       - history_per_run
       title: EvidenceRunHistory
       description: Evidence collection run history with details per instance and history per run.
+    Evidence_DetailsPerRun:
+      type: object
+      properties:
+        service_display_name:
+          type: string
+          title: Service Display Name
+          description: The display name of the instance.
+        instance_runs:
+          type: array
+          items:
+            type: string
+            format: date-time
+          title: Instance Runs
+          description: List of instance collection timestamps.
+      required:
+      - service_display_name
+      - instance_runs
+      title: DetailsPerRun
     Evidence_EvidenceDefinition:
       type: object
       properties:
@@ -537,45 +520,62 @@ components:
       - evidence_also_collected_by_instances
       title: EvidenceDefinition
       description: Full evidence definition with metadata and latest collection data.
-    Evidence_EvidenceStatusDetails:
+    Evidence_ColumnHelp:
       type: object
       properties:
-        status:
+        column_name:
           type: string
-          title: Status
-          description: The evidence status value.
-        timestamp:
+          title: Column Name
+          description: The display name of the column.
+        help_note:
           type: string
-          format: date-time
-          title: Timestamp
-          description: When this status was set.
-        updated_by:
-          type: string
-          title: Updated By
-          description: Who set this status.
-        update_mode:
-          type: string
-          title: Update Mode
-          description: The way the status was set (manual or auto).
-          enum:
-          - manual
-          - auto
-        evidence_alert_level:
-          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+          title: Help Note
+          description: The help note for the column.
       required:
-      - status
-      - timestamp
-      title: EvidenceStatusDetails
-    AnalysisRuleAlertLevel:
-      type: integer
+      - column_name
+      - help_note
+      title: ColumnHelp
+    Evidence_EvidenceType:
+      type: string
       enum:
-      - 3
-      - 5
-      - 10
-      - 30
-      - 50
-      title: AnalysisRuleAlertLevel
-      description: 'The alert level of the analysis rule. Values: 3 (Not Processed), 5 (No Active Rules), 10 (OK), 30 (Warning), 50 (Gap).'
+      - URL
+      - DOCUMENT
+      - LOG
+      - LIST
+      - CONFIGURATION
+      - APP
+      - UNKNOWN
+      - LINK
+      - MANUAL
+      - TICKET
+      - API
+      title: EvidenceType
+      description: The type of evidence.
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
   securitySchemes:
     ApiKey:
       type: apiKey

@@ -115,13 +115,23 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
 components:
   schemas:
-    AnalysisRuleOrigin:
+    AnalysisRuleAlertLevel:
+      type: integer
+      enum:
+      - 3
+      - 5
+      - 10
+      - 30
+      - 50
+      title: AnalysisRuleAlertLevel
+      description: 'The alert level of the analysis rule. Values: 3 (Not Processed), 5 (No Active Rules), 10 (OK), 30 (Warning), 50 (Gap).'
+    AnalysisRuleType:
       type: string
       enum:
-      - library
-      - custom
-      title: AnalysisRuleOrigin
-      description: Whether the rule originates from the library or is custom.
+      - uam
+      - eid
+      title: AnalysisRuleType
+      description: The type of the analysis rule.
     AnalysisRuleResultModel:
       type: object
       properties:
@@ -197,53 +207,6 @@ components:
       - evidence_entity_type
       title: AnalysisRuleResultModel
       description: Analysis rule execution result for a specific evidence instance.
-    CreateCustomAnalysisRuleModel:
-      type: object
-      properties:
-        evidence_id:
-          type: string
-          title: Evidence Id
-          description: The evidence ID that the rule is related to.
-        rule_name:
-          type: string
-          title: Rule Name
-          description: The name of the rule.
-        alert_level:
-          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
-        rule_message:
-          type: string
-          title: Rule Message
-          description: The message displayed when the rule triggers.
-        rule_query_type:
-          allOf:
-          - $ref: '#/components/schemas/AnalysisRuleQueryType'
-          default: aql
-          description: The query type. Defaults to aql.
-        rule_query:
-          type: object
-          title: Rule Query
-          description: The rule query object. Structure depends on the rule_query_type (AQL, AQLExt, or Pandas).
-        rule_origin:
-          $ref: '#/components/schemas/AnalysisRuleOrigin'
-        library_rule_id:
-          type: string
-          title: Library Rule Id
-          description: The library rule ID that the rule was cloned from (if applicable).
-        rule_type:
-          $ref: '#/components/schemas/AnalysisRuleType'
-        account_scoping_type:
-          allOf:
-          - $ref: '#/components/schemas/AccountScopingType'
-          default: all_accounts
-          description: The account scoping type. Defaults to all_accounts.
-        account_scoping_list:
-          type: array
-          items:
-            type: string
-          title: Account Scoping List
-          description: List of service instance IDs the rule relates to (used with included_accounts or excluded_accounts scoping).
-      title: CreateCustomAnalysisRuleModel
-      description: Request body for creating a new custom analysis rule.
     AnalysisRuleActiveState:
       type: string
       enum:
@@ -251,39 +214,6 @@ components:
       - inactive
       title: AnalysisRuleActiveState
       description: Whether the analysis rule is active or inactive.
-    ValidationError:
-      type: object
-      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
-      properties:
-        detail:
-          type: array
-          items:
-            type: object
-            properties:
-              loc:
-                type: array
-                items:
-                  anyOf:
-                  - type: string
-                  - type: integer
-              msg:
-                type: string
-              type:
-                type: string
-              ctx:
-                type: object
-                description: Optional machine context (e.g. `enum_values` for enum validation errors).
-                additionalProperties: true
-            additionalProperties: true
-      additionalProperties: true
-    AccountScopingType:
-      type: string
-      enum:
-      - all_accounts
-      - included_accounts
-      - excluded_accounts
-      title: AccountScopingType
-      description: Determines which accounts the rule applies to.
     AnalysisRuleModel:
       type: object
       properties:
@@ -361,23 +291,38 @@ components:
       - rule_is_archived
       - account_scoping_type
       title: AnalysisRuleModel
-    AnalysisRuleType:
+    AnalysisRuleOrigin:
       type: string
       enum:
-      - uam
-      - eid
-      title: AnalysisRuleType
-      description: The type of the analysis rule.
-    AnalysisRuleAlertLevel:
-      type: integer
-      enum:
-      - 3
-      - 5
-      - 10
-      - 30
-      - 50
-      title: AnalysisRuleAlertLevel
-      description: 'The alert level of the analysis rule. Values: 3 (Not Processed), 5 (No Active Rules), 10 (OK), 30 (Warning), 50 (Gap).'
+      - library
+      - custom
+      title: AnalysisRuleOrigin
+      description: Whether the rule originates from the library or is custom.
+    ValidationError:
+      type: object
+      description: Validation error response. Each item in `detail` describes one validation failure. The `loc` array identifies the field path — each segment may be a string (field name) or integer (list index).
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  anyOf:
+                  - type: string
+                  - type: integer
+              msg:
+                type: string
+              type:
+                type: string
+              ctx:
+                type: object
+                description: Optional machine context (e.g. `enum_values` for enum validation errors).
+                additionalProperties: true
+            additionalProperties: true
+      additionalProperties: true
     AnalysisRuleQueryType:
       type: string
       enum:
@@ -386,6 +331,61 @@ components:
       - pandas
       title: AnalysisRuleQueryType
       description: The type of query engine used by the analysis rule.
+    AccountScopingType:
+      type: string
+      enum:
+      - all_accounts
+      - included_accounts
+      - excluded_accounts
+      title: AccountScopingType
+      description: Determines which accounts the rule applies to.
+    CreateCustomAnalysisRuleModel:
+      type: object
+      properties:
+        evidence_id:
+          type: string
+          title: Evidence Id
+          description: The evidence ID that the rule is related to.
+        rule_name:
+          type: string
+          title: Rule Name
+          description: The name of the rule.
+        alert_level:
+          $ref: '#/components/schemas/AnalysisRuleAlertLevel'
+        rule_message:
+          type: string
+          title: Rule Message
+          description: The message displayed when the rule triggers.
+        rule_query_type:
+          allOf:
+          - $ref: '#/components/schemas/AnalysisRuleQueryType'
+          default: aql
+          description: The query type. Defaults to aql.
+        rule_query:
+          type: object
+          title: Rule Query
+          description: The rule query object. Structure depends on the rule_query_type (AQL, AQLExt, or Pandas).
+        rule_origin:
+          $ref: '#/components/schemas/AnalysisRuleOrigin'
+        library_rule_id:
+          type: string
+          title: Library Rule Id
+          description: The library rule ID that the rule was cloned from (if applicable).
+        rule_type:
+          $ref: '#/components/schemas/AnalysisRuleType'
+        account_scoping_type:
+          allOf:
+          - $ref: '#/components/schemas/AccountScopingType'
+          default: all_accounts
+          description: The account scoping type. Defaults to all_accounts.
+        account_scoping_list:
+          type: array
+          items:
+            type: string
+          title: Account Scoping List
+          description: List of service instance IDs the rule relates to (used with included_accounts or excluded_accounts scoping).
+      title: CreateCustomAnalysisRuleModel
+      description: Request body for creating a new custom analysis rule.
   securitySchemes:
     ApiKey:
       type: apiKey

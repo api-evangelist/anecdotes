@@ -173,15 +173,6 @@ paths:
         '404':
           description: Evidence not found.
 components:
-  parameters:
-    EvidenceId:
-      name: evidence_id
-      in: path
-      required: true
-      description: Evidence artifact identifier.
-      schema:
-        type: string
-      example: '659414963'
   schemas:
     EvidenceHistory:
       type: object
@@ -204,6 +195,15 @@ components:
         pagination:
           type: object
           additionalProperties: true
+  parameters:
+    EvidenceId:
+      name: evidence_id
+      in: path
+      required: true
+      description: Evidence artifact identifier.
+      schema:
+        type: string
+      example: '659414963'
   securitySchemes:
     ApiKey:
       type: apiKey
